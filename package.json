@@ -1,0 +1,42 @@
+{
+  "name": "hopp",
+  "version": "0.0.1",
+  "description": "Rapid & lightweight build system.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "bin": {
+    "hopp": "index.js"
+  },
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "babel src -d dist",
+    "test": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karimsa/hopp.git"
+  },
+  "keywords": [
+    "build",
+    "hopp"
+  ],
+  "author": "Karim Alibhai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/karimsa/hopp/issues"
+  },
+  "homepage": "https://github.com/karimsa/hopp#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1"
+  },
+  "dependencies": {
+    "babel-core": "^6.25.0",
+    "babel-preset-env": "^1.5.2",
+    "glob": "^7.1.2",
+    "minimist": "^1.2.0",
+    "regenerator-runtime": "^0.10.5",
+    "require-like": "^0.1.2"
+  }
+}

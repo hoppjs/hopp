@@ -1,0 +1,89 @@
+/**
+ * @file src/utils/log.js
+ * @license MIT
+ * @copyright 2017 Karim Alibhai.
+ */
+
+import util from 'util'
+
+/**
+ * Selected colors - borrowed from `debug`.
+ */
+const colors = [6, 2, 3, 4, 5, 1]
+
+/**
+ * Manage distributed colors.
+ */
+let color = -1
+function nextColor() {
+  color += 1
+  color = color === colors.length ? 0 : color
+
+  return colors[color]
+}
+
+/**
+ * Basic attempt to figure out if colors should
+ * be used or not.
+ */
+const useColors = process.stdout.isTTY
+
+/**
+ * Create error mark.
+ */
+const ERROR = useColors ? '\u001b[31m✖\u001b[39m' : '✖'
+
+/**
+ * Wraps a string with color escapes.
+ */
+function wrapColor( str ) {
+  const color = nextColor()
+  return useColors ? `\u001b[3${color}m${str}\u001b[39m` : str
+}
+
+/**
+ * Dimify string.
+ */
+function dim( str ) {
+  return `\u001b[90m${str}\u001b[39m`
+}
+
+/**
+ * Create generic logger function.
+ */
+function fmt(namespace, log, msg) {
+  return function (msg) {
+    if (log !== 'debug' || process.env.HOPP_DEBUG !== 'false') {
+      return console[log === 'debug' ? 'error' : log].apply(
+        console,
+        [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`]
+          .concat([].slice.call(arguments, 1))
+      )
+    }
+  }
+}
+
+/**
+ * Cache loggers for repeat calls.
+ */
+const cache = {}
+
+/**
+ * Create debug-like loggers attached to given
+ * namespace & stdout+stderr.
+ */
+module.exports = namespace => {
+  // check cache
+  const nm = namespace
+  if (cache[nm]) return cache[nm]
+
+  // colorize namespace
+  namespace = wrapColor(namespace)
+
+  // return loggers
+  return (cache[nm] = {
+    log: fmt(namespace, 'log'),
+    debug: fmt(namespace, 'debug'),
+    error: fmt(namespace, 'error')
+  })
+}
