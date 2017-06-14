@@ -30,8 +30,6 @@ export default async file => {
   const req = require('require-like')
   const { Script } = require('vm')
 
-  console.log('LOADING ELSE')
-
   // compile with babel
   const { code } = babel.transform(data, {
     babelrc: false,
