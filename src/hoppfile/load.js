@@ -8,9 +8,10 @@ import { stat, readFile } from '../fs'
 import env from 'babel-preset-env'
 import * as cache from '../cache'
 import { dirname } from 'path'
-import babel from 'babel-core'
 import req from 'require-like'
 import { Script } from 'vm'
+
+const babel = require('babel-core')
 
 export default async file => {
   // if bad args die
