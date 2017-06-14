@@ -14,12 +14,12 @@ export default class Hopp {
    * Creates a new task with the glob.
    * DOES NOT START THE TASK.
    * 
-   * @param {Glob} sources
+   * @param {Glob} src
    * @return {Hopp} new hopp object
    */
-  constructor (sources) {
-    this.sources = sources
-    this.callStack = []
+  constructor (src) {
+    this.src = src
+    this.stack = []
   }
 
   /**
@@ -28,7 +28,7 @@ export default class Hopp {
    * @return {Hopp} task manager
    */
   dest (out) {
-    this.output = out
+    this.dest = out
     return this
   }
 
@@ -38,7 +38,7 @@ export default class Hopp {
    */
   start () {
     // TODO: actually start the task
-    debug('Starting task: %s -> %s', this.sources, this.output)
+    debug('Starting task: %s -> %s', this.src, this.dest)
 
     return Promise.resolve(1)
   }
@@ -49,9 +49,9 @@ export default class Hopp {
    */
   toJSON () {
     return {
-      output: this.output,
-      sources: this.sources,
-      callStack: this.callStack
+      dest: this.dest,
+      src: this.src,
+      stack: this.stack
     }
   }
 
@@ -61,9 +61,9 @@ export default class Hopp {
    * @return {Hopp} task manager
    */
   fromJSON (json) {
-    this.output = json.output
-    this.sources = json.sources
-    this.callStack = json.callStack
+    this.dest = json.dest
+    this.src = json.src
+    this.stack = json.stack
 
     return this
   }

@@ -25,13 +25,13 @@ async function createCache( lockfile ) {
   debug('Creating empty cache')
 
   // write empty cache
-  await writeFile(lockfile, '{"lmod":0,"stat":{},"files":{}}')
+  await writeFile(lockfile, '{"s":{"lock":0}}')
 
   // return the empty cache
   return (lock = {
-    lmod: 0,
-    stat: {},
-    files: {}
+    s: {
+      lock: 0
+    }
   })
 }
 
@@ -78,29 +78,6 @@ export const val = (key, value) => {
   }
   
   lock[key] = value
-}
-
-/**
- * Fetches a file - cache-first.
- */
-export const get = async file => {
-  const lmod = +(await stat(file)).mtime
-  
-  // try loading from cache
-  if (lock.stat[file] === lmod) {
-    log('loading %s from cache', path.basename(file))
-    return lock.files[file]
-  }
-
-  // load file off fs
-  const data = await readFile(file, 'utf8')
-
-  // add to cache
-  lock.stat[file] = lmod
-  lock.files[file] = data
-
-  // return contents finally
-  return data
 }
 
 /**

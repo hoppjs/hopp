@@ -10,7 +10,7 @@
     "hopp": "index.js"
   },
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "rm -rf dist dist-legacy",
     "build": "npm run build-latest && npm run build-legacy",
     "build-latest": "babel src -d dist --source-maps inline --no-babelrc --plugins=babel-plugin-transform-es2015-modules-commonjs",
     "build-legacy": "babel src -d dist-legacy --source-maps inline",

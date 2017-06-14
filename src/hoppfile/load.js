@@ -10,6 +10,7 @@ import * as cache from '../cache'
 import { dirname } from 'path'
 import req from 'require-like'
 import { Script } from 'vm'
+import * as UN from '../utils/uninum'
 
 const babel = require('babel-core')
 
@@ -24,7 +25,11 @@ export default async file => {
   const data = await readFile(file, 'utf8')
 
   // try to load from cache
-  const state = cache.val('tree') || {}
+  const state = {}
+  ;[state.lmod, state.tasks] = cache.val('_') || []
+
+  // unpack time
+  state.lmod = UN.toNumber(state.lmod)
 
   if (state.lmod === lmod) {
     return [true, state.tasks]
@@ -77,10 +82,10 @@ export default async file => {
   delete global.scope
 
   // cache exports
-  cache.val('tree', {
-    lmod,
-    tasks: scope.module.exports
-  })
+  cache.val('_', [
+    UN.toString(lmod),
+    scope.module.exports
+  ])
 
   // return exports
   return [false, scope.module.exports]
