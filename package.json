@@ -11,7 +11,9 @@
   },
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "babel src -d dist",
+    "build": "npm run build-latest && npm run build-legacy",
+    "build-latest": "babel src -d dist --source-maps inline --no-babelrc --plugins=babel-plugin-transform-es2015-modules-commonjs",
+    "build-legacy": "babel src -d dist-legacy --source-maps inline",
     "test": "npm run build"
   },
   "repository": {
@@ -29,7 +31,8 @@
   },
   "homepage": "https://github.com/karimsa/hopp#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1"
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1"
   },
   "dependencies": {
     "babel-core": "^6.25.0",
