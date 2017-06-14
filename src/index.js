@@ -19,7 +19,23 @@ const { log, debug, error } = require('./utils/log')('hopp')
 /**
  * Parse args
  */
-const argv = require('minimist')(process.argv.slice(2))
+const argv = (args => {
+  const o = {
+    _: []
+  }
+
+  for (let i = 2; i < args.length; i += 1) {
+    let a = args[i]
+
+    if (a === '-h' || a === '--help') o.help = true
+    else if (a === '-V' || a === '--version') o.version = true
+    else if (a === '-v' || a === '--verbose') o.verbose = true
+    else if (a === '-d' || a === '--directory') o.directory = args[++i]
+    else if (a[0] !== '-') o._.push(a)
+  }
+
+  return o
+})(process.argv)
 
 /**
  * Print help.
@@ -35,7 +51,7 @@ function help() {
   process.exit(1)
 }
 
-if (argv.V || argv.version) {
+if (argv.version) {
   console.log(require('../package.json').version)
   process.exit(0)
 }
@@ -48,7 +64,7 @@ if (argv.V || argv.version) {
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
-if (argv.h || argv.help) {
+if (argv.help) {
   help()
 }
 
@@ -61,7 +77,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   /**
    * Pass verbosity through to the env.
    */
-  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !! (argv.v || argv.verbose)
+  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !! argv.verbose
   debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
 
   /**
@@ -81,7 +97,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
 
     // map to current directory
     return path.resolve(process.cwd(), directory)
-  })(argv.d || argv.directory || await hoppfile.find(path.dirname(__dirname)))
+  })(argv.directory || await hoppfile.find(path.dirname(__dirname)))
 
   /**
    * Set hoppfile location relative to the project.

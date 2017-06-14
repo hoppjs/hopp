@@ -38,7 +38,6 @@
     "babel-core": "^6.25.0",
     "babel-preset-env": "^1.5.2",
     "glob": "^7.1.2",
-    "minimist": "^1.2.0",
     "regenerator-runtime": "^0.10.5",
     "require-like": "^0.1.2"
   }
