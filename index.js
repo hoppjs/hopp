@@ -6,9 +6,9 @@
  * @copyright 2017 Karim Alibhai.
  */
 
-const NODE_VERSION = +process.version.substr(1).split('.')[0]
+process.env.LEGACY_NODE = 7 > +process.version.substr(1).split('.')[0]
 
-if ( NODE_VERSION < 7 ) {
+if ( process.env.LEGACY_NODE ) {
   require('regenerator-runtime/runtime')
   require('./dist-legacy')
 } else {

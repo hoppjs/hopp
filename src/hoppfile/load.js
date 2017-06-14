@@ -17,7 +17,7 @@ export default async file => {
 
   // get file contents
   const lmod = +(await stat(file)).mtime
-  const data = await readFile(file, 'utf8')
+  let code = await readFile(file, 'utf8')
 
   // try to load from cache
   const state = {}
@@ -30,22 +30,26 @@ export default async file => {
     return [true, state.tasks]
   }
 
-  const env = require('babel-preset-env')
-  const babel = require('babel-core')
   const req = require('require-like')
   const { Script } = require('vm')
 
-  // compile with babel
-  const { code } = babel.transform(data, {
-    babelrc: false,
-    presets: [
-      [env, {
-        targets: {
-          node: 'current'
-        }
-      }]
-    ]
-  })
+  // crude test to see if babel is needed
+  if (process.env.LEGACY_NODE || /import|export/.test(code)) {
+    const env = require('babel-preset-env')
+    const babel = require('babel-core')
+
+    // compile with babel
+    code = babel.transform(code, {
+      babelrc: false,
+      presets: [
+        [env, {
+          targets: {
+            node: 'current'
+          }
+        }]
+      ]
+    }).code
+  }
 
   // setup virtual script
   const script = new Script(
