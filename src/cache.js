@@ -16,6 +16,11 @@ import path from 'path'
 const { debug, log } = require('./utils/log')('hopp')
 let lock
 
+/**
+ * Creates a new cache (overwrites existing).
+ * @param {String} lockfile location of lockfile
+ * @return {Object} contents of new cache
+ */
 async function createCache( lockfile ) {
   debug('Creating empty cache')
 
@@ -30,6 +35,11 @@ async function createCache( lockfile ) {
   })
 }
 
+/**
+ * Loads a cache from the project.
+ * @param {String} directory project directory
+ * @return {Object} the loaded cache
+ */
 export const load = async directory => {
   // send back internal cache if reloading
   if (lock) return lock

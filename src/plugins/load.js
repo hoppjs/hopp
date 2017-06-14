@@ -6,6 +6,11 @@
 
 import path from 'path'
 
+/**
+ * Loads the list of plugins defined in the package.json.
+ * @param {String} path to directory with package.json
+ * @return {Promise} resolves with array of paths to plugins
+ */
 export default async directory => {
   const pkg = (() => {
     try {

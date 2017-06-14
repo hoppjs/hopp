@@ -71,6 +71,8 @@ const cache = {}
 /**
  * Create debug-like loggers attached to given
  * namespace & stdout+stderr.
+ * @param {String} namespace the namespace to lock your logger into
+ * @return {Object} contains log, debug, and error methods
  */
 module.exports = namespace => {
   // check cache

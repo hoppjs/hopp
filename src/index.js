@@ -40,6 +40,14 @@ if (argv.V || argv.version) {
   process.exit(0)
 }
 
+/**
+ * Currently the only way for help to be called.
+ * Later, it should also happen on invalid args but we
+ * don't have invalid arguments yet.
+ * 
+ * Invalid arguments is a flag misuse - never a missing
+ * task. That error should be more minimal and separate.
+ */
 if (argv.h || argv.help) {
   help()
 }
@@ -74,6 +82,15 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
     // map to current directory
     return path.resolve(process.cwd(), directory)
   })(argv.d || argv.directory || await hoppfile.find(path.dirname(__dirname)))
+
+  /**
+   * Set hoppfile location relative to the project.
+   * 
+   * This will cause errors later if the directory was supplied
+   * manually but contains no hoppfile. We don't want to do a magic
+   * lookup for the user because they overrode the magic with the
+   * manual flag.
+   */
   const file = projectDir + '/hoppfile.js'
   debug('Using hoppfile.js @ %s', file)
 
@@ -83,16 +100,13 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   const lock = await cache.load(projectDir)
 
   /**
-   * Create hopp instance.
+   * Create hopp instance creator.
    */
   const hopp = await createHopp(projectDir)
-  debug('Created proxy object: %s', util.inspect(hopp, {
-    colors: true,
-    depth: Infinity
-  }))
 
   /**
-   * Cache it to make require work.
+   * Cache the hopp handler to make `require()` work
+   * in the hoppfile.
    */
   const _resolve = Module._resolveFilename
   Module._resolveFilename = (what, parent) => {
@@ -109,7 +123,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   /**
    * Load tasks from file.
    */
-  let [fromCache, taskDefns] = await hoppfile.load(file)
+  const [fromCache, taskDefns] = await hoppfile.load(file)
 
   /**
    * Parse from cache.

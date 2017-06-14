@@ -6,6 +6,11 @@
 
 import fs from 'fs'
 
+/**
+ * Similar to bluebird's Promise.promisify.
+ * @param {Function} fn the async-callback function to transform
+ * @return {Function} a new promise-based function
+ */
 function promisify(fn) {
   return function () {
     const args = [].slice.call(arguments)
@@ -18,6 +23,10 @@ function promisify(fn) {
   }
 }
 
+/**
+ * Transform only needed methods (instead of using mz
+ * or doing a promisifyAll).
+ */
 export const exists = dir => new Promise(res => fs.exists(dir, res))
 export const stat = promisify(fs.stat)
 export const mkdir = promisify(fs.mkdir)
