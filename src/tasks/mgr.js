@@ -4,6 +4,8 @@
  * @copyright 2017 Karim Alibhai.
  */
 
+const { debug } = require('../utils/log')('hopp')
+
 /**
  * Hopp class to manage tasks.
  */
@@ -16,6 +18,7 @@ export default class Hopp {
    * @return {Hopp} new hopp object
    */
   constructor (sources) {
+    this.sources = sources
     this.callStack = []
   }
 
@@ -35,6 +38,7 @@ export default class Hopp {
    */
   start () {
     // TODO: actually start the task
+    debug('Starting task: %s -> %s', this.sources, this.output)
 
     return Promise.resolve(1)
   }
@@ -45,6 +49,8 @@ export default class Hopp {
    */
   toJSON () {
     return {
+      output: this.output,
+      sources: this.sources,
       callStack: this.callStack
     }
   }
@@ -55,7 +61,10 @@ export default class Hopp {
    * @return {Hopp} task manager
    */
   fromJSON (json) {
+    this.output = json.output
+    this.sources = json.sources
     this.callStack = json.callStack
+
     return this
   }
 }
