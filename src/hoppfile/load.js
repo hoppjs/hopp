@@ -5,8 +5,12 @@
  */
 
 import { stat, readFile } from '../fs'
-import { dirname } from 'path'
+import env from 'babel-preset-env'
 import * as cache from '../cache'
+import { dirname } from 'path'
+import babel from 'babel-core'
+import req from 'require-like'
+import { Script } from 'vm'
 
 export default async file => {
   // if bad args die
@@ -24,11 +28,6 @@ export default async file => {
   if (state.lmod === lmod) {
     return [true, state.tasks]
   }
-
-  const env = require('babel-preset-env')
-  const babel = require('babel-core')
-  const req = require('require-like')
-  const { Script } = require('vm')
 
   // compile with babel
   const { code } = babel.transform(data, {
