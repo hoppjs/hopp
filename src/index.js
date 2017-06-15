@@ -12,9 +12,10 @@ import * as cache from './cache'
 import createHopp from './hopp'
 import fromTree from './tasks/tree'
 import * as hoppfile from './hoppfile'
+import createLogger from './utils/log'
 import createParallel from './tasks/parallel'
 
-const { log, debug, error } = require('./utils/log')('hopp')
+const { log, debug, error } = createLogger('hopp')
 
 /**
  * Parse args
@@ -183,17 +184,29 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
     if (goal instanceof Array) {
       goal = createParallel(name, goal, taskDefns)
     }
-    
-    goal = goal.start(name)
+
+    goal = (async () => {
+      try {
+        await goal.start(name)
+      } catch (err) {
+        createLogger(`hopp:${name}`).error(err.stack || err)
+        throw ('Build failed.')
+      }
+    })()
   } else {
-    goal = Promise.all(tasks.map(name => {
+    goal = Promise.all(tasks.map(async name => {
       let task = taskDefns[name]
 
       if (task instanceof Array) {
         task = createParallel(name, task, taskDefns)
       }
 
-      return task.start(name)
+      try {
+        await task.start(name)
+      } catch (err) {
+        createLogger(`hopp:${name}`).error(err.stack || err)
+        throw ('Build failed.')
+      }
     }))
   }
 
