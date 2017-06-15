@@ -4,6 +4,7 @@
  * @copyright 2017 Karim Alibhai.
  */
 
+import glob from '../glob'
 import * as cache from '../cache'
 import createLogger from '../utils/log'
 
@@ -37,11 +38,19 @@ export default class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  async start (name) {
-    const { debug } = createLogger(`hopp:${name}`)
-    debug('Starting task')
+  async start (name, directory) {
+    const { log, debug } = createLogger(`hopp:${name}`)
+    const start = Date.now()
+    log('Starting task')
 
-    return Promise.resolve(1)
+    /**
+     * Create a tree of the current state.
+     */
+    const tree = await glob(this.src, directory)
+
+    // console.log(tree)
+
+    log('Task ended (took %s ms)', Date.now() - start)
   }
 
   /**
