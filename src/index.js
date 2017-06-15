@@ -160,7 +160,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
       goal = createParallel(goal)
     }
     
-    goal.start()
+    goal = goal.start()
   } else {
     goal = Promise.all(tasks.map(task => {
       task = taskDefns[task]
