@@ -8,7 +8,7 @@
  * Creates a Hopp-ish object that runs
  * subtasks in parallel.
  */
-export default tasks => ({
+export default (name, tasks, taskTree) => ({
   /**
    * Starts all tasks concurrently.
    * 
@@ -19,7 +19,7 @@ export default tasks => ({
 
     // just async for now
     return Promise.all(tasks.map(
-      task => task.start()
+      task => taskTree[task].start(`${name}:${task}`)
     ))
   },
 

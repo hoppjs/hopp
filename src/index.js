@@ -145,7 +145,30 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
    * Parse from cache.
    */
   if (fromCache) {
-    fromTree(taskDefns, tasks)
+    // create copy of tasks, we don't want to modify
+    // the actual goal list
+    const fullList = [].slice.call(tasks)
+
+    // loop until we walk the whole tree
+    while (true) {
+      let length = fullList.length
+
+      // add task dependencies to list
+      tasks.forEach(task => {
+        if (taskDefns[task] instanceof Array) {
+          fullList.push(task)
+        }
+      })
+
+      // once length is unchanging, we've hit the bottom
+      // of the tree
+      if (length === fullList.length) {
+        break
+      }
+    }
+
+    // parse all tasks and their dependencies
+    fromTree(taskDefns, fullList)
   }
 
   /**
@@ -154,22 +177,23 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   let goal
 
   if (tasks.length === 1) {
+    let name = tasks[0]
     goal = taskDefns[tasks[0]]
     
     if (goal instanceof Array) {
-      goal = createParallel(goal)
+      goal = createParallel(name, goal, taskDefns)
     }
     
-    goal = goal.start()
+    goal = goal.start(name)
   } else {
-    goal = Promise.all(tasks.map(task => {
-      task = taskDefns[task]
+    goal = Promise.all(tasks.map(name => {
+      let task = taskDefns[name]
 
       if (task instanceof Array) {
-        task = createParallel(task)
+        task = createParallel(name, task, taskDefns)
       }
 
-      return task.start()
+      return task.start(name)
     }))
   }
 

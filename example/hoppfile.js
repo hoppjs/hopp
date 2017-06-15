@@ -9,6 +9,6 @@ export const js =
     .dest('dist')
 
 export default [
-  js,
-  css
+  'js',
+  'css'
 ]

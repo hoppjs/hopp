@@ -4,7 +4,8 @@
  * @copyright 2017 Karim Alibhai.
  */
 
-const { debug } = require('../utils/log')('hopp')
+import * as cache from '../cache'
+import createLogger from '../utils/log'
 
 /**
  * Hopp class to manage tasks.
@@ -36,9 +37,9 @@ export default class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  start () {
-    // TODO: actually start the task
-    debug('Starting task: %s -> %s', this.src, this.dest)
+  async start (name) {
+    const { debug } = createLogger(`hopp:${name}`)
+    debug('Starting task')
 
     return Promise.resolve(1)
   }
