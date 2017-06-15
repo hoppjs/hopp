@@ -25,13 +25,11 @@ async function createCache( lockfile ) {
   debug('Creating empty cache')
 
   // write empty cache
-  await writeFile(lockfile, '{"s":{"lock":0}}')
+  await writeFile(lockfile, '{"s":{}}')
 
   // return the empty cache
   return (lock = {
-    s: {
-      lock: 0
-    }
+    s: {}
   })
 }
 
