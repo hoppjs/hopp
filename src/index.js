@@ -148,25 +148,18 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   if (fromCache) {
     // create copy of tasks, we don't want to modify
     // the actual goal list
-    const fullList = [].slice.call(tasks)
+    let fullList = [].slice.call(tasks)
 
-    // loop until we walk the whole tree
-    while (true) {
-      let length = fullList.length
-
-      // add task dependencies to list
-      tasks.forEach(task => {
-        if (taskDefns[task] instanceof Array) {
-          fullList.push(task)
-        }
-      })
-
-      // once length is unchanging, we've hit the bottom
-      // of the tree
-      if (length === fullList.length) {
-        break
+    // walk the full tree
+    function addDependencies(task) {
+      if (taskDefns[task] instanceof Array) {
+        fullList = fullList.concat(taskDefns[task])
+        taskDefns[task].forEach(sub => addDependencies(sub))
       }
     }
+
+    // start walking from top
+    fullList.forEach(task => addDependencies(task))
 
     // parse all tasks and their dependencies
     fromTree(taskDefns, fullList)
@@ -182,12 +175,12 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
     goal = taskDefns[tasks[0]]
     
     if (goal instanceof Array) {
-      goal = createParallel(name, goal, taskDefns)
+      goal = createParallel(goal, taskDefns)
     }
 
     goal = (async () => {
       try {
-        await goal.start(name)
+        await goal.start(name, projectDir)
       } catch (err) {
         createLogger(`hopp:${name}`).error(err.stack || err)
         throw ('Build failed.')
@@ -198,11 +191,11 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
       let task = taskDefns[name]
 
       if (task instanceof Array) {
-        task = createParallel(name, task, taskDefns)
+        task = createParallel(task, taskDefns)
       }
 
       try {
-        await task.start(name)
+        await task.start(name, projectDir)
       } catch (err) {
         createLogger(`hopp:${name}`).error(err.stack || err)
         throw ('Build failed.')
