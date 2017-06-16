@@ -16,23 +16,17 @@ export default (pattern, cwd) => new Promise((resolve, reject) => {
   }
 
   let files = []
-  let gc = cache.val('gc') || {}
 
   // glob eval all
   Promise.all(pattern.map(pttn => new Promise(res => {
-    const opts = globCache !== undefined ? globCache : { cwd, cache: gc }
-
-    globCache = new glob.Glob(pttn, opts, (err, results) => {
+    globCache = new glob.Glob(pttn, globCache !== undefined ? globCache : { cwd }, (err, results) => {
       if (err) reject(err)
       else {
         files = files.concat(results)
         res()
       }
     })
-
-    gc = globCache.cache
   }))).then(() => {
-    cache.val('gc', gc)
     resolve(files)
   })
 })

@@ -44,11 +44,9 @@ export default class Hopp {
     log('Starting task')
 
     /**
-     * Create a tree of the current state.
+     * Get the files.
      */
-    const tree = await glob(this.src, directory)
-
-    // console.log(tree)
+    const files = await glob(this.src, directory)
 
     log('Task ended (took %s ms)', Date.now() - start)
   }
