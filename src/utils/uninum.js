@@ -5,7 +5,9 @@
  */
 
 export function toString( number ) {
-  return String(number).match(/([0-9]{4})|([0-9]{3})|([0-9]{2})|([0-9]{1})/g).map(num => {
+  number = String(number)
+
+  return number.match(new RegExp(`([0-9]{4})|([0-9]{${ number.length % 4 }})`, 'g')).map(num => {
     return String.fromCodePoint(+num)
   }).join('')
 }
