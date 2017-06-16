@@ -7,6 +7,8 @@
 import glob from 'glob'
 import * as cache from './cache'
 
+let globCache
+
 export default (pattern, cwd) => new Promise((resolve, reject) => {
   // prefer arrays
   if (!(pattern instanceof Array)) {
@@ -14,25 +16,23 @@ export default (pattern, cwd) => new Promise((resolve, reject) => {
   }
 
   let files = []
-  const caches = cache.val('gc') || {}
+  let gc = cache.val('gc') || {}
 
   // glob eval all
   Promise.all(pattern.map(pttn => new Promise(res => {
-    const opts = { cwd }
+    const opts = globCache !== undefined ? globCache : { cwd, cache: gc }
 
-    if (caches[pttn]) {
-      opts.cache = caches[pttn]
-    }
-
-    caches[pttn] = (new glob.Glob(pttn, opts, (err, results) => {
+    globCache = new glob.Glob(pttn, opts, (err, results) => {
       if (err) reject(err)
       else {
         files = files.concat(results)
         res()
       }
-    })).cache
+    })
+
+    gc = globCache.cache
   }))).then(() => {
-    cache.val('gc', caches)
+    cache.val('gc', gc)
     resolve(files)
   })
 })
