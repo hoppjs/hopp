@@ -83,5 +83,6 @@ export const val = (key, value) => {
  * @param {*} directory 
  */
 export const save = async directory => {
+  debug('Saving cache')
   await writeFile(directory + '/hopp.lock', JSON.stringify(lock))
 }
