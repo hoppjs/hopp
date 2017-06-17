@@ -4,31 +4,81 @@
  * @copyright 2017 Karim Alibhai.
  */
 
-import glob from 'glob'
 import path from 'path'
+import match from 'minimatch'
 import * as cache from './cache'
 import getPath from './get-path'
+import { readdir, stat } from './fs'
 
-let globCache
+let statCache
 
-export default (pattern, cwd) => new Promise((resolve, reject) => {
+export default async (pattern, cwd) => {
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]
   }
 
-  let files = []
+  // get cache
+  if (statCache === undefined) {
+    statCache = cache.val('sc') || {}
+  }
 
-  // glob eval all
-  Promise.all(pattern.map(pttn => new Promise(res => {
-    globCache = new glob.Glob(pttn, globCache !== undefined ? globCache : { cwd }, (err, results) => {
-      if (err) reject(err)
-      else {
-        files = files.concat(results.map(file => path.resolve(cwd, getPath(file))))
-        res()
+  /**
+   * Recursive walk.
+   */
+  async function walk(pttn, directory, recursive = false) {
+    if (pttn.length === 0) {
+      return
+    }
+
+    const curr = pttn.shift()
+    const localResults = []
+
+    for (let file of (await readdir(directory))) {
+      // fix file path
+      const filepath = directory + path.sep + file
+
+      // todo: cache this shit
+      let fstat = await stat(filepath)
+
+      // has been modified
+      if (!statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
+        statCache[filepath] = +fstat.mtime
+
+        if (match(file, curr)) {
+          if (fstat.isFile()) {
+            localResults.push(filepath)
+          } else {
+            await walk(pttn, filepath, recursive || curr === '**')
+          }
+        } else if (fstat.isDirectory() && recursive) {
+          await walk([curr].concat(pttn), filepath, recursive)
+        }
       }
-    })
-  }))).then(() => {
-    resolve(files)
-  })
-})
+    }
+
+    return localResults
+  }
+
+  /**
+   * Run all patterns against directory.
+   */
+  let results = []
+  for (let pttn of pattern) {
+    if (pttn[0] === '/') {
+      throw new Error('Not sure what to do with the / in your glob.')
+    }
+
+    results = results.concat(await walk(pttn.split('/'), cwd))
+  }
+
+  /**
+   * Update cache.
+   */
+  cache.val('sc', statCache)
+
+  /**
+   * Return final results object.
+   */
+  return results
+}

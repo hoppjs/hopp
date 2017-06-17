@@ -11,7 +11,6 @@ import glob from '../glob'
 import mkdirp from '../mkdirp'
 import getPath from '../get-path'
 import * as cache from '../cache'
-import modified from '../modified'
 import createLogger from '../utils/log'
 
 /**
@@ -52,34 +51,36 @@ export default class Hopp {
     log('Starting task')
 
     /**
-     * Get the files.
+     * Get the modified files.
      */
-    const files = _(await modified(await glob(this.d.src, directory)))
+    let files = await glob(this.d.src, directory)
 
-        /**
-         * Create streams.
-         */
-        .map(file => ({
-          file,
-          stream: fs.createReadStream(file, { encoding: 'utf8' })
-        }))
+    if (files.length > 0) {
+      /**
+       * Create streams.
+       */
+      files = _(files).map(file => ({
+        file,
+        stream: fs.createReadStream(file, { encoding: 'utf8' })
+      }))
 
-    // TODO: pipe to plugin streams
+      // TODO: pipe to plugin streams
 
-    /**
-     * Connect with destination.
-     */
-    const dest = path.resolve(directory, getPath(this.d.dest))
-    await mkdirp(dest.replace(directory, ''), directory)
+      /**
+       * Connect with destination.
+       */
+      const dest = path.resolve(directory, getPath(this.d.dest))
+      await mkdirp(dest.replace(directory, ''), directory)
 
-    files.map(file => {
-      file.stream.pipe(
-        fs.createWriteStream(dest + '/' + path.basename(file.file))
-      )
-    })
+      files.map(file => {
+        file.stream.pipe(
+          fs.createWriteStream(dest + '/' + path.basename(file.file))
+        )
+      })
 
-    // launch
-    files.val()
+      // launch
+      files.val()
+    }
 
     log('Task ended (took %s ms)', Date.now() - start)
   }
