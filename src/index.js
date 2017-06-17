@@ -31,6 +31,7 @@ const argv = (args => {
     if (a === '-h' || a === '--help') o.help = true
     else if (a === '-V' || a === '--version') o.version = true
     else if (a === '-v' || a === '--verbose') o.verbose = true
+    else if (a === '-H' || a === '--harmony') o.harmony = true
     else if (a === '-d' || a === '--directory') o.directory = args[++i]
     else if (a[0] !== '-') o._.push(a)
   }
@@ -46,6 +47,7 @@ function help() {
   console.log('')
   console.log('  -d, --directory [dir]\tpath to project directory')
   console.log('  -v, --verbose\tenable debug messages')
+  console.log('  -H, --harmony\tauto-transpile hoppfile features')
   console.log('  -V, --version\tget version info')
   console.log('  -h, --help\tdisplay this message')
 
@@ -80,6 +82,11 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
    */
   process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !! argv.verbose
   debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
+
+  /**
+   * Harmony flag for transpiling hoppfiles.
+   */
+  process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !! argv.harmony
 
   /**
    * If project directory not specified, do lookup for the

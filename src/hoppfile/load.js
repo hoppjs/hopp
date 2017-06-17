@@ -30,7 +30,7 @@ export default async file => {
   const { Script } = require('vm')
 
   // crude test to see if babel is needed
-  if (process.env.LEGACY_NODE || /import|export/.test(code)) {
+  if (process.env.HARMONY_FLAG === 'true') {
     const env = require('babel-preset-env')
     const babel = require('babel-core')
 
