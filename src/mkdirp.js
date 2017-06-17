@@ -8,6 +8,7 @@ import path from 'path'
 import { mkdir } from './fs'
 
 const { debug } = require('./utils/log')('hopp')
+const exists = {}
 
 export default async (directory, cwd) => {
   // explode into separate
@@ -15,12 +16,17 @@ export default async (directory, cwd) => {
 
   // walk
   for (let dir of directory) {
-    if (dir) {
+    if (dir && !exists[cwd + path.sep + dir]) {
       try {
         debug('mkdir %s', cwd + path.sep + dir)
         await mkdir(cwd + path.sep + dir)
-      } catch (_) {}
+      } catch (err) {
+        if (String(err).indexOf('EEXIST') === -1) {
+          throw err
+        }
+      }
 
+      exists[cwd + path.sep + dir] = true
       cwd += path.sep + dir
     }
   }
