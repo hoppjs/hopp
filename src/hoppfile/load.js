@@ -7,7 +7,6 @@
 import { stat, readFile } from '../fs'
 import * as cache from '../cache'
 import { dirname } from 'path'
-import * as UN from '../utils/uninum'
 
 export default async file => {
   // if bad args die
@@ -22,9 +21,6 @@ export default async file => {
   // try to load from cache
   const state = {}
   ;[state.lmod, state.tasks] = cache.val('_') || []
-
-  // unpack time
-  state.lmod = UN.toNumber(state.lmod)
 
   if (state.lmod === lmod) {
     return [true, state.tasks]
@@ -87,7 +83,7 @@ export default async file => {
 
   // cache exports
   cache.val('_', [
-    UN.toString(lmod),
+    lmod,
     scope.module.exports
   ])
 

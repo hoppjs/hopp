@@ -5,7 +5,6 @@
  */
 
 import * as cache from './cache'
-import UN from './utils/uninum'
 import { stat } from './fs'
 
 let statCache
