@@ -17,20 +17,6 @@ const { debug, log } = require('./utils/log')('hopp')
 let lock
 
 /**
- * Creates a new cache.
- * @param {String} lockfile location of lockfile
- * @return {Object} contents of new cache
- */
-async function createCache( lockfile ) {
-  debug('Creating empty cache')
-
-  // return empty cache
-  return (lock = {
-    s: {}
-  })
-}
-
-/**
  * Loads a cache from the project.
  * @param {String} directory project directory
  * @return {Object} the loaded cache
@@ -49,7 +35,7 @@ export const load = async directory => {
 
   // bring cache into existence
   if (!await exists(lockfile)) {
-    return await createCache(lockfile)
+    return (lock = {})
   }
 
   // load lock file
@@ -58,7 +44,7 @@ export const load = async directory => {
     return (lock = JSON.parse(await readFile(lockfile, 'utf8')))
   } catch (_) {
     log('Corrupted cache; ejecting.')
-    return await createCache(lockfile)
+    return (lock = {})
   }
 }
 

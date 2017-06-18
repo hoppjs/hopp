@@ -5,15 +5,24 @@
  */
 
 import fs from 'fs'
+import wrap from './fn'
+
+const { debug } = require('./utils/log')('hopp:fs')
+
+let useCache = true
 
 /**
  * Similar to bluebird's Promise.promisify.
  * @param {Function} fn the async-callback function to transform
  * @return {Function} a new promise-based function
  */
-function promisify(fn) {
-  return function () {
+function promisify(fn, name) {
+  /**
+   * Create function call wrapper.
+   */
+  const fnCall = function () {
     const args = [].slice.call(arguments)
+    debug('%s(%j)', name, args)
     return new Promise((resolve, reject) => {
       fn.apply(this, args.concat([function (err) {
         if (err) reject(err)
@@ -21,6 +30,27 @@ function promisify(fn) {
       }]))
     })
   }
+
+  /**
+   * Create deterministic wrapper.
+   */
+  const cacheCall = wrap(fnCall)
+
+  /**
+   * Return conditional cache.
+   */
+  return function () {
+    if (useCache) return cacheCall.apply(this, arguments)
+    return fnCall.apply(this, arguments)
+  }
+}
+
+/**
+ * Allow disabling of cache.
+ */
+export const disableFSCache = () => {
+  debug('Disabling fs cache')
+  useCache = false
 }
 
 /**
@@ -28,8 +58,8 @@ function promisify(fn) {
  * or doing a promisifyAll).
  */
 export const exists = dir => new Promise(res => fs.exists(dir, res))
-export const stat = promisify(fs.stat)
-export const mkdir = promisify(fs.mkdir)
-export const readdir = promisify(fs.readdir)
-export const readFile = promisify(fs.readFile)
-export const writeFile = promisify(fs.writeFile)
+export const stat = promisify(fs.stat, 'stat')
+export const mkdir = promisify(fs.mkdir, 'mkdir')
+export const readdir = promisify(fs.readdir, 'readdir')
+export const readFile = promisify(fs.readFile, 'readFile')
+export const writeFile = promisify(fs.writeFile, 'writeFile')

@@ -5,44 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.save = exports.val = exports.load = undefined;
 
-/**
- * Creates a new cache.
- * @param {String} lockfile location of lockfile
- * @return {Object} contents of new cache
- */
-var createCache = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(lockfile) {
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            debug('Creating empty cache'
-
-            // return empty cache
-            );return _context.abrupt('return', lock = {
-              s: {}
-            });
-
-          case 2:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  return function createCache(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-/**
- * Loads a cache from the project.
- * @param {String} directory project directory
- * @return {Object} the loaded cache
- */
-
-
 var _fs = require('./fs');
 
 var _path = require('path');
@@ -61,37 +23,44 @@ var _require = require('./utils/log')('hopp'),
     debug = _require.debug,
     log = _require.log;
 
-var lock = void 0;var load = exports.load = function () {
-  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory) {
+var lock = void 0;
+
+/**
+ * Loads a cache from the project.
+ * @param {String} directory project directory
+ * @return {Object} the loaded cache
+ */
+var load = exports.load = function () {
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(directory) {
     var lockfile;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context.prev = _context.next) {
           case 0:
             if (!lock) {
-              _context2.next = 2;
+              _context.next = 2;
               break;
             }
 
-            return _context2.abrupt('return', lock);
+            return _context.abrupt('return', lock);
 
           case 2:
-            _context2.t0 = typeof directory !== 'string';
+            _context.t0 = typeof directory !== 'string';
 
-            if (_context2.t0) {
-              _context2.next = 7;
+            if (_context.t0) {
+              _context.next = 7;
               break;
             }
 
-            _context2.next = 6;
+            _context.next = 6;
             return (0, _fs.exists)(directory);
 
           case 6:
-            _context2.t0 = !_context2.sent;
+            _context.t0 = !_context.sent;
 
           case 7:
-            if (!_context2.t0) {
-              _context2.next = 9;
+            if (!_context.t0) {
+              _context.next = 9;
               break;
             }
 
@@ -104,55 +73,47 @@ var lock = void 0;var load = exports.load = function () {
 
             // bring cache into existence
 
-            _context2.next = 12;
+            _context.next = 12;
             return (0, _fs.exists)(lockfile);
 
           case 12:
-            if (_context2.sent) {
-              _context2.next = 16;
+            if (_context.sent) {
+              _context.next = 14;
               break;
             }
 
-            _context2.next = 15;
-            return createCache(lockfile);
+            return _context.abrupt('return', lock = {});
 
-          case 15:
-            return _context2.abrupt('return', _context2.sent);
-
-          case 16:
+          case 14:
 
             // load lock file
             debug('Loading cache');
-            _context2.prev = 17;
-            _context2.t1 = JSON;
-            _context2.next = 21;
+            _context.prev = 15;
+            _context.t1 = JSON;
+            _context.next = 19;
             return (0, _fs.readFile)(lockfile, 'utf8');
 
-          case 21:
-            _context2.t2 = _context2.sent;
-            return _context2.abrupt('return', lock = _context2.t1.parse.call(_context2.t1, _context2.t2));
+          case 19:
+            _context.t2 = _context.sent;
+            return _context.abrupt('return', lock = _context.t1.parse.call(_context.t1, _context.t2));
 
-          case 25:
-            _context2.prev = 25;
-            _context2.t3 = _context2['catch'](17);
+          case 23:
+            _context.prev = 23;
+            _context.t3 = _context['catch'](15);
 
             log('Corrupted cache; ejecting.');
-            _context2.next = 30;
-            return createCache(lockfile);
+            return _context.abrupt('return', lock = {});
 
-          case 30:
-            return _context2.abrupt('return', _context2.sent);
-
-          case 31:
+          case 27:
           case 'end':
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2, undefined, [[17, 25]]);
+    }, _callee, undefined, [[15, 23]]);
   }));
 
-  return function load(_x2) {
-    return _ref2.apply(this, arguments);
+  return function load(_x) {
+    return _ref.apply(this, arguments);
   };
 }();
 
@@ -174,25 +135,25 @@ var val = exports.val = function val(key, value) {
  * @param {*} directory 
  */
 var save = exports.save = function () {
-  var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(directory) {
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             debug('Saving cache');
-            _context3.next = 3;
+            _context2.next = 3;
             return (0, _fs.writeFile)(directory + '/hopp.lock', JSON.stringify(lock));
 
           case 3:
           case 'end':
-            return _context3.stop();
+            return _context2.stop();
         }
       }
-    }, _callee3, undefined);
+    }, _callee2, undefined);
   }));
 
-  return function save(_x3) {
-    return _ref3.apply(this, arguments);
+  return function save(_x2) {
+    return _ref2.apply(this, arguments);
   };
 }();
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9jYWNoZS5qcyJdLCJuYW1lcyI6WyJsb2NrZmlsZSIsImRlYnVnIiwibG9jayIsInMiLCJjcmVhdGVDYWNoZSIsInJlcXVpcmUiLCJsb2ciLCJsb2FkIiwiZGlyZWN0b3J5IiwiRXJyb3IiLCJKU09OIiwicGFyc2UiLCJ2YWwiLCJrZXkiLCJ2YWx1ZSIsInVuZGVmaW5lZCIsInNhdmUiLCJzdHJpbmdpZnkiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFrQkE7Ozs7Ozt1REFLQSxpQkFBNEJBLFFBQTVCO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFDRUMsa0JBQU07O0FBRU47QUFGQSxjQURGLGlDQUlVQyxPQUFPO0FBQ2JDLGlCQUFHO0FBRFUsYUFKakI7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsRzs7a0JBQWVDLFc7Ozs7O0FBU2Y7Ozs7Ozs7QUExQkE7O0FBT0E7Ozs7OzsyY0FiQTs7Ozs7O2VBZXVCQyxRQUFRLGFBQVIsRUFBdUIsTUFBdkIsQztJQUFmSixLLFlBQUFBLEs7SUFBT0ssRyxZQUFBQSxHOztBQUNmLElBQUlKLGFBQUosQ0FxQk8sSUFBTUs7QUFBQSx3REFBTyxrQkFBTUMsU0FBTjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFFZE4sSUFGYztBQUFBO0FBQUE7QUFBQTs7QUFBQSw4Q0FFREEsSUFGQzs7QUFBQTtBQUFBLDJCQUtkLE9BQU9NLFNBQVAsS0FBcUIsUUFMUDs7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFBQTtBQUFBLG1CQUswQixnQkFBT0EsU0FBUCxDQUwxQjs7QUFBQTtBQUFBOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQUEsa0JBTVYsSUFBSUMsS0FBSixDQUFVLDhCQUE4QkQsU0FBeEMsQ0FOVTs7QUFBQTs7QUFTbEI7QUFDTVIsb0JBVlksR0FVRVEsU0FWRjs7QUFZbEI7O0FBWmtCO0FBQUEsbUJBYVAsZ0JBQU9SLFFBQVAsQ0FiTzs7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUFBO0FBQUEsbUJBY0hJLFlBQVlKLFFBQVosQ0FkRzs7QUFBQTtBQUFBOztBQUFBOztBQWlCbEI7QUFDQUMsa0JBQU0sZUFBTjtBQWxCa0I7QUFBQSwyQkFvQkRTLElBcEJDO0FBQUE7QUFBQSxtQkFvQmdCLGtCQUFTVixRQUFULEVBQW1CLE1BQW5CLENBcEJoQjs7QUFBQTtBQUFBO0FBQUEsOENBb0JSRSxJQXBCUSxnQkFvQklTLEtBcEJKOztBQUFBO0FBQUE7QUFBQTs7QUFzQmhCTCxnQkFBSSw0QkFBSjtBQXRCZ0I7QUFBQSxtQkF1QkhGLFlBQVlKLFFBQVosQ0F2Qkc7O0FBQUE7QUFBQTs7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxHQUFQOztBQUFBO0FBQUE7QUFBQTtBQUFBLEdBQU47O0FBMkJQOzs7OztBQUtPLElBQU1ZLG9CQUFNLFNBQU5BLEdBQU0sQ0FBQ0MsR0FBRCxFQUFNQyxLQUFOLEVBQWdCO0FBQ2pDLE1BQUlBLFVBQVVDLFNBQWQsRUFBeUI7QUFDdkIsV0FBT2IsS0FBS1csR0FBTCxDQUFQO0FBQ0Q7O0FBRURYLE9BQUtXLEdBQUwsSUFBWUMsS0FBWjtBQUNELENBTk07O0FBUVA7Ozs7QUFJTyxJQUFNRTtBQUFBLHdEQUFPLGtCQUFNUixTQUFOO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFDbEJQLGtCQUFNLGNBQU47QUFEa0I7QUFBQSxtQkFFWixtQkFBVU8sWUFBWSxZQUF0QixFQUFvQ0UsS0FBS08sU0FBTCxDQUFlZixJQUFmLENBQXBDLENBRlk7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsR0FBUDs7QUFBQTtBQUFBO0FBQUE7QUFBQSxHQUFOIiwiZmlsZSI6ImNhY2hlLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAZmlsZSBzcmMvY2FjaGUvbG9hZC5qc1xuICogQGxpY2Vuc2UgTUlUXG4gKiBAY29weXJpZ2h0IDIwMTcgS2FyaW0gQWxpYmhhaS5cbiAqL1xuXG5pbXBvcnQge1xuICBzdGF0LFxuICBta2RpcixcbiAgZXhpc3RzLFxuICByZWFkRmlsZSxcbiAgd3JpdGVGaWxlLFxufSBmcm9tICcuL2ZzJ1xuaW1wb3J0IHBhdGggZnJvbSAncGF0aCdcblxuY29uc3QgeyBkZWJ1ZywgbG9nIH0gPSByZXF1aXJlKCcuL3V0aWxzL2xvZycpKCdob3BwJylcbmxldCBsb2NrXG5cbi8qKlxuICogQ3JlYXRlcyBhIG5ldyBjYWNoZS5cbiAqIEBwYXJhbSB7U3RyaW5nfSBsb2NrZmlsZSBsb2NhdGlvbiBvZiBsb2NrZmlsZVxuICogQHJldHVybiB7T2JqZWN0fSBjb250ZW50cyBvZiBuZXcgY2FjaGVcbiAqL1xuYXN5bmMgZnVuY3Rpb24gY3JlYXRlQ2FjaGUoIGxvY2tmaWxlICkge1xuICBkZWJ1ZygnQ3JlYXRpbmcgZW1wdHkgY2FjaGUnKVxuXG4gIC8vIHJldHVybiBlbXB0eSBjYWNoZVxuICByZXR1cm4gKGxvY2sgPSB7XG4gICAgczoge31cbiAgfSlcbn1cblxuLyoqXG4gKiBMb2FkcyBhIGNhY2hlIGZyb20gdGhlIHByb2plY3QuXG4gKiBAcGFyYW0ge1N0cmluZ30gZGlyZWN0b3J5IHByb2plY3QgZGlyZWN0b3J5XG4gKiBAcmV0dXJuIHtPYmplY3R9IHRoZSBsb2FkZWQgY2FjaGVcbiAqL1xuZXhwb3J0IGNvbnN0IGxvYWQgPSBhc3luYyBkaXJlY3RvcnkgPT4ge1xuICAvLyBzZW5kIGJhY2sgaW50ZXJuYWwgY2FjaGUgaWYgcmVsb2FkaW5nXG4gIGlmIChsb2NrKSByZXR1cm4gbG9ja1xuXG4gIC8vIHZlcmlmeSBkaXJlY3RvcnlcbiAgaWYgKHR5cGVvZiBkaXJlY3RvcnkgIT09ICdzdHJpbmcnIHx8ICFhd2FpdCBleGlzdHMoZGlyZWN0b3J5KSkge1xuICAgIHRocm93IG5ldyBFcnJvcignSW52YWxpZCBkaXJlY3RvcnkgZ2l2ZW46ICcgKyBkaXJlY3RvcnkpXG4gIH1cblxuICAvLyBzZXQgY2FjaGUgZmlsZVxuICBjb25zdCBsb2NrZmlsZSA9IGAke2RpcmVjdG9yeX0vaG9wcC5sb2NrYFxuXG4gIC8vIGJyaW5nIGNhY2hlIGludG8gZXhpc3RlbmNlXG4gIGlmICghYXdhaXQgZXhpc3RzKGxvY2tmaWxlKSkge1xuICAgIHJldHVybiBhd2FpdCBjcmVhdGVDYWNoZShsb2NrZmlsZSlcbiAgfVxuXG4gIC8vIGxvYWQgbG9jayBmaWxlXG4gIGRlYnVnKCdMb2FkaW5nIGNhY2hlJylcbiAgdHJ5IHtcbiAgICByZXR1cm4gKGxvY2sgPSBKU09OLnBhcnNlKGF3YWl0IHJlYWRGaWxlKGxvY2tmaWxlLCAndXRmOCcpKSlcbiAgfSBjYXRjaCAoXykge1xuICAgIGxvZygnQ29ycnVwdGVkIGNhY2hlOyBlamVjdGluZy4nKVxuICAgIHJldHVybiBhd2FpdCBjcmVhdGVDYWNoZShsb2NrZmlsZSlcbiAgfVxufVxuXG4vKipcbiAqIEFkZHMvcmVwbGFjZXMgYSB2YWx1ZSBpbiB0aGUgY2FjaGUuXG4gKiBAcGFyYW0ge1N0cmluZ30ga2V5XG4gKiBAcGFyYW0ge0FueX0gdmFsdWUgYW55dGhpbmcgc3RyaW5naWZpYWJsZVxuICovXG5leHBvcnQgY29uc3QgdmFsID0gKGtleSwgdmFsdWUpID0+IHtcbiAgaWYgKHZhbHVlID09PSB1bmRlZmluZWQpIHtcbiAgICByZXR1cm4gbG9ja1trZXldXG4gIH1cbiAgXG4gIGxvY2tba2V5XSA9IHZhbHVlXG59XG5cbi8qKlxuICogU2F2ZXMgdGhlIGxvY2tmaWxlIGFnYWluLlxuICogQHBhcmFtIHsqfSBkaXJlY3RvcnkgXG4gKi9cbmV4cG9ydCBjb25zdCBzYXZlID0gYXN5bmMgZGlyZWN0b3J5ID0+IHtcbiAgZGVidWcoJ1NhdmluZyBjYWNoZScpXG4gIGF3YWl0IHdyaXRlRmlsZShkaXJlY3RvcnkgKyAnL2hvcHAubG9jaycsIEpTT04uc3RyaW5naWZ5KGxvY2spKVxufSJdfQ==
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9jYWNoZS5qcyJdLCJuYW1lcyI6WyJyZXF1aXJlIiwiZGVidWciLCJsb2ciLCJsb2NrIiwibG9hZCIsImRpcmVjdG9yeSIsIkVycm9yIiwibG9ja2ZpbGUiLCJKU09OIiwicGFyc2UiLCJ2YWwiLCJrZXkiLCJ2YWx1ZSIsInVuZGVmaW5lZCIsInNhdmUiLCJzdHJpbmdpZnkiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFNQTs7QUFPQTs7Ozs7OzJjQWJBOzs7Ozs7ZUFldUJBLFFBQVEsYUFBUixFQUF1QixNQUF2QixDO0lBQWZDLEssWUFBQUEsSztJQUFPQyxHLFlBQUFBLEc7O0FBQ2YsSUFBSUMsYUFBSjs7QUFFQTs7Ozs7QUFLTyxJQUFNQztBQUFBLHVEQUFPLGlCQUFNQyxTQUFOO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUVkRixJQUZjO0FBQUE7QUFBQTtBQUFBOztBQUFBLDZDQUVEQSxJQUZDOztBQUFBO0FBQUEsMEJBS2QsT0FBT0UsU0FBUCxLQUFxQixRQUxQOztBQUFBO0FBQUE7QUFBQTtBQUFBOztBQUFBO0FBQUEsbUJBSzBCLGdCQUFPQSxTQUFQLENBTDFCOztBQUFBO0FBQUE7O0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTs7QUFBQSxrQkFNVixJQUFJQyxLQUFKLENBQVUsOEJBQThCRCxTQUF4QyxDQU5VOztBQUFBOztBQVNsQjtBQUNNRSxvQkFWWSxHQVVFRixTQVZGOztBQVlsQjs7QUFaa0I7QUFBQSxtQkFhUCxnQkFBT0UsUUFBUCxDQWJPOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7O0FBQUEsNkNBY1JKLE9BQU8sRUFkQzs7QUFBQTs7QUFpQmxCO0FBQ0FGLGtCQUFNLGVBQU47QUFsQmtCO0FBQUEsMEJBb0JETyxJQXBCQztBQUFBO0FBQUEsbUJBb0JnQixrQkFBU0QsUUFBVCxFQUFtQixNQUFuQixDQXBCaEI7O0FBQUE7QUFBQTtBQUFBLDZDQW9CUkosSUFwQlEsZUFvQklNLEtBcEJKOztBQUFBO0FBQUE7QUFBQTs7QUFzQmhCUCxnQkFBSSw0QkFBSjtBQXRCZ0IsNkNBdUJSQyxPQUFPLEVBdkJDOztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLEdBQVA7O0FBQUE7QUFBQTtBQUFBO0FBQUEsR0FBTjs7QUEyQlA7Ozs7O0FBS08sSUFBTU8sb0JBQU0sU0FBTkEsR0FBTSxDQUFDQyxHQUFELEVBQU1DLEtBQU4sRUFBZ0I7QUFDakMsTUFBSUEsVUFBVUMsU0FBZCxFQUF5QjtBQUN2QixXQUFPVixLQUFLUSxHQUFMLENBQVA7QUFDRDs7QUFFRFIsT0FBS1EsR0FBTCxJQUFZQyxLQUFaO0FBQ0QsQ0FOTTs7QUFRUDs7OztBQUlPLElBQU1FO0FBQUEsd0RBQU8sa0JBQU1ULFNBQU47QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUNsQkosa0JBQU0sY0FBTjtBQURrQjtBQUFBLG1CQUVaLG1CQUFVSSxZQUFZLFlBQXRCLEVBQW9DRyxLQUFLTyxTQUFMLENBQWVaLElBQWYsQ0FBcEMsQ0FGWTs7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxHQUFQOztBQUFBO0FBQUE7QUFBQTtBQUFBLEdBQU4iLCJmaWxlIjoiY2FjaGUuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBmaWxlIHNyYy9jYWNoZS9sb2FkLmpzXG4gKiBAbGljZW5zZSBNSVRcbiAqIEBjb3B5cmlnaHQgMjAxNyBLYXJpbSBBbGliaGFpLlxuICovXG5cbmltcG9ydCB7XG4gIHN0YXQsXG4gIG1rZGlyLFxuICBleGlzdHMsXG4gIHJlYWRGaWxlLFxuICB3cml0ZUZpbGUsXG59IGZyb20gJy4vZnMnXG5pbXBvcnQgcGF0aCBmcm9tICdwYXRoJ1xuXG5jb25zdCB7IGRlYnVnLCBsb2cgfSA9IHJlcXVpcmUoJy4vdXRpbHMvbG9nJykoJ2hvcHAnKVxubGV0IGxvY2tcblxuLyoqXG4gKiBMb2FkcyBhIGNhY2hlIGZyb20gdGhlIHByb2plY3QuXG4gKiBAcGFyYW0ge1N0cmluZ30gZGlyZWN0b3J5IHByb2plY3QgZGlyZWN0b3J5XG4gKiBAcmV0dXJuIHtPYmplY3R9IHRoZSBsb2FkZWQgY2FjaGVcbiAqL1xuZXhwb3J0IGNvbnN0IGxvYWQgPSBhc3luYyBkaXJlY3RvcnkgPT4ge1xuICAvLyBzZW5kIGJhY2sgaW50ZXJuYWwgY2FjaGUgaWYgcmVsb2FkaW5nXG4gIGlmIChsb2NrKSByZXR1cm4gbG9ja1xuXG4gIC8vIHZlcmlmeSBkaXJlY3RvcnlcbiAgaWYgKHR5cGVvZiBkaXJlY3RvcnkgIT09ICdzdHJpbmcnIHx8ICFhd2FpdCBleGlzdHMoZGlyZWN0b3J5KSkge1xuICAgIHRocm93IG5ldyBFcnJvcignSW52YWxpZCBkaXJlY3RvcnkgZ2l2ZW46ICcgKyBkaXJlY3RvcnkpXG4gIH1cblxuICAvLyBzZXQgY2FjaGUgZmlsZVxuICBjb25zdCBsb2NrZmlsZSA9IGAke2RpcmVjdG9yeX0vaG9wcC5sb2NrYFxuXG4gIC8vIGJyaW5nIGNhY2hlIGludG8gZXhpc3RlbmNlXG4gIGlmICghYXdhaXQgZXhpc3RzKGxvY2tmaWxlKSkge1xuICAgIHJldHVybiAobG9jayA9IHt9KVxuICB9XG5cbiAgLy8gbG9hZCBsb2NrIGZpbGVcbiAgZGVidWcoJ0xvYWRpbmcgY2FjaGUnKVxuICB0cnkge1xuICAgIHJldHVybiAobG9jayA9IEpTT04ucGFyc2UoYXdhaXQgcmVhZEZpbGUobG9ja2ZpbGUsICd1dGY4JykpKVxuICB9IGNhdGNoIChfKSB7XG4gICAgbG9nKCdDb3JydXB0ZWQgY2FjaGU7IGVqZWN0aW5nLicpXG4gICAgcmV0dXJuIChsb2NrID0ge30pXG4gIH1cbn1cblxuLyoqXG4gKiBBZGRzL3JlcGxhY2VzIGEgdmFsdWUgaW4gdGhlIGNhY2hlLlxuICogQHBhcmFtIHtTdHJpbmd9IGtleVxuICogQHBhcmFtIHtBbnl9IHZhbHVlIGFueXRoaW5nIHN0cmluZ2lmaWFibGVcbiAqL1xuZXhwb3J0IGNvbnN0IHZhbCA9IChrZXksIHZhbHVlKSA9PiB7XG4gIGlmICh2YWx1ZSA9PT0gdW5kZWZpbmVkKSB7XG4gICAgcmV0dXJuIGxvY2tba2V5XVxuICB9XG4gIFxuICBsb2NrW2tleV0gPSB2YWx1ZVxufVxuXG4vKipcbiAqIFNhdmVzIHRoZSBsb2NrZmlsZSBhZ2Fpbi5cbiAqIEBwYXJhbSB7Kn0gZGlyZWN0b3J5IFxuICovXG5leHBvcnQgY29uc3Qgc2F2ZSA9IGFzeW5jIGRpcmVjdG9yeSA9PiB7XG4gIGRlYnVnKCdTYXZpbmcgY2FjaGUnKVxuICBhd2FpdCB3cml0ZUZpbGUoZGlyZWN0b3J5ICsgJy9ob3BwLmxvY2snLCBKU09OLnN0cmluZ2lmeShsb2NrKSlcbn0iXX0=

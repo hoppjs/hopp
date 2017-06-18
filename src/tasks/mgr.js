@@ -12,6 +12,7 @@ import glob from '../glob'
 import mkdirp from '../mkdirp'
 import getPath from '../get-path'
 import * as cache from '../cache'
+import { disableFSCache } from '../fs'
 import createLogger from '../utils/log'
 
 const watchlog = createLogger('hopp:watch').log
@@ -72,6 +73,9 @@ export default class Hopp {
         }
       }
       newpath = path.resolve(directory, newpath.substr(1))
+
+      // disable fs caching for watch
+      disableFSCache()
 
       // start watch
       watchlog('Watching for %s ...', name)

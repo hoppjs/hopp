@@ -11,7 +11,7 @@ import getPath from './get-path'
 import { readdir, stat } from './fs'
 
 let statCache
-const tempCache = []
+const tempCache = {}
 
 export default async (pattern, cwd, useDoubleCache = false) => {
   // prefer arrays
