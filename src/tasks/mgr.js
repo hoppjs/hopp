@@ -15,6 +15,7 @@ import * as cache from '../cache'
 import mapStream from 'map-stream'
 import { disableFSCache } from '../fs'
 import createLogger from '../utils/log'
+import createReadStream from './read-stream'
 
 const watchlog = createLogger('hopp:watch').log
 
@@ -146,7 +147,7 @@ export default class Hopp {
       files = _(files).map(file => ({
         file,
         stream: [
-          fs.createReadStream(file)
+          createReadStream(file)
         ]
       }))
 
@@ -198,16 +199,21 @@ export default class Hopp {
       await mkdirp(dest.replace(directory, ''), directory)
 
       files.map(file => {
+        // strip out the actual body and write it
+        file.stream.push(mapStream((data, next) => next(null, data.body)))
         file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+
+        // connect all streams together to form pipeline
         file.stream = pump(file.stream)
 
+        // promisify the current pipeline
         return new Promise((resolve, reject) => {
           file.stream.on('error', reject)
           file.stream.on('close', resolve)
         })
       })
 
-      // launch
+      // launch, create aggregate promise of all pipelines
       files = files.val()
     } else {
       log('Task ended (took %s ms)', Date.now() - start)
