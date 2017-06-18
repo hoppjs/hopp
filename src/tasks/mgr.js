@@ -12,10 +12,43 @@ import glob from '../glob'
 import mkdirp from '../mkdirp'
 import getPath from '../get-path'
 import * as cache from '../cache'
+import mapStream from 'map-stream'
 import { disableFSCache } from '../fs'
 import createLogger from '../utils/log'
 
 const watchlog = createLogger('hopp:watch').log
+
+/**
+ * Plugins storage.
+ */
+const plugins = {}
+const pluginCtx = {}
+
+/**
+ * Loads a plugin, manages its env.
+ */
+const loadPlugin = (plugin, args) => {
+  let mod = require(plugin)
+
+  // if defined as an ES2015 module, assume that the
+  // export is at 'default'
+  if (mod.__esModule === true) {
+    mod = mod.default
+  }
+
+  // create plugin logger
+  const logger = createLogger(`hopp:${path.basename(plugin).substr(5)}`)
+
+  // create a new context for this plugin
+  pluginCtx[plugin] = {
+    args,
+    log: logger.debug,
+    error: logger.error
+  }
+
+  // return loaded plugin
+  return mod
+}
 
 /**
  * Hopp class to manage tasks.
@@ -112,10 +145,51 @@ export default class Hopp {
        */
       files = _(files).map(file => ({
         file,
-        stream: fs.createReadStream(file, { encoding: 'utf8' })
+        stream: [
+          fs.createReadStream(file)
+        ]
       }))
 
-      // TODO: pipe to plugin streams
+      if (this.d.stack.length > 0) {
+        /**
+         * Try to load plugins.
+         */
+        let stack = _(this.d.stack)
+
+        if (!this.plugins) {
+          this.plugins = {}
+
+          stack.map(([plugin, args]) => {
+            if (!plugins.hasOwnProperty(plugin)) {
+              plugins[plugin] = loadPlugin(plugin, args)
+            }
+
+            return [plugin, args]
+          })
+        }
+
+        /**
+         * Create streams.
+         */
+        stack = stack.map(([plugin]) =>
+          mapStream((data, next) => {
+            plugins[plugin](
+              pluginCtx[plugin],
+              data
+            )
+              .then(newData => next(null, newData))
+              .catch(err => next(err))
+          })
+        ).val()
+
+        /**
+         * Connect plugin streams with pipelines.
+         */
+        files.map(file => {
+          file.stream = file.stream.concat(stack)
+          return file
+        })
+      }
 
       /**
        * Connect with destination.
@@ -124,7 +198,8 @@ export default class Hopp {
       await mkdirp(dest.replace(directory, ''), directory)
 
       files.map(file => {
-        pump(file.stream, fs.createWriteStream(dest + '/' + path.basename(file.file)))
+        file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+        file.stream = pump(file.stream)
       })
 
       // launch
