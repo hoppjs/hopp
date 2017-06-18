@@ -27,7 +27,8 @@ export default async (directory, cwd) => {
       }
 
       exists[cwd + path.sep + dir] = true
-      cwd += path.sep + dir
     }
+
+    cwd += path.sep + dir
   }
 }
