@@ -11,8 +11,9 @@ import getPath from './get-path'
 import { readdir, stat } from './fs'
 
 let statCache
+const tempCache = []
 
-export default async (pattern, cwd) => {
+export default async (pattern, cwd, useDoubleCache = false) => {
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]
@@ -32,28 +33,33 @@ export default async (pattern, cwd) => {
     }
 
     const curr = pttn.shift()
-    const localResults = []
+    let localResults = []
 
     for (let file of (await readdir(directory))) {
       // fix file path
       const filepath = directory + path.sep + file
 
-      // todo: cache this shit
-      let fstat = await stat(filepath)
+      // get stat from temp cache (for non-watch tasks) or stat()
+      let fstat
+
+      if (useDoubleCache) {
+        fstat = tempCache[filepath] = tempCache[filepath] || await stat(filepath)
+      } else {
+        fstat = await stat(filepath)
+      }
 
       // has been modified
-      if (!statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
-        statCache[filepath] = +fstat.mtime
-
-        if (match(file, curr)) {
-          if (fstat.isFile()) {
+      if (match(file, curr)) {
+        if (fstat.isFile()) {
+          if (!statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
+            statCache[filepath] = +fstat.mtime
             localResults.push(filepath)
-          } else {
-            await walk(pttn, filepath, recursive || curr === '**')
           }
-        } else if (fstat.isDirectory() && recursive) {
-          await walk([curr].concat(pttn), filepath, recursive)
+        } else {
+          localResults = localResults.concat(await walk(pttn, filepath, recursive || curr === '**'))
         }
+      } else if (fstat.isDirectory() && recursive) {
+        localResults = localResults.concat(await walk([curr].concat(pttn), filepath, recursive))
       }
     }
 
