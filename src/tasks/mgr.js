@@ -132,8 +132,6 @@ export default class Hopp {
    */
   async start (name, directory, useDoubleCache = true) {
     const { log, debug } = createLogger(`hopp:${name}`)
-    const start = Date.now()
-    log('Starting task')
 
     /**
      * Get the modified files.
@@ -141,13 +139,16 @@ export default class Hopp {
     let files = await glob(this.d.src, directory, useDoubleCache)
 
     if (files.length > 0) {
+      const dest = path.resolve(directory, getPath(this.d.dest))
+      await mkdirp(dest.replace(directory, ''), directory)
+
       /**
        * Create streams.
        */
       files = _(files).map(file => ({
         file,
         stream: [
-          createReadStream(file)
+          createReadStream(file, dest)
         ]
       }))
 
@@ -195,9 +196,6 @@ export default class Hopp {
       /**
        * Connect with destination.
        */
-      const dest = path.resolve(directory, getPath(this.d.dest))
-      await mkdirp(dest.replace(directory, ''), directory)
-
       files.map(file => {
         // strip out the actual body and write it
         file.stream.push(mapStream((data, next) => next(null, data.body)))
@@ -213,15 +211,14 @@ export default class Hopp {
         })
       })
 
-      // launch, create aggregate promise of all pipelines
-      files = files.val()
-    } else {
+      // start & wait for all pipelines to end
+      const start = Date.now()
+      log('Starting task')
+      await Promise.all(files.val())
       log('Task ended (took %s ms)', Date.now() - start)
-      return
+    } else {
+      log('Skipping task')
     }
-
-    await Promise.all(files)
-    log('Task ended (took %s ms)', Date.now() - start)
   }
 
   /**

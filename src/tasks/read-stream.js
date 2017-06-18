@@ -8,12 +8,13 @@ import fs from 'fs'
 import pump from 'pump'
 import map from 'map-stream'
 
-export default file => pump(
+export default (file, dest) => pump(
   fs.createReadStream(file),
   map((body, next) => {
     next(null, {
       file,
-      body
+      body,
+      dest
     })
   })
 )
