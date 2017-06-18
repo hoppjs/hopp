@@ -17,17 +17,14 @@ const { debug, log } = require('./utils/log')('hopp')
 let lock
 
 /**
- * Creates a new cache (overwrites existing).
+ * Creates a new cache.
  * @param {String} lockfile location of lockfile
  * @return {Object} contents of new cache
  */
 async function createCache( lockfile ) {
   debug('Creating empty cache')
 
-  // write empty cache
-  await writeFile(lockfile, '{"s":{}}')
-
-  // return the empty cache
+  // return empty cache
   return (lock = {
     s: {}
   })
