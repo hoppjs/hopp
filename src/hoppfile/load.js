@@ -14,9 +14,8 @@ export default async file => {
     throw new Error('Unknown arguments')
   }
 
-  // get file contents
+  // get file stat
   const lmod = +(await stat(file)).mtime
-  let code = await readFile(file, 'utf8')
 
   // try to load from cache
   const state = {}
@@ -25,6 +24,9 @@ export default async file => {
   if (state.lmod === lmod) {
     return [true, state.tasks]
   }
+
+  // load file
+  let code = await readFile(file, 'utf8')
 
   const req = require('require-like')
   const { Script } = require('vm')
