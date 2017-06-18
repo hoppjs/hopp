@@ -28,6 +28,6 @@ export default tasks => ({
    * @return {Array} 
    */
   toJSON () {
-    return tasks
+    return ['watch', tasks]
   }
 })

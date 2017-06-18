@@ -4,10 +4,19 @@
  * @copyright 2017 Karim Alibhai.
  */
 
+import createWatch from './watch'
 import createLogger from '../utils/log'
 import createParallel from './parallel'
 
 let taskDefns
+
+function fromArray(arr, taskDefns) {
+  if (arr[0] === 'parallel') {
+    return createParallel(arr, taskDefns)
+  }
+  
+  return createWatch(arr)
+}
 
 export const defineTasks = defns => {
   taskDefns = defns
@@ -21,7 +30,7 @@ export const create = (tasks, projectDir, mode = 'start') => {
     goal = taskDefns[tasks[0]]
     
     if (goal instanceof Array) {
-      goal = createParallel(goal, taskDefns)
+      goal = fromArray(goal, taskDefns)
     }
 
     goal = (async () => {
@@ -37,7 +46,7 @@ export const create = (tasks, projectDir, mode = 'start') => {
       let task = taskDefns[name]
 
       if (task instanceof Array) {
-        task = createParallel(task, taskDefns)
+        task = fromArray(task, taskDefns)
       }
 
       try {

@@ -7,11 +7,14 @@
 import fs from 'fs'
 import _ from '../_'
 import path from 'path'
+import pump from 'pump'
 import glob from '../glob'
 import mkdirp from '../mkdirp'
 import getPath from '../get-path'
 import * as cache from '../cache'
 import createLogger from '../utils/log'
+
+const watchlog = createLogger('hopp:watch').log
 
 /**
  * Hopp class to manage tasks.
@@ -71,7 +74,7 @@ export default class Hopp {
       newpath = path.resolve(directory, newpath.substr(1))
 
       // start watch
-      console.log('watching: %s', newpath)
+      watchlog('Watching for %s ...', name)
       watchers.push(fs.watch(newpath, {
         recursive: src.indexOf('/**/') !== -1
       }, () => this.start(name, directory, false)))
@@ -117,9 +120,7 @@ export default class Hopp {
       await mkdirp(dest.replace(directory, ''), directory)
 
       files.map(file => {
-        file.stream.pipe(
-          fs.createWriteStream(dest + '/' + path.basename(file.file))
-        )
+        pump(file.stream, fs.createWriteStream(dest + '/' + path.basename(file.file)))
       })
 
       // launch

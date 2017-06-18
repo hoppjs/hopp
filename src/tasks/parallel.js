@@ -15,8 +15,6 @@ export default (tasks, taskTree) => ({
    * @return {Promise} joins all task promises under .all()
    */
   start (name, directory) {
-    this.tasks = tasks
-
     // just async for now
     return Promise.all(tasks.map(
       task => taskTree[task].start(`${name}:${task}`, directory)
@@ -31,6 +29,6 @@ export default (tasks, taskTree) => ({
    * @return {Array} 
    */
   toJSON () {
-    return this.tasks
+    return ['parallel', tasks]
   }
 })
