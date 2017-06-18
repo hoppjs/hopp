@@ -6,6 +6,7 @@ export const css =
 
 export const js =
   hopp([ 'src/js/*.js' ])
+    .concat('bundle.js')
     .dest('dist/js')
 
 export const watch = hopp.watch([
