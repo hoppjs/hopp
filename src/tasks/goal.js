@@ -12,14 +12,15 @@ let taskDefns
 
 function fromArray(arr, taskDefns) {
   if (arr[0] === 'parallel') {
-    return createParallel(arr, taskDefns)
+    return createParallel(arr[1], taskDefns)
   }
   
-  return createWatch(arr)
+  return createWatch(arr[1])
 }
 
 export const defineTasks = defns => {
   taskDefns = defns
+  createParallel.defineTasks(defns)
 }
 
 export const create = (tasks, projectDir, mode = 'start') => {

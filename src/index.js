@@ -160,7 +160,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
     // walk the full tree
     function addDependencies(task) {
       if (taskDefns[task] instanceof Array) {
-        fullList = fullList.concat(taskDefns[task])
+        fullList = fullList.concat(taskDefns[task][1])
         taskDefns[task].forEach(sub => addDependencies(sub))
       }
     }

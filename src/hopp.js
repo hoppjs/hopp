@@ -8,6 +8,7 @@ import path from 'path'
 import Hopp from './tasks/mgr'
 import createWatch from './tasks/watch'
 import loadPlugins from './plugins/load'
+import createParallel from './tasks/parallel'
 
 const { debug } = require('./utils/log')('hopp')
 
@@ -45,6 +46,9 @@ export default async directory => {
    * Expose hopp class for task creation.
    */
   const init = src => new Hopp(src)
+  
+  init.all = createParallel
   init.watch = createWatch
+
   return init
 }

@@ -4,11 +4,13 @@
  * @copyright 2017 Karim Alibhai.
  */
 
+let taskTree
+
 /**
  * Creates a Hopp-ish object that runs
  * subtasks in parallel.
  */
-export default (tasks, taskTree) => ({
+const parallel = tasks => ({
   /**
    * Starts all tasks concurrently.
    * 
@@ -32,3 +34,9 @@ export default (tasks, taskTree) => ({
     return ['parallel', tasks]
   }
 })
+
+parallel.defineTasks = defns => {
+  taskTree = defns
+}
+
+export default parallel
