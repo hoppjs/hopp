@@ -200,12 +200,21 @@ export default class Hopp {
       files.map(file => {
         file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
         file.stream = pump(file.stream)
+
+        return new Promise((resolve, reject) => {
+          file.stream.on('error', reject)
+          file.stream.on('close', resolve)
+        })
       })
 
       // launch
-      files.val()
+      files = files.val()
+    } else {
+      log('Task ended (took %s ms)', Date.now() - start)
+      return
     }
 
+    await Promise.all(files)
     log('Task ended (took %s ms)', Date.now() - start)
   }
 
