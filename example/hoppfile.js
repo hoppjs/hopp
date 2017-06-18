@@ -5,9 +5,11 @@ export const css =
     .dest('dist/css')
 
 export const js =
-  hopp([ 'src/js/*.js' ]) // create fs streams
-    // .babel()              // pipe to (create babel stream)
-    .dest('dist/js')         // pipe to (create dest stream)
+  hopp([ 'src/js/*.js' ])
+    .dest('dist/js')
+
+export const watch =
+  hopp.watch([ 'js', 'css' ])
 
 export default [
   'js',
