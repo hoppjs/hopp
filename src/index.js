@@ -11,9 +11,9 @@ import Module from 'module'
 import * as cache from './cache'
 import createHopp from './hopp'
 import fromTree from './tasks/tree'
+import * as Goal from './tasks/goal'
 import * as hoppfile from './hoppfile'
 import createLogger from './utils/log'
-import createParallel from './tasks/parallel'
 
 const { log, debug, error } = createLogger('hopp')
 
@@ -173,47 +173,10 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   }
 
   /**
-   * Run tasks.
-   */
-  let goal
-
-  if (tasks.length === 1) {
-    let name = tasks[0]
-    goal = taskDefns[tasks[0]]
-    
-    if (goal instanceof Array) {
-      goal = createParallel(goal, taskDefns)
-    }
-
-    goal = (async () => {
-      try {
-        await goal.start(name, projectDir)
-      } catch (err) {
-        createLogger(`hopp:${name}`).error(err.stack || err)
-        throw ('Build failed.')
-      }
-    })()
-  } else {
-    goal = Promise.all(tasks.map(async name => {
-      let task = taskDefns[name]
-
-      if (task instanceof Array) {
-        task = createParallel(task, taskDefns)
-      }
-
-      try {
-        await task.start(name, projectDir)
-      } catch (err) {
-        createLogger(`hopp:${name}`).error(err.stack || err)
-        throw ('Build failed.')
-      }
-    }))
-  }
-
-  /**
    * Wait for task completion.
    */
-  await goal
+  Goal.defineTasks(taskDefns)
+  await Goal.create(tasks, projectDir)
 
   /**
    * Store cache for later.
