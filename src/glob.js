@@ -10,6 +10,8 @@ import * as cache from './cache'
 import getPath from './get-path'
 import { readdir, stat } from './fs'
 
+const { debug } = require('./utils/log')('hopp:glob')
+
 let statCache
 const tempCache = {}
 
@@ -34,6 +36,8 @@ export default async (pattern, cwd, useDoubleCache = false) => {
 
     const curr = pttn.shift()
     let localResults = []
+
+    debug('curr: %s, dir = %s, recur = %s', curr, directory, recursive)
 
     for (let file of (await readdir(directory))) {
       // fix file path
