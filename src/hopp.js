@@ -19,11 +19,11 @@ export default async directory => {
   ;(await loadPlugins(directory)).forEach(name => {
     let plugName = ''
 
-    for (let i = 5; i < name.length; i += 1) {
-      plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i]
+    for (let tmp = path.basename(name), i = 5; i < tmp.length; i += 1) {
+      plugName += tmp[i] === '-' ? tmp[i++].toUpperCase() : tmp[i]
     }
 
-    debug('adding plugin %s', name)
+    debug('adding plugin %s from %s', plugName, name)
     
     // add the plugin to the hopp prototype so it can be
     // used for the rest of the build process
@@ -33,7 +33,7 @@ export default async directory => {
       // for use later. this is useful when we are stepping through
       // an entire hoppfile but might only be running a single task
 
-      this.callStack.push([
+      this.d.stack.push([
         name,
         arguments
       ])
