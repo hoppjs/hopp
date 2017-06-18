@@ -25,6 +25,10 @@ export default class Hopp {
    * @return {Hopp} new hopp object
    */
   constructor (src) {
+    if (!(src instanceof Array)) {
+      src = [src]
+    }
+
     this.d = {
       src,
       stack: []
@@ -42,10 +46,50 @@ export default class Hopp {
   }
 
   /**
+   * Run task in continuous mode.
+   */
+  watch (name, directory) {
+    name = `watch:${name}`
+
+    const watchers = []
+
+    this.d.src.forEach(src => {
+      // figure out if watch should be recursive
+      const recursive = src.indexOf('/**/') !== -1
+
+      // get most definitive path possible
+      let newpath = ''
+      for (let sub of src.split('/')) {
+        if (sub) {
+          if (sub.indexOf('*') !== -1) {
+            break
+          }
+
+          newpath += path.sep + sub
+        }
+      }
+      newpath = path.resolve(directory, newpath.substr(1))
+
+      // start watch
+      console.log('watching: %s', newpath)
+      watchers.push(fs.watch(newpath, {
+        recursive: src.indexOf('/**/') !== -1
+      }, () => this.start(name, directory, false)))
+    })
+
+    return new Promise(resolve => {
+      process.on('SIGINT', () => {
+        watchers.forEach(watcher => watcher.close())
+        resolve()
+      })
+    })
+  }
+
+  /**
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  async start (name, directory) {
+  async start (name, directory, useDoubleCache = true) {
     const { log, debug } = createLogger(`hopp:${name}`)
     const start = Date.now()
     log('Starting task')
@@ -53,7 +97,7 @@ export default class Hopp {
     /**
      * Get the modified files.
      */
-    let files = await glob(this.d.src, directory)
+    let files = await glob(this.d.src, directory, useDoubleCache)
 
     if (files.length > 0) {
       /**
