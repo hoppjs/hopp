@@ -5,8 +5,9 @@
  */
 
 import path from 'path'
-import loadPlugins from './plugins/load'
 import Hopp from './tasks/mgr'
+import createWatch from './tasks/watch'
+import loadPlugins from './plugins/load'
 
 const { debug } = require('./utils/log')('hopp')
 
@@ -43,5 +44,7 @@ export default async directory => {
   /**
    * Expose hopp class for task creation.
    */
-  return src => new Hopp(src)
+  const init = src => new Hopp(src)
+  init.watch = createWatch
+  return init
 }
