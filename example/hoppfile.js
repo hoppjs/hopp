@@ -8,10 +8,12 @@ export const js =
   hopp([ 'src/js/*.js' ])
     .dest('dist/js')
 
-export const watch =
-  hopp.watch([ 'js', 'css' ])
-
-export default [
+export const watch = hopp.watch([
   'js',
   'css'
-]
+])
+
+export default hopp.all([
+  'js',
+  'css'
+])
