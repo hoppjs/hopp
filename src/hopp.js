@@ -35,7 +35,7 @@ export default async directory => {
 
       this.d.stack.push([
         name,
-        arguments
+        [].slice.call(arguments)
       ])
 
       return this
