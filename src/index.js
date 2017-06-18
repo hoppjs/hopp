@@ -18,6 +18,12 @@ import createLogger from './utils/log'
 const { log, debug, error } = createLogger('hopp')
 
 /**
+ * Extend the number of default listeners because 10
+ * gets hit pretty quickly with piping streams.
+ */
+require('events').EventEmitter.defaultMaxListeners = 50
+
+/**
  * Parse args
  */
 const argv = (args => {
