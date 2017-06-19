@@ -7,14 +7,27 @@
 import fs from 'fs'
 import pump from 'pump'
 import map from 'map-stream'
+import { stat } from '../fs'
 
-export default (file, dest) => pump(
-  fs.createReadStream(file),
-  map((body, next) => {
-    next(null, {
-      file,
-      body,
-      dest
+export default (file, dest) => {
+  let size
+
+  return pump(
+    fs.createReadStream(file),
+    map(async (body, next) => {
+      if (size === undefined) {
+        size = (await stat(file)).size
+      }
+
+      next(null, {
+        // metadata
+        file,
+        dest,
+        size,
+
+        // contents
+        body
+      })
     })
-  })
-)
+  )
+}
