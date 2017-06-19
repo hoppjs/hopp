@@ -1,11 +1,11 @@
 import hopp from 'hopp'
 
 export const css =
-  hopp([ 'src/css/*.css' ])
+  hopp([ 'src/css/**/*.css' ])
     .dest('dist/css')
 
 export const js =
-  hopp([ 'src/js/*.js' ])
+  hopp([ 'src/js/**/*.js' ])
     .concat('bundle.js')
     .dest('dist/js')
 
