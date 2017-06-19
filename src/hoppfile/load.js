@@ -4,10 +4,10 @@
  * @copyright 2017 Karim Alibhai.
  */
 
-import { stat, readFile } from '../fs'
-import * as cache from '../cache'
 import { dirname } from 'path'
-import deepEqual from '../deep-equal'
+import * as cache from '../cache'
+import { deepEqual } from '../utils'
+import { stat, readFile } from '../fs'
 
 export default async file => {
   // if bad args die

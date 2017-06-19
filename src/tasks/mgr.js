@@ -5,18 +5,15 @@
  */
 
 import fs from 'fs'
-import _ from '../_'
 import path from 'path'
 import pump from 'pump'
-import glob from '../glob'
-import buffer from './buffer'
-import mkdirp from '../mkdirp'
-import getPath from '../get-path'
+import glob from '../fs/glob'
 import * as cache from '../cache'
 import mapStream from 'map-stream'
-import { disableFSCache } from '../fs'
-import createLogger from '../utils/log'
-import createReadStream from './read-stream'
+import getPath from '../fs/get-path'
+import { _, createLogger } from '../utils'
+import { disableFSCache, mkdirp } from '../fs'
+import { buffer, createReadStream } from '../streams'
 
 const watchlog = createLogger('hopp:watch').log
 

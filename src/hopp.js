@@ -7,7 +7,7 @@
 import path from 'path'
 import Hopp from './tasks/mgr'
 import createWatch from './tasks/watch'
-import loadPlugins from './plugins/load'
+import loadPlugins from './tasks/loadPlugins'
 import createParallel from './tasks/parallel'
 
 const { debug } = require('./utils/log')('hopp')
