@@ -9,6 +9,7 @@ import _ from '../_'
 import path from 'path'
 import pump from 'pump'
 import glob from '../glob'
+import buffer from './buffer'
 import mkdirp from '../mkdirp'
 import getPath from '../get-path'
 import * as cache from '../cache'
@@ -24,12 +25,18 @@ const watchlog = createLogger('hopp:watch').log
  */
 const plugins = {}
 const pluginCtx = {}
+const bufferPlugins = {}
 
 /**
  * Loads a plugin, manages its env.
  */
 const loadPlugin = (plugin, args) => {
   let mod = require(plugin)
+
+  // check for if plugin requires before
+  if (mod.FORCE_BUFFER === true) {
+    bufferPlugins[plugin] = true
+  }
 
   // if defined as an ES2015 module, assume that the
   // export is at 'default'
@@ -173,8 +180,9 @@ export default class Hopp {
         /**
          * Create streams.
          */
-        stack = stack.map(([plugin]) =>
-          mapStream((data, next) => {
+        let mode = 'stream'
+        stack = stack.map(([plugin]) => {
+          const pluginStream = mapStream((data, next) => {
             plugins[plugin](
               pluginCtx[plugin],
               data
@@ -182,7 +190,20 @@ export default class Hopp {
               .then(newData => next(null, newData))
               .catch(err => next(err))
           })
-        ).val()
+
+          /**
+           * Enable buffer mode if required.
+           */
+          if (mode === 'stream' && bufferPlugins[plugin]) {
+            mode = 'buffer'
+            return pump(buffer(), pluginStream)
+          }
+
+          /**
+           * Otherwise keep pumping.
+           */
+          return pluginStream
+        }).val()
 
         /**
          * Connect plugin streams with pipelines.
