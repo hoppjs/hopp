@@ -9,18 +9,21 @@ import createLogger from '../utils/log'
 import createParallel from './parallel'
 
 let taskDefns
+let bustedTasks
 
-function fromArray(arr, taskDefns) {
+function fromArray(arr) {
   if (arr[0] === 'parallel') {
-    return createParallel(arr[1], taskDefns)
+    return createParallel(arr[1])
   }
   
   return createWatch(arr[1])
 }
 
-export const defineTasks = defns => {
+export const defineTasks = (defns, busted) => {
   taskDefns = defns
-  createParallel.defineTasks(defns)
+  bustedTasks = busted
+
+  createParallel.defineTasks(defns, busted)
 }
 
 export const create = (tasks, projectDir, mode = 'start') => {
@@ -31,12 +34,12 @@ export const create = (tasks, projectDir, mode = 'start') => {
     goal = taskDefns[tasks[0]]
     
     if (goal instanceof Array) {
-      goal = fromArray(goal, taskDefns)
+      goal = fromArray(goal)
     }
 
     goal = (async () => {
       try {
-        await goal[mode](name, projectDir)
+        await goal[mode](name, projectDir, !!bustedTasks[name])
       } catch (err) {
         createLogger(`hopp:${name}`).error(err.stack || err)
         throw ('Build failed.')
@@ -47,11 +50,11 @@ export const create = (tasks, projectDir, mode = 'start') => {
       let task = taskDefns[name]
 
       if (task instanceof Array) {
-        task = fromArray(task, taskDefns)
+        task = fromArray(task)
       }
 
       try {
-        await task[mode](name, projectDir)
+        await task[mode](name, projectDir, !!bustedTasks[name])
       } catch (err) {
         createLogger(`hopp:${name}`).error(err.stack || err)
         throw ('Build failed.')

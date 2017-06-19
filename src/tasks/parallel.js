@@ -5,6 +5,7 @@
  */
 
 let taskTree
+let bustedTasks
 
 /**
  * Creates a Hopp-ish object that runs
@@ -19,7 +20,7 @@ const parallel = tasks => ({
   start (name, directory) {
     // just async for now
     return Promise.all(tasks.map(
-      task => taskTree[task].start(`${name}:${task}`, directory)
+      task => taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task])
     ))
   },
 
@@ -35,8 +36,9 @@ const parallel = tasks => ({
   }
 })
 
-parallel.defineTasks = defns => {
+parallel.defineTasks = (defns, busted) => {
   taskTree = defns
+  bustedTasks = busted
 }
 
 export default parallel

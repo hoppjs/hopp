@@ -93,7 +93,7 @@ export default class Hopp {
   /**
    * Run task in continuous mode.
    */
-  watch (name, directory) {
+  watch (name, directory, recache = false) {
     name = `watch:${name}`
 
     const watchers = []
@@ -122,7 +122,7 @@ export default class Hopp {
       watchlog('Watching for %s ...', name)
       watchers.push(fs.watch(newpath, {
         recursive: src.indexOf('/**/') !== -1
-      }, () => this.start(name, directory, false)))
+      }, () => this.start(name, directory, recache, false)))
     })
 
     return new Promise(resolve => {
@@ -137,13 +137,14 @@ export default class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  async start (name, directory, useDoubleCache = true) {
+  async start (name, directory, recache = false, useDoubleCache = true) {
     const { log, debug } = createLogger(`hopp:${name}`)
 
     /**
      * Get the modified files.
      */
-    let files = await glob(this.d.src, directory, useDoubleCache)
+    debug('task recache = %s', recache)
+    let files = await glob(this.d.src, directory, useDoubleCache, recache)
 
     if (files.length > 0) {
       const dest = path.resolve(directory, getPath(this.d.dest))

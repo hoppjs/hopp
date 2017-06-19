@@ -153,7 +153,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   /**
    * Load tasks from file.
    */
-  const [fromCache, taskDefns] = await hoppfile.load(file)
+  const [fromCache, busted, taskDefns] = await hoppfile.load(file)
 
   /**
    * Parse from cache.
@@ -181,7 +181,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
   /**
    * Wait for task completion.
    */
-  Goal.defineTasks(taskDefns)
+  Goal.defineTasks(taskDefns, busted)
   await Goal.create(tasks, projectDir)
 
   /**

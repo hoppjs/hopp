@@ -7,6 +7,7 @@
 import { stat, readFile } from '../fs'
 import * as cache from '../cache'
 import { dirname } from 'path'
+import deepEqual from '../deep-equal'
 
 export default async file => {
   // if bad args die
@@ -22,7 +23,7 @@ export default async file => {
   ;[state.lmod, state.tasks] = cache.val('_') || []
 
   if (state.lmod === lmod) {
-    return [true, state.tasks]
+    return [true, {}, state.tasks]
   }
 
   // load file
@@ -83,6 +84,21 @@ export default async file => {
   // clean global scope
   delete global.scope
 
+  // figure out which tasks are bust
+  state.tasks = state.tasks || {}
+  const bustedTasks = {}
+
+  // only try checking for single tasks
+  for (let task in scope.module.exports) {
+    if (scope.module.exports.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
+      const json = scope.module.exports[task].toJSON()
+
+      if (!(json instanceof Array) && !deepEqual(json, state.tasks[task])) {
+        bustedTasks[task] = true
+      }
+    }
+  }
+
   // cache exports
   cache.val('_', [
     lmod,
@@ -90,5 +106,5 @@ export default async file => {
   ])
 
   // return exports
-  return [false, scope.module.exports]
+  return [false, bustedTasks, scope.module.exports]
 }

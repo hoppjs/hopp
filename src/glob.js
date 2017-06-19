@@ -15,7 +15,7 @@ const { debug } = require('./utils/log')('hopp:glob')
 let statCache
 const tempCache = {}
 
-export default async (pattern, cwd, useDoubleCache = false) => {
+export default async (pattern, cwd, useDoubleCache = false, recache = false) => {
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]
@@ -37,7 +37,7 @@ export default async (pattern, cwd, useDoubleCache = false) => {
     const curr = pttn.shift()
     let localResults = []
 
-    debug('curr: %s, dir = %s, recur = %s', curr, directory, recursive)
+    debug('curr: %s, dir = %s, recur = %s, recache = %s', curr, directory, recursive, recache)
 
     for (let file of (await readdir(directory))) {
       // fix file path
@@ -55,7 +55,7 @@ export default async (pattern, cwd, useDoubleCache = false) => {
       // has been modified
       if (match(file, curr)) {
         if (fstat.isFile()) {
-          if (!statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
+          if (recache || !statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
             statCache[filepath] = +fstat.mtime
             localResults.push(filepath)
           }
