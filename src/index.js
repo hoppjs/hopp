@@ -111,7 +111,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
 
     // map to current directory
     return path.resolve(process.cwd(), directory)
-  })(argv.directory || await hoppfile.find(path.dirname(__dirname)))
+  })(argv.directory || await hoppfile.find(process.cwd()))
 
   /**
    * Set hoppfile location relative to the project.
