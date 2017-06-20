@@ -232,12 +232,16 @@ export default class Hopp {
 
     return this.d.stack.map(([plugin]) => {
       const pluginStream = mapStream((data, next) => {
-        plugins[plugin](
-          pluginCtx[plugin],
-          data
-        )
-          .then(newData => next(null, newData))
-          .catch(err => next(err))
+        try {
+          plugins[plugin](
+            pluginCtx[plugin],
+            data
+          )
+            .then(newData => next(null, newData))
+            .catch(err => next(err))
+        } catch (err) {
+          next(err)
+        }
       })
 
       /**
