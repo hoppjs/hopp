@@ -9,7 +9,12 @@ import util from 'util'
 /**
  * Selected colors - borrowed from `debug`.
  */
-const colors = [6, 2, 3, 4, 5, 1]
+const colors = [2, 3, 4, 5, 1]
+
+/**
+ * This color is reserved for `hopp` logs.
+ */
+const HOPP_COLOR = 6
 
 /**
  * Manage distributed colors.
@@ -37,7 +42,7 @@ const ERROR = useColors ? '\u001b[31m✖\u001b[39m' : '✖'
  * Wraps a string with color escapes.
  */
 function wrapColor( str ) {
-  const color = nextColor()
+  const color = str === 'hopp' ? HOPP_COLOR : nextColor()
   return useColors ? `\u001b[3${color}m${str}\u001b[39m` : str
 }
 
