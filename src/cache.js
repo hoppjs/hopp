@@ -52,6 +52,7 @@ export const load = async directory => {
  * Adds/replaces a value in the cache.
  * @param {String} key
  * @param {Any} value anything stringifiable
+ * @returns {Any?} value from cache
  */
 export const val = (key, value) => {
   if (value === undefined) {
@@ -59,6 +60,28 @@ export const val = (key, value) => {
   }
   
   lock[key] = value
+}
+
+/**
+ * Get/set a sourcemap.
+ * @param {String} taskName name of the task
+ * @param {Object} sm sourcemap to save for the task
+ * @returns {Object} sourcemap from cache
+ */
+export const sourcemap = (taskName, sm) => {
+  let sourcemap = val('sm')
+
+  if (!sourcemap) {
+    val('sm', sourcemap = {})
+  }
+
+  if (sm) {
+    sourcemap[taskName] = sm
+  } else {
+    sourcemap[taskName] = sourcemap[taskName] || {}
+  }
+
+  return sourcemap
 }
 
 /**

@@ -5,6 +5,7 @@
  */
 
 import fs from 'fs'
+import tmp from 'tmp'
 import path from 'path'
 import { fn as wrap } from '../utils'
 
@@ -61,9 +62,20 @@ export const disableFSCache = () => {
 export const exists = dir => new Promise(res => fs.exists(dir, res))
 export const stat = promisify(fs.stat, 'stat')
 export const mkdir = promisify(fs.mkdir, 'mkdir')
+export const openFile = promisify(fs.open, 'open')
 export const readdir = promisify(fs.readdir, 'readdir')
 export const readFile = promisify(fs.readFile, 'readFile')
 export const writeFile = promisify(fs.writeFile, 'writeFile')
+
+/**
+ * Create temporary file.
+ */
+export const tmpFile = () => new Promise((resolve, reject) => {
+  tmp.file((err, fdpath, fd) => {
+    if (err) reject(err)
+    else resolve([fd, fdpath])
+  })
+})
 
 /**
  * mkdir -p

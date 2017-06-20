@@ -12,8 +12,8 @@ import * as cache from '../cache'
 import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
 import { _, createLogger } from '../utils'
-import { disableFSCache, mkdirp } from '../fs'
-import { buffer, createReadStream } from '../streams'
+import { disableFSCache, mkdirp, openFile, tmpFile } from '../fs'
+import { buffer, createBundle, createReadStream } from '../streams'
 
 const watchlog = createLogger('hopp:watch').log
 
@@ -129,6 +129,132 @@ export default class Hopp {
   }
 
   /**
+   * Handles bundling.
+   */
+  async startBundling(name, directory, modified, dest, useDoubleCache = true) {
+    const { log, debug } = createLogger(`hopp:${name}`)
+    debug('Switched to bundling mode')
+
+    /**
+     * Fetch sourcemap from cache.
+     */
+    const sourcemap = cache.sourcemap(name)
+
+    /**
+     * Get full list of current files.
+     */
+    const files = await glob(this.d.src, directory, useDoubleCache, true)
+
+    /**
+     * Create list of unmodified.
+     */
+    let freshBuild = true
+    const unmodified = {}
+
+    for (let file of files) {
+      if (modified.indexOf(file) === -1) {
+        unmodified[file] = true
+        freshBuild = false
+      }
+    }
+
+    /**
+     * Get old bundle & create new one.
+     */
+    const originalFd = freshBuild ? null : await openFile(dest, 'r')
+        , [tmpBundle, tmpBundlePath] = await tmpFile()
+    
+    /**
+     * Create new bundle to forward to.
+     */
+    const bundle = createBundle(tmpBundle)
+
+    /**
+     * Since bundling starts streaming right away, we can count this
+     * as the start of the build.
+     */
+    const start = Date.now()
+    log('Starting task')
+
+    /**
+     * Add all files.
+     */
+    for (let file of files) {
+      let stream
+
+      if (unmodified[file]) {
+        debug('forward: %s', file)
+        stream = fs.createReadStream(null, {
+          fd: originalFd,
+          autoClose: false,
+          start: sourcemap[file].start,
+          end: sourcemap[file].end
+        })
+      } else {
+        debug('transform: %s', file)
+        stream = pump([createReadStream(file)].concat(this.buildStack()))
+      }
+
+      bundle.add(file, stream)
+    }
+
+    /**
+     * Wait for bundling to end.
+     */
+    await bundle.end(tmpBundlePath)
+
+    /**
+     * Move the bundle to the new location.
+     */
+    if (originalFd) originalFd.close()
+    await mkdirp(path.dirname(dest).replace(directory, ''), directory)
+    await new Promise((resolve, reject) => {
+      const stream = fs.createReadStream(tmpBundlePath).pipe(fs.createWriteStream(dest))
+
+      stream.on('close', resolve)
+      stream.on('error', reject)
+    })
+
+    /**
+     * Update sourcemap.
+     */
+    cache.sourcemap(name, bundle.map)
+
+    log('Task ended (took %s ms)', Date.now() - start)
+  }
+
+  /**
+   * Converts all plugins in the stack into streams.
+   */
+  buildStack () {
+    let mode = 'stream'
+
+    return this.d.stack.map(([plugin]) => {
+      const pluginStream = mapStream((data, next) => {
+        plugins[plugin](
+          pluginCtx[plugin],
+          data
+        )
+          .then(newData => next(null, newData))
+          .catch(err => next(err))
+      })
+
+      /**
+       * Enable buffer mode if required.
+       */
+      if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
+        mode = 'buffer'
+        return pump(buffer(), pluginStream)
+      }
+
+      /**
+       * Otherwise keep pumping.
+       */
+      return pluginStream
+    })
+  }
+
+  /**
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
@@ -143,6 +269,38 @@ export default class Hopp {
 
     if (files.length > 0) {
       const dest = path.resolve(directory, getPath(this.d.dest))
+
+      /**
+       * Bundling tangeant.
+       */
+      if (this.d.stack.length > 0) {
+        let needsBundling = false
+
+        /**
+         * Try to load plugins.
+         */
+        if (!this.loadedPlugins) {
+          this.loadedPlugins = true
+
+          this.d.stack.forEach(([plugin, args]) => {
+            if (!plugins.hasOwnProperty(plugin)) {
+              plugins[plugin] = loadPlugin(plugin, args)
+              needsBundling = needsBundling || pluginConfig[plugin].bundle
+            }
+          })
+        }
+
+        /**
+         * Switch to bundling mode if need be.
+         */
+        if (needsBundling) {
+          return await this.startBundling(name, directory, files, dest, useDoubleCache)
+        }
+      }
+
+      /**
+       * Ensure dist directory exists.
+       */
       await mkdirp(dest.replace(directory, ''), directory)
 
       /**
@@ -157,49 +315,9 @@ export default class Hopp {
 
       if (this.d.stack.length > 0) {
         /**
-         * Try to load plugins.
-         */
-        let stack = _(this.d.stack)
-
-        if (!this.plugins) {
-          this.plugins = {}
-
-          stack.map(([plugin, args]) => {
-            if (!plugins.hasOwnProperty(plugin)) {
-              plugins[plugin] = loadPlugin(plugin, args)
-            }
-
-            return [plugin, args]
-          })
-        }
-
-        /**
          * Create streams.
          */
-        let mode = 'stream'
-        stack = stack.map(([plugin]) => {
-          const pluginStream = mapStream((data, next) => {
-            plugins[plugin](
-              pluginCtx[plugin],
-              data
-            )
-              .then(newData => next(null, newData))
-              .catch(err => next(err))
-          })
-
-          /**
-           * Enable buffer mode if required.
-           */
-          if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
-            mode = 'buffer'
-            return pump(buffer(), pluginStream)
-          }
-
-          /**
-           * Otherwise keep pumping.
-           */
-          return pluginStream
-        }).val()
+        const stack = this.buildStack()
 
         /**
          * Connect plugin streams with pipelines.

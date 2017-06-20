@@ -41,6 +41,7 @@
     "minimatch": "^3.0.4",
     "pump": "^1.0.2",
     "regenerator-runtime": "^0.10.5",
-    "require-like": "^0.1.2"
+    "require-like": "^0.1.2",
+    "tmp": "0.0.31"
   }
 }
