@@ -45,7 +45,8 @@ const loadPlugin = (plugin, args) => {
   // create a new context for this plugin
   pluginCtx[plugin] = {
     args,
-    log: logger.debug,
+    log: logger.log,
+    debug: logger.debug,
     error: logger.error
   }
 
