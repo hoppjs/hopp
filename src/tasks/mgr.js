@@ -22,18 +22,16 @@ const watchlog = createLogger('hopp:watch').log
  */
 const plugins = {}
 const pluginCtx = {}
-const bufferPlugins = {}
+const pluginConfig = {}
 
 /**
  * Loads a plugin, manages its env.
  */
 const loadPlugin = (plugin, args) => {
   let mod = require(plugin)
-
-  // check for if plugin requires before
-  if (mod.FORCE_BUFFER === true) {
-    bufferPlugins[plugin] = true
-  }
+  
+  // expose module config
+  pluginConfig[plugin] = mod.config || {}
 
   // if defined as an ES2015 module, assume that the
   // export is at 'default'
@@ -192,7 +190,7 @@ export default class Hopp {
           /**
            * Enable buffer mode if required.
            */
-          if (mode === 'stream' && bufferPlugins[plugin]) {
+          if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
             mode = 'buffer'
             return pump(buffer(), pluginStream)
           }
