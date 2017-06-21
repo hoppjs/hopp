@@ -193,7 +193,9 @@ export default class Hopp {
         })
       } else {
         debug('transform: %s', file)
-        stream = pump([createReadStream(file)].concat(this.buildStack()))
+        stream = pump([
+          createReadStream(file, dest + '/' + path.basename(file))
+        ].concat(this.buildStack()))
       }
 
       bundle.add(file, stream)
@@ -314,7 +316,7 @@ export default class Hopp {
       files = _(files).map(file => ({
         file,
         stream: [
-          createReadStream(file, dest)
+          createReadStream(file, dest + '/' + path.basename(file))
         ]
       }))
 
