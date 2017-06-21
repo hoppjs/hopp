@@ -338,15 +338,21 @@ export default class Hopp {
        */
       files.map(file => {
         // strip out the actual body and write it
-        file.stream.push(mapStream((data, next) => next(null, data.body)))
-        file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+        file.stream.push(mapStream((data, next) => {
+          if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
+            return next(new Error('A plugin has destroyed the stream by returning a non-object.'))
+          }
 
-        // connect all streams together to form pipeline
-        file.stream = pump(file.stream)
+          next(null, data.body)
+        }))
+        file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
 
         // promisify the current pipeline
         return new Promise((resolve, reject) => {
-          file.stream.on('error', reject)
+          // connect all streams together to form pipeline
+          file.stream = pump(file.stream, err => {
+            if (err) reject(err)
+          })
           file.stream.on('close', resolve)
         })
       })

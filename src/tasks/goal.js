@@ -41,7 +41,7 @@ export const create = (tasks, projectDir, mode = 'start') => {
       try {
         await goal[mode](name, projectDir, !!bustedTasks[name])
       } catch (err) {
-        createLogger(`hopp:${name}`).error(err.stack || err)
+        createLogger(`hopp:${name}`).error(err && err.stack ? err.stack : err)
         throw ('Build failed.')
       }
     })()
