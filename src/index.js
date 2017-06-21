@@ -39,6 +39,7 @@ const argv = (args => {
     else if (a === '-v' || a === '--verbose') o.verbose = true
     else if (a === '-H' || a === '--harmony') o.harmony = true
     else if (a === '-d' || a === '--directory') o.directory = args[++i]
+    else if (a === '-r' || a === '--recache') process.env.RECACHE = true
     else if (a[0] !== '-') o._.push(a)
   }
 
@@ -52,8 +53,9 @@ function help() {
   console.log('usage: hopp [OPTIONS] [TASKS]')
   console.log('')
   console.log('  -d, --directory [dir]\tpath to project directory')
+  console.log('  -H, --harmony\tauto-transpile hoppfile with babel')
+  console.log('  -r, --recache\tforce cache busting')
   console.log('  -v, --verbose\tenable debug messages')
-  console.log('  -H, --harmony\tauto-transpile hoppfile features')
   console.log('  -V, --version\tget version info')
   console.log('  -h, --help\tdisplay this message')
 

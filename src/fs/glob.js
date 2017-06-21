@@ -25,6 +25,9 @@ export default async (pattern, cwd, useDoubleCache = false, recache = false) => 
   if (statCache === undefined) {
     statCache = cache.val('sc') || {}
   }
+  
+  // allow overrides from the env
+  recache = recache || process.env.RECACHE === 'true'
 
   /**
    * Recursive walk.
