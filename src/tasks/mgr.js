@@ -50,8 +50,15 @@ const loadPlugin = (plugin, args) => {
     error: logger.error
   }
 
-  // return loaded plugin
-  return mod
+  // add plugins to loaded plugins
+  plugins[plugin] = mod
+}
+
+/**
+ * Test for undefined or null.
+ */
+function isUndefined(value) {
+  return value === undefined || value === null
 }
 
 /**
@@ -69,6 +76,9 @@ export default class Hopp {
     if (!(src instanceof Array)) {
       src = [src]
     }
+
+    this.needsBundling = false
+    this.needsRecaching = false
 
     this.d = {
       src,
@@ -269,6 +279,29 @@ export default class Hopp {
     const { log, debug } = createLogger(`hopp:${name}`)
 
     /**
+     * Figure out if bundling is needed & load plugins.
+     */
+    if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || (this.d.stack.length > 0 && !this.loadedPlugins)) {
+      this.loadedPlugins = true
+
+      this.d.stack.forEach(([plugin, args]) => {
+        if (!plugins.hasOwnProperty(plugin)) {
+          loadPlugin(plugin, args)
+        }
+
+        this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle)
+        this.needsRecaching = !!(this.needsRecaching || pluginConfig[plugin].recache)
+      })
+    }
+
+    /**
+     * Override recaching.
+     */
+    if (this.needsRecaching) {
+      recache = true
+    }
+
+    /**
      * Get the modified files.
      */
     debug('task recache = %s', recache)
@@ -278,31 +311,10 @@ export default class Hopp {
       const dest = path.resolve(directory, getPath(this.d.dest))
 
       /**
-       * Bundling tangeant.
+       * Switch to bundling mode if need be.
        */
-      if (this.d.stack.length > 0) {
-        let needsBundling = false
-
-        /**
-         * Try to load plugins.
-         */
-        if (!this.loadedPlugins) {
-          this.loadedPlugins = true
-
-          this.d.stack.forEach(([plugin, args]) => {
-            if (!plugins.hasOwnProperty(plugin)) {
-              plugins[plugin] = loadPlugin(plugin, args)
-              needsBundling = needsBundling || pluginConfig[plugin].bundle
-            }
-          })
-        }
-
-        /**
-         * Switch to bundling mode if need be.
-         */
-        if (needsBundling) {
-          return await this.startBundling(name, directory, files, dest, useDoubleCache)
-        }
+      if (this.needsBundling) {
+        return await this.startBundling(name, directory, files, dest, useDoubleCache)
       }
 
       /**
@@ -377,7 +389,9 @@ export default class Hopp {
     return {
       dest: this.d.dest,
       src: this.d.src,
-      stack: this.d.stack
+      stack: this.d.stack,
+      needsBundling: this.needsBundling,
+      needsRecaching: this.needsRecaching
     }
   }
 
@@ -390,6 +404,8 @@ export default class Hopp {
     this.d.dest = json.dest
     this.d.src = json.src
     this.d.stack = json.stack
+    this.needsBundling = json.needsBundling
+    this.needsRecaching = json.needsRecaching
 
     return this
   }
