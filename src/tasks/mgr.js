@@ -21,38 +21,7 @@ const watchlog = createLogger('hopp:watch').log
  * Plugins storage.
  */
 const plugins = {}
-const pluginCtx = {}
 const pluginConfig = {}
-
-/**
- * Loads a plugin, manages its env.
- */
-const loadPlugin = (plugin, args) => {
-  let mod = require(plugin)
-  
-  // expose module config
-  pluginConfig[plugin] = mod.config || {}
-
-  // if defined as an ES2015 module, assume that the
-  // export is at 'default'
-  if (mod.__esModule === true) {
-    mod = mod.default
-  }
-
-  // create plugin logger
-  const logger = createLogger(`hopp:${path.basename(plugin).substr(5)}`)
-
-  // create a new context for this plugin
-  pluginCtx[plugin] = {
-    args,
-    log: logger.log,
-    debug: logger.debug,
-    error: logger.error
-  }
-
-  // add plugins to loaded plugins
-  plugins[plugin] = mod
-}
 
 /**
  * Test for undefined or null.
@@ -77,9 +46,10 @@ export default class Hopp {
       src = [src]
     }
 
-    this.needsBundling = false
-    this.needsRecaching = false
+    // store context local to each task
+    this.pluginCtx = {}
 
+    // persistent info
     this.d = {
       src,
       stack: []
@@ -246,7 +216,7 @@ export default class Hopp {
       const pluginStream = mapStream((data, next) => {
         try {
           plugins[plugin](
-            pluginCtx[plugin],
+            this.pluginCtx[plugin],
             data
           )
             .then(newData => next(null, newData))
@@ -272,6 +242,40 @@ export default class Hopp {
   }
 
   /**
+   * Loads a plugin, manages its env.
+   */
+  loadPlugin (taskName, plugin, args) {
+    let mod = plugins[plugin]
+    
+    if (!mod) {
+      mod = require(plugin)
+      
+      // expose module config
+      pluginConfig[plugin] = mod.config || {}
+
+      // if defined as an ES2015 module, assume that the
+      // export is at 'default'
+      if (mod.__esModule === true) {
+        mod = mod.default
+      }
+
+      // add plugins to loaded plugins
+      plugins[plugin] = mod
+    }
+
+    // create plugin logger
+    const logger = createLogger(`hopp:${taskName}:${path.basename(plugin).substr(5)}`)
+
+    // create a new context for this plugin
+    this.pluginCtx[plugin] = {
+      args,
+      log: logger.log,
+      debug: logger.debug,
+      error: logger.error
+    }
+  }
+
+  /**
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
@@ -285,8 +289,8 @@ export default class Hopp {
       this.loadedPlugins = true
 
       this.d.stack.forEach(([plugin, args]) => {
-        if (!plugins.hasOwnProperty(plugin)) {
-          loadPlugin(plugin, args)
+        if (!this.pluginCtx.hasOwnProperty(plugin)) {
+          this.loadPlugin(name, plugin, args)
         }
 
         this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle)
