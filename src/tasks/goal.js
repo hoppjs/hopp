@@ -1,7 +1,7 @@
 /**
  * @file src/tasks/mgr.js
  * @license MIT
- * @copyright 2017 Karim Alibhai.
+ * @copyright 2017 10244872 Canada Inc.
  */
 
 import createWatch from './watch'

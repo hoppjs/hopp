@@ -14,6 +14,6 @@ It's inspired by the best of popular build systems like gulp, fly, & brunch - bu
 
 ## License
 
-Copyright (C) 2017 Karim Alibhai.
+Copyright (C) 2017 10244872 Canada Inc.
 
 Licensed under MIT license.
