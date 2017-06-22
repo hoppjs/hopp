@@ -4,7 +4,7 @@
 <p align="center">Crazy rapid build system.</p>
 
 <p align="center">
-  <a href="https://travis-ci.org/hoppjs/hopp.svg?branch=master"><img alt="Travis CI" src="https://travis-ci.org/hoppjs/hopp.svg?branch=master"></a>
+  <a href="https://travis-ci.org/hoppjs/hopp"><img alt="Travis CI" src="https://travis-ci.org/hoppjs/hopp.svg?branch=master"></a>
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
