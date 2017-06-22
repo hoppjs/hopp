@@ -24,6 +24,13 @@ const { log, debug, error } = createLogger('hopp')
 require('events').EventEmitter.defaultMaxListeners = 50
 
 /**
+ * This is resolved to the directory with a hoppfile later
+ * on but it is globally scoped in this module so that we can
+ * save debug logs to it.
+ */
+let projectDir = process.cwd()
+
+/**
  * Parse args
  */
 const argv = (args => {
@@ -100,7 +107,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
    * If project directory not specified, do lookup for the
    * hoppfile.js
    */
-  const projectDir = (directory => {
+  projectDir = (directory => {
     // absolute paths don't need correcting
     if (directory[0] === '/') {
       return directory
@@ -191,6 +198,12 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
    */
   await cache.save(projectDir)
 })().catch(err => {
-  error(err.stack || err)
-  process.exit(-1)
+  function end(lastErr) {
+    error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
+    process.exit(-1)
+  }
+
+  createLogger.saveLog(projectDir)
+    .then(() => end(err))
+    .catch(err => end(err))
 })

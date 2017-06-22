@@ -4,7 +4,11 @@
  * @copyright 2017 Karim Alibhai.
  */
 
+import os from 'os'
 import util from 'util'
+import path from 'path'
+import strip from 'strip-ansi'
+import { writeFile } from '../fs'
 
 /**
  * Selected colors - borrowed from `debug`.
@@ -54,16 +58,27 @@ function dim( str ) {
 }
 
 /**
+ * Complete record of logging events.
+ */
+const debugOutput = []
+
+/**
  * Create generic logger function.
  */
 function fmt(namespace, log, msg) {
   return function (msg) {
+    const str = util.format.apply(
+      console,
+      [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`]
+        .concat([].slice.call(arguments, 1))
+    )
+
+    // add to record
+    debugOutput.push(strip(str))
+
+    // log to console
     if (log !== 'debug' || process.env.HOPP_DEBUG !== 'false') {
-      return console[log === 'debug' ? 'error' : log].apply(
-        console,
-        [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`]
-          .concat([].slice.call(arguments, 1))
-      )
+      return console[log === 'debug' ? 'error' : log](str)
     }
   }
 }
@@ -93,4 +108,14 @@ module.exports = namespace => {
     debug: fmt(namespace, 'debug'),
     error: fmt(namespace, 'error')
   })
+}
+
+/**
+ * Write debug log to file on failure.
+ */
+module.exports.saveLog = async directory => {
+  await writeFile(path.join(directory, 'hopp-debug.log'), debugOutput.join(os.EOL))
+
+  console.error('\nSaved debug info to: %s.', directory)
+  console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m')
 }
