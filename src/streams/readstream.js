@@ -10,7 +10,7 @@ import map from 'map-stream'
 import { stat } from '../fs'
 
 export default (file, dest) => {
-  let size
+  let size, emitted = 0
 
   return pump(
     fs.createReadStream(file),
@@ -19,11 +19,20 @@ export default (file, dest) => {
         size = (await stat(file)).size
       }
 
+      // collect size
+      emitted += body.length
+
+      // check for unexpected values
+      if (emitted > size) {
+        return next(new Error('File size received exceeded expected file size.'))
+      }
+
       next(null, {
         // metadata
         file,
         dest,
         size,
+        done: emitted === size,
 
         // contents
         body
