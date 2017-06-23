@@ -14,10 +14,8 @@
     "build": "npm run build-latest && npm run build-legacy",
     "build-latest": "babel src -d dist --source-maps inline --no-babelrc --plugins=babel-plugin-transform-es2015-modules-commonjs",
     "build-legacy": "babel src -d dist-legacy --source-maps inline",
-    
     "pretest": "npm run build",
     "test": "npm run lint",
-
     "lint": "eslint src/**/*.js",
     "lintfix": "eslint --fix src/**/*.js"
   },
@@ -50,6 +48,7 @@
     "regenerator-runtime": "^0.10.5",
     "require-like": "^0.1.2",
     "strip-ansi": "^4.0.0",
+    "through": "^2.3.8",
     "tmp": "0.0.31"
   }
 }

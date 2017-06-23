@@ -8,6 +8,7 @@ import fs from 'fs'
 import path from 'path'
 import pump from 'pump'
 import glob from '../fs/glob'
+import through from 'through'
 import * as cache from '../cache'
 import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
@@ -207,19 +208,40 @@ export default class Hopp {
    * Converts all plugins in the stack into streams.
    */
   buildStack () {
+    const that = this
     let mode = 'stream'
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = mapStream((data, next) => {
+      const pluginStream = through(async function (data) {
         try {
-          plugins[plugin](
-            this.pluginCtx[plugin],
+          const handler = plugins[plugin](
+            that.pluginCtx[plugin],
             data
           )
-            .then(newData => next(null, newData))
-            .catch(err => next(err))
+
+          // for async functions/promises
+          if (handler instanceof Promise) {
+            handler
+              .then(newData => this.emit('data', newData))
+              .catch(err => this.emit('error', err))
+          }
+
+          // for async generators
+          else if ('next' in handler) {
+            let retval
+
+            do {
+              retval = await handler.next()
+              this.emit('data', retval.value)
+            } while (!retval.done);
+          }
+
+          // otherwise, fail
+          else {
+            this.emit('error', new Error('Unknown return value received from ' + plugin))
+          }
         } catch (err) {
-          next(err)
+          this.emit('error', err)
         }
       })
 
