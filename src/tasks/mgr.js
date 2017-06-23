@@ -266,9 +266,13 @@ export default class Hopp {
     // create plugin logger
     const logger = createLogger(`hopp:${taskName}:${path.basename(plugin).substr(5)}`)
 
+    // load/create cache for plugin
+    const pluginCache = cache.plugin(plugin)
+
     // create a new context for this plugin
     this.pluginCtx[plugin] = {
       args,
+      cache: pluginCache,
       log: logger.log,
       debug: logger.debug,
       error: logger.error

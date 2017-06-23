@@ -35,7 +35,7 @@ export const load = async directory => {
 
   // bring cache into existence
   if (!await exists(lockfile)) {
-    return (lock = {})
+    return (lock = {p:{}})
   }
 
   // load lock file
@@ -44,7 +44,7 @@ export const load = async directory => {
     return (lock = JSON.parse(await readFile(lockfile, 'utf8')))
   } catch (_) {
     log('Corrupted cache; ejecting.')
-    return (lock = {})
+    return (lock = {p:{}})
   }
 }
 
@@ -60,6 +60,20 @@ export const val = (key, value) => {
   }
   
   lock[key] = value
+}
+
+/**
+ * Load/create cache for a plugin.
+ * @param {}
+ */
+export const plugin = pluginName => {
+  const plugins = val('p')
+
+  if (!plugins.hasOwnProperty(pluginName)) {
+    plugins[pluginName] = {}
+  }
+
+  return plugins[pluginName]
 }
 
 /**
