@@ -34,8 +34,14 @@ export default async file => {
 
   // crude test to see if babel is needed
   if (process.env.HARMONY_FLAG === 'true') {
-    const env = require('babel-preset-env')
-    const babel = require('babel-core')
+    let babel, env
+
+    try {
+      babel = require('babel-core')
+      env = require('babel-preset-env')
+    } catch (err) {
+      throw new Error('Please install babel-core locally to use the harmony flag.')
+    }
 
     // compile with babel
     code = babel.transform(code, {
