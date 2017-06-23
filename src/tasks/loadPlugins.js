@@ -4,8 +4,6 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import path from 'path'
-
 /**
  * Loads the list of plugins defined in the package.json.
  * @param {String} path to directory with package.json

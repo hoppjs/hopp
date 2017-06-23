@@ -3,6 +3,7 @@
  * @license MIT
  * @copyright 2017 10244872 Canada Inc.
  */
+/* eslint no-console: 'off' */
 
 import os from 'os'
 import util from 'util'
@@ -65,7 +66,7 @@ const debugOutput = []
 /**
  * Create generic logger function.
  */
-function fmt(namespace, log, msg) {
+function fmt(namespace, log) {
   return function (msg) {
     const str = util.format.apply(
       console,

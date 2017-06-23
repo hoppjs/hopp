@@ -74,7 +74,7 @@ class Bundle extends EventEmitter {
     }
   }
 
-  end (f) {
+  end () {
     return Promise.all(this.goal).then(async () => {
       /**
        * Ensure all data has been written.

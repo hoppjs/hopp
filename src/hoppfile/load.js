@@ -4,10 +4,9 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import { dirname } from 'path'
+import { stat } from '../fs'
 import * as cache from '../cache'
 import { deepEqual } from '../utils'
-import { stat, readFile } from '../fs'
 
 export default async file => {
   // if bad args die

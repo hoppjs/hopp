@@ -75,9 +75,6 @@ export default class Hopp {
     const watchers = []
 
     this.d.src.forEach(src => {
-      // figure out if watch should be recursive
-      const recursive = src.indexOf('/**/') !== -1
-
       // get most definitive path possible
       let newpath = ''
       for (let sub of src.split('/')) {

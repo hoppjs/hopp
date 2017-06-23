@@ -7,7 +7,6 @@
 import path from 'path'
 import match from 'minimatch'
 import * as cache from '../cache'
-import getPath from './get-path'
 import { readdir, stat } from './'
 
 const { debug } = require('../utils/log')('hopp:glob')
