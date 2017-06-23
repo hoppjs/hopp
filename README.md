@@ -8,12 +8,33 @@
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
-> [UNSTABLE] It's under development. Hasn't hit a proper release version yet.
+> [UNSTABLE] It's under development. Don't use it yet.
 
-It's inspired by the best of popular build systems like gulp, fly, & brunch - but in one tiny combined package.
+## Usage
+
+For all information regarding how to setup hopp, how to use plugins, & how to
+make plugins, checkout our official [docs](https://docs.hoppjs.com/).
+
+## Why hopp?
+
+ 1. **Ridiculously fast.** It was the reason we originally built hopp.
+ We realized how much time was being wasted waiting for builds to finish.
+ We also realized that all build tools claim to be the fastest. So we first
+ developed benchmarks to verify the performance of build tools under various
+ conditions over at [buildjs-benchmarks](https://travis-ci.org/hoppjs/buildjs-benchmarks).
+ We use these benchmarks to continuously test the performance of hopp as we
+ add and remove features.
+ 2. **Super magical.** This is an opinion-based issue but many developers
+ shy away from automation and say it is too *magical*. hopp does things a bit
+ differently. We try to wave magic wands and say abracadabra whenever possible.
+ Like autoloading plugins & managing bundling.
+ 3. **Built to scale.** Though the performance issues of other build tools is
+ a bit painful, it really affects the build process of really large projects.
+ hopp was built to perform well not just for smaller projects but also for large
+ projects that their tools to perform at scale.
 
 ## License
 
 Copyright (C) 2017 10244872 Canada Inc.
 
-Licensed under MIT license.
+Licensed under [MIT](LICENSE.md) license.
