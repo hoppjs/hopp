@@ -27,6 +27,6 @@ exports.default = async directory => {
   /**
    * Filter for appropriate dependencies.
    */
-  return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => dep.startsWith('hopp-')).map(dep => `${directory}/node_modules/${dep}`);
+  return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => dep.startsWith('hopp-plugin-')).map(dep => `${directory}/node_modules/${dep}`);
 };
 //# sourceMappingURL=loadPlugins.js.map

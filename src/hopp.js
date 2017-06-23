@@ -19,7 +19,7 @@ export default async directory => {
   ;(await loadPlugins(directory)).forEach(name => {
     let plugName = ''
 
-    for (let tmp = path.basename(name), i = 5; i < tmp.length; i += 1) {
+    for (let tmp = path.basename(name), i = 12; i < tmp.length; i += 1) {
       plugName += tmp[i] === '-' ? tmp[i++].toUpperCase() : tmp[i]
     }
 

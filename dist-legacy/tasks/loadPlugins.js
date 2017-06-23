@@ -38,7 +38,7 @@ exports.default = function () {
 
 
             return _context.abrupt('return', [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(function (dep) {
-              return dep.startsWith('hopp-');
+              return dep.startsWith('hopp-plugin-');
             }).map(function (dep) {
               return directory + '/node_modules/' + dep;
             }));

@@ -54,7 +54,7 @@ exports.default = function () {
             _context.t0 = function (name) {
               var plugName = '';
 
-              for (var tmp = _path2.default.basename(name), i = 5; i < tmp.length; i += 1) {
+              for (var tmp = _path2.default.basename(name), i = 12; i < tmp.length; i += 1) {
                 plugName += tmp[i] === '-' ? tmp[i++].toUpperCase() : tmp[i];
               }
 
