@@ -34,7 +34,7 @@ export const load = async directory => {
   const lockfile = `${directory}/hopp.lock`
 
   // bring cache into existence
-  if (!await exists(lockfile)) {
+  if (process.env.RECACHE || !await exists(lockfile)) {
     return (lock = {p:{}})
   }
 
