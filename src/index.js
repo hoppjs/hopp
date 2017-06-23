@@ -33,25 +33,37 @@ let projectDir = process.cwd()
 /**
  * Parse args
  */
-const argv = (args => {
-  const o = {
-    _: []
-  }
+const args = {
+  d: ['directory', 'set path to project directory'],
+  r: ['require', 'require a module before doing anything'],
+  R: ['recache', 'force cache busting'],
+  v: ['verbose', 'enable debug messages'],
+  V: ['version', 'get version info'],
+  h: ['help', 'display this message']
+}
 
-  for (let i = 2; i < args.length; i += 1) {
-    let a = args[i]
+// parse via minimist
+let largestArg = ''
+const argv = require('minimist')(process.argv.slice(2), {
+  alias: (() => {
+    const o = {}
 
-    if (a === '-h' || a === '--help') o.help = true
-    else if (a === '-V' || a === '--version') o.version = true
-    else if (a === '-v' || a === '--verbose') o.verbose = true
-    else if (a === '-H' || a === '--harmony') o.harmony = true
-    else if (a === '-d' || a === '--directory') o.directory = args[++i]
-    else if (a === '-r' || a === '--recache') process.env.RECACHE = true
-    else if (a[0] !== '-') o._.push(a)
-  }
+    for (let a in args) {
+      if (args.hasOwnProperty(a)) {
+        o[a] = args[a][0]
 
-  return o
-})(process.argv)
+        if (args[a][0].length > largestArg.length) {
+          largestArg = args[a][0]
+        }
+      }
+    }
+
+    return o
+  })()
+})
+
+// expose to env
+process.env.RECACHE = argv.recache
 
 /**
  * Print help.
@@ -59,12 +71,12 @@ const argv = (args => {
 function help() {
   console.log('usage: hopp [OPTIONS] [TASKS]')
   console.log('')
-  console.log('  -d, --directory [dir]\tpath to project directory')
-  console.log('  -H, --harmony\tauto-transpile hoppfile with babel')
-  console.log('  -r, --recache\tforce cache busting')
-  console.log('  -v, --verbose\tenable debug messages')
-  console.log('  -V, --version\tget version info')
-  console.log('  -h, --help\tdisplay this message')
+  
+  for (let a in args) {
+    if (args.hasOwnProperty(a)) {
+      console.log('  -%s, --%s%s%s', a, args[a][0], ' '.repeat(largestArg.length - args[a][0].length + 2), args[a][1])
+    }
+  }
 
   process.exit(1)
 }
@@ -90,6 +102,14 @@ if (argv.help) {
  * Set tasks.
  */
 const tasks = argv._.length === 0 ? ['default'] : argv._
+
+/**
+ * Require whatever needs to be loaded.
+ */
+if (argv.require) {
+  ;(argv.require instanceof Array ? argv.require : [argv.require])
+    .forEach(mod => require(mod))
+}
 
 ;(async () => {
   /**

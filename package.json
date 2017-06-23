@@ -32,19 +32,17 @@
   "homepage": "https://github.com/karimsa/hopp#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1"
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-preset-env": "^1.5.2"
   },
   "dependencies": {
     "map-stream": "0.0.7",
     "minimatch": "^3.0.4",
+    "minimist": "^1.2.0",
     "pump": "^1.0.2",
     "regenerator-runtime": "^0.10.5",
     "require-like": "^0.1.2",
     "strip-ansi": "^4.0.0",
     "tmp": "0.0.31"
-  },
-  "optionalDependencies": {
-    "babel-core": "^6.25.0",
-    "babel-preset-env": "^1.5.2"
   }
 }

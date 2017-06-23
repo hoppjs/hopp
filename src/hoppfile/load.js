@@ -26,78 +26,17 @@ export default async file => {
     return [true, {}, state.tasks]
   }
 
-  // load file
-  let code = await readFile(file, 'utf8')
-
-  const req = require('require-like')
-  const { Script } = require('vm')
-
-  // crude test to see if babel is needed
-  if (process.env.HARMONY_FLAG === 'true') {
-    let babel, env
-
-    try {
-      babel = require('babel-core')
-      env = require('babel-preset-env')
-    } catch (err) {
-      throw new Error('Please install babel-core locally to use the harmony flag.')
-    }
-
-    // compile with babel
-    code = babel.transform(code, {
-      babelrc: false,
-      presets: [
-        [env, {
-          targets: {
-            node: 'current'
-          }
-        }]
-      ]
-    }).code
-  }
-
-  // setup virtual script
-  const script = new Script(
-    `(function (exports, require, module, __filename, __dirname) {
-      ${code}
-     }(scope.exports, scope.require, scope.module, scope.__filename, scope.__dirname))`
-  , {
-    filename: file,
-    displayErrors: true
-  })
-
-  // setup mock scope
-  const scopeExports = {}
-      , scope = {
-          exports: scopeExports,
-          require: req(file),
-          module: {
-            exports: scopeExports
-          },
-
-          __dirname: dirname(file),
-          __filename: file
-        }
-
-  // expose to script
-  global.scope = scope
-
-  // run script
-  script.runInThisContext({
-    filename: file
-  })
-
-  // clean global scope
-  delete global.scope
+  // load via require
+  const tasks = require(file)
 
   // figure out which tasks are bust
   state.tasks = state.tasks || {}
   const bustedTasks = {}
 
   // only try checking for single tasks
-  for (let task in scope.module.exports) {
-    if (scope.module.exports.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
-      const json = scope.module.exports[task].toJSON()
+  for (let task in tasks) {
+    if (tasks.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
+      const json = tasks[task].toJSON()
 
       if (!(json instanceof Array) && !deepEqual(json, state.tasks[task])) {
         bustedTasks[task] = true
@@ -108,9 +47,9 @@ export default async file => {
   // cache exports
   cache.val('_', [
     lmod,
-    scope.module.exports
+    tasks
   ])
 
   // return exports
-  return [false, bustedTasks, scope.module.exports]
+  return [false, bustedTasks, tasks]
 }
