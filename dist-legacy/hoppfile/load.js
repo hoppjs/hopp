@@ -6,13 +6,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _fs = require('../fs');
-
 var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
 
 var _utils = require('../utils');
+
+var _fs = require('../fs');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -83,12 +83,40 @@ exports.default = function () {
             }
 
             // cache exports
-            cache.val('_', [lmod, tasks]);
+            _context.t0 = cache;
+            _context.t1 = /function|=>/;
+            _context.next = 20;
+            return (0, _fs.readFile)(require.resolve(file), 'utf8');
 
-            // return exports
+          case 20:
+            _context.t2 = _context.sent;
+
+            if (!_context.t1.test.call(_context.t1, _context.t2)) {
+              _context.next = 25;
+              break;
+            }
+
+            _context.t3 =
+
+            // if any functions exist, we can't cache the file
+            [0, null]
+
+            // otherwise, cache normally
+            ;
+            _context.next = 26;
+            break;
+
+          case 25:
+            _context.t3 = [lmod, tasks];
+
+          case 26:
+            _context.t4 = _context.t3;
+
+            _context.t0.val.call(_context.t0, '_', _context.t4);
+
             return _context.abrupt('return', [false, bustedTasks, tasks]);
 
-          case 18:
+          case 29:
           case 'end':
             return _context.stop();
         }

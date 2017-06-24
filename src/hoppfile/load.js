@@ -4,9 +4,9 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import { stat } from '../fs'
 import * as cache from '../cache'
 import { deepEqual } from '../utils'
+import { stat, readFile } from '../fs'
 
 export default async file => {
   // if bad args die
@@ -44,10 +44,23 @@ export default async file => {
   }
 
   // cache exports
-  cache.val('_', [
-    lmod,
-    tasks
-  ])
+  cache.val(
+    '_',
+
+    /function|=>/.test(await readFile(require.resolve(file), 'utf8'))
+
+    // if any functions exist, we can't cache the file
+    ? [
+      0,
+      null
+    ]
+
+    // otherwise, cache normally
+    : [
+      lmod,
+      tasks
+    ]
+  )
 
   // return exports
   return [false, bustedTasks, tasks]

@@ -4,13 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _fs = require('../fs');
-
 var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
 
 var _utils = require('../utils');
+
+var _fs = require('../fs');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -49,7 +49,13 @@ exports.default = async file => {
   }
 
   // cache exports
-  cache.val('_', [lmod, tasks]);
+  cache.val('_', /function|=>/.test((await (0, _fs.readFile)(require.resolve(file), 'utf8')))
+
+  // if any functions exist, we can't cache the file
+  ? [0, null]
+
+  // otherwise, cache normally
+  : [lmod, tasks]);
 
   // return exports
   return [false, bustedTasks, tasks];
