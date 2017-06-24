@@ -1,0 +1,4 @@
+# this keeps the 'compat' folder in the repo
+# this is for the future when hopp's lockfiles begin
+# to change their standards and hopp needs to attempt to
+# maintain backwards compatibility

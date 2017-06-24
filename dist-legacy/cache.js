@@ -5,11 +5,72 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.save = exports.sourcemap = exports.plugin = exports.val = exports.load = undefined;
 
+/**
+ * Cache updater.
+ */
+var updateCache = function () {
+  var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(lock) {
+    var compat;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            if (!_semver2.default.gt(lock.v, version)) {
+              _context3.next = 2;
+              break;
+            }
+
+            throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp');
+
+          case 2:
+            compat = void 0;
+
+            // load converter  
+
+            _context3.prev = 3;
+
+            compat = require('./compat/' + lock.v);
+            _context3.next = 11;
+            break;
+
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3['catch'](3);
+
+            debug('failed to update hoppfile: %s', _context3.t0 && _context3.t0.stack ? _context3.t0.stack : _context3.t0);
+
+            // error out for unsupported versions
+            throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
+
+          case 11:
+            _context3.next = 13;
+            return compat(lock);
+
+          case 13:
+            return _context3.abrupt('return', _context3.sent);
+
+          case 14:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this, [[3, 7]]);
+  }));
+
+  return function updateCache(_x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
 var _fs = require('./fs');
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
+
+var _semver = require('semver');
+
+var _semver2 = _interopRequireDefault(_semver);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19,11 +80,24 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * @copyright 2017 10244872 Canada Inc.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
-var _require = require('./utils/log')('hopp'),
-    debug = _require.debug,
-    log = _require.log;
+var _require = require('../package.json'),
+    version = _require.version;
+
+var _require2 = require('./utils/log')('hopp'),
+    debug = _require2.debug,
+    log = _require2.log;
 
 var lock = void 0;
+
+/**
+ * Define what an empty cache looks like.
+ */
+var createCache = function createCache() {
+  return lock = {
+    v: version,
+    p: {}
+  };
+};
 
 /**
  * Loads a cache from the project.
@@ -73,7 +147,7 @@ var load = exports.load = function () {
 
             // bring cache into existence
 
-            _context.t1 = process.env.RECACHE;
+            _context.t1 = process.env.RECACHE === 'true';
 
             if (_context.t1) {
               _context.next = 15;
@@ -92,7 +166,7 @@ var load = exports.load = function () {
               break;
             }
 
-            return _context.abrupt('return', lock = { p: {} });
+            return _context.abrupt('return', lock = createCache());
 
           case 17:
 
@@ -105,21 +179,41 @@ var load = exports.load = function () {
 
           case 22:
             _context.t3 = _context.sent;
-            return _context.abrupt('return', lock = _context.t2.parse.call(_context.t2, _context.t3));
+            lock = _context.t2.parse.call(_context.t2, _context.t3);
 
-          case 26:
-            _context.prev = 26;
+            debug('loaded cache at v%s', lock.v);
+            _context.next = 31;
+            break;
+
+          case 27:
+            _context.prev = 27;
             _context.t4 = _context['catch'](18);
 
             log('Corrupted cache; ejecting.');
-            return _context.abrupt('return', lock = { p: {} });
+            return _context.abrupt('return', lock = createCache());
 
-          case 30:
+          case 31:
+            if (!(lock.v !== version)) {
+              _context.next = 36;
+              break;
+            }
+
+            log('Found stale cache; updating.');
+            _context.next = 35;
+            return updateCache(lock);
+
+          case 35:
+            lock = _context.sent;
+
+          case 36:
+            return _context.abrupt('return', lock);
+
+          case 37:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, undefined, [[18, 26]]);
+    }, _callee, undefined, [[18, 27]]);
   }));
 
   return function load(_x) {

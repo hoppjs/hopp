@@ -11,16 +11,28 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _semver = require('semver');
+
+var _semver2 = _interopRequireDefault(_semver);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/cache/load.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+const { version } = require('../package.json'); /**
+                                                 * @file src/cache/load.js
+                                                 * @license MIT
+                                                 * @copyright 2017 10244872 Canada Inc.
+                                                 */
 
 const { debug, log } = require('./utils/log')('hopp');
 let lock;
+
+/**
+ * Define what an empty cache looks like.
+ */
+const createCache = () => lock = {
+  v: version,
+  p: {}
+};
 
 /**
  * Loads a cache from the project.
@@ -40,18 +52,27 @@ const load = exports.load = async directory => {
   const lockfile = `${directory}/hopp.lock`;
 
   // bring cache into existence
-  if (process.env.RECACHE || !(await (0, _fs.exists)(lockfile))) {
-    return lock = { p: {} };
+  if (process.env.RECACHE === 'true' || !(await (0, _fs.exists)(lockfile))) {
+    return lock = createCache();
   }
 
   // load lock file
   debug('Loading cache');
   try {
-    return lock = JSON.parse((await (0, _fs.readFile)(lockfile, 'utf8')));
+    lock = JSON.parse((await (0, _fs.readFile)(lockfile, 'utf8')));
+    debug('loaded cache at v%s', lock.v);
   } catch (_) {
     log('Corrupted cache; ejecting.');
-    return lock = { p: {} };
+    return lock = createCache();
   }
+
+  // handle version change
+  if (lock.v !== version) {
+    log('Found stale cache; updating.');
+    lock = await updateCache(lock);
+  }
+
+  return lock;
 };
 
 /**
@@ -112,4 +133,29 @@ const save = exports.save = async directory => {
   debug('Saving cache');
   await (0, _fs.writeFile)(directory + '/hopp.lock', JSON.stringify(lock));
 };
+
+/**
+ * Cache updater.
+ */
+async function updateCache(lock) {
+  // handle newer lock files
+  if (_semver2.default.gt(lock.v, version)) {
+    throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp');
+  }
+
+  let compat;
+
+  // load converter  
+  try {
+    compat = require('./compat/' + lock.v);
+  } catch (err) {
+    debug('failed to update hoppfile: %s', err && err.stack ? err.stack : err);
+
+    // error out for unsupported versions
+    throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
+  }
+
+  // do convert
+  return await compat(lock);
+}
 //# sourceMappingURL=cache.js.map

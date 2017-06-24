@@ -47,6 +47,7 @@
     "pump": "^1.0.2",
     "regenerator-runtime": "^0.10.5",
     "require-like": "^0.1.2",
+    "semver": "^5.3.0",
     "strip-ansi": "^4.0.0",
     "through": "^2.3.8",
     "tmp": "0.0.31"
