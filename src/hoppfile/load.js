@@ -50,16 +50,16 @@ export default async file => {
     /function|=>/.test(await readFile(require.resolve(file), 'utf8'))
 
     // if any functions exist, we can't cache the file
-    ? [
-      0,
-      null
-    ]
+      ? [
+        0,
+        null
+      ]
 
-    // otherwise, cache normally
-    : [
-      lmod,
-      tasks
-    ]
+      // otherwise, cache normally
+      : [
+        lmod,
+        tasks
+      ]
   )
 
   // return exports
