@@ -8,6 +8,10 @@ var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
 
+var _steps = require('./tasks/steps');
+
+var _steps2 = _interopRequireDefault(_steps);
+
 var _watch = require('./tasks/watch');
 
 var _watch2 = _interopRequireDefault(_watch);
@@ -81,11 +85,12 @@ exports.default = function () {
             };
 
             init.all = _parallel2.default;
+            init.steps = _steps2.default;
             init.watch = _watch2.default;
 
             return _context.abrupt('return', init);
 
-          case 9:
+          case 10:
           case 'end':
             return _context.stop();
         }

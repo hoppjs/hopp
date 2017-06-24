@@ -5,6 +5,7 @@
  */
 
 import Hopp from './tasks/mgr'
+import createSteps from './tasks/steps'
 import createWatch from './tasks/watch'
 import loadPlugins from './tasks/loadPlugins'
 import createParallel from './tasks/parallel'
@@ -48,6 +49,7 @@ export default async directory => {
   const init = src => new Hopp(src)
 
   init.all = createParallel
+  init.steps = createSteps
   init.watch = createWatch
 
   return init

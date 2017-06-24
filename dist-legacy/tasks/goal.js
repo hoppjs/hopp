@@ -9,6 +9,10 @@ var _watch = require('./watch');
 
 var _watch2 = _interopRequireDefault(_watch);
 
+var _steps = require('./steps');
+
+var _steps2 = _interopRequireDefault(_steps);
+
 var _log = require('../utils/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -40,6 +44,7 @@ var defineTasks = exports.defineTasks = function defineTasks(defns, busted) {
   taskDefns = defns;
   bustedTasks = busted;
 
+  _steps2.default.defineTasks(defns, busted);
   _parallel2.default.defineTasks(defns, busted);
 };
 

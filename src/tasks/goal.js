@@ -5,6 +5,7 @@
  */
 
 import createWatch from './watch'
+import createSteps from './steps'
 import createLogger from '../utils/log'
 import createParallel from './parallel'
 
@@ -23,6 +24,7 @@ export const defineTasks = (defns, busted) => {
   taskDefns = defns
   bustedTasks = busted
 
+  createSteps.defineTasks(defns, busted)
   createParallel.defineTasks(defns, busted)
 }
 

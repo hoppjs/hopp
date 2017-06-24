@@ -8,6 +8,10 @@ var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
 
+var _steps = require('./tasks/steps');
+
+var _steps2 = _interopRequireDefault(_steps);
+
 var _watch = require('./tasks/watch');
 
 var _watch2 = _interopRequireDefault(_watch);
@@ -22,16 +26,15 @@ var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/hopp.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc..
- */
-
 const { debug } = require('./utils/log')('hopp');
 
 /**
  * Create hopp object based on plugins.
+ */
+/**
+ * @file src/hopp.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc..
  */
 
 exports.default = async directory => {
@@ -65,6 +68,7 @@ exports.default = async directory => {
   const init = src => new _mgr2.default(src);
 
   init.all = _parallel2.default;
+  init.steps = _steps2.default;
   init.watch = _watch2.default;
 
   return init;
