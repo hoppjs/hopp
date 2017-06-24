@@ -16,8 +16,8 @@
     "build-legacy": "babel src -d dist-legacy --source-maps",
     "pretest": "npm run build",
     "test": "npm run lint",
-    "lint": "eslint src/**/*.js",
-    "lintfix": "eslint --fix src/**/*.js"
+    "lint": "eslint src/*.js src/**/*.js",
+    "lintfix": "eslint --fix src/*.js src/**/*.js"
   },
   "repository": {
     "type": "git",
