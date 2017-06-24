@@ -13,7 +13,7 @@ import * as cache from '../cache'
 import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
 import { _, createLogger } from '../utils'
-import { disableFSCache, mkdirp, openFile, tmpFile } from '../fs'
+import { disableFSCache, mkdirp, openFile, tmpFile, tmpFileSync } from '../fs'
 import { buffer, Bundle, createReadStream } from '../streams'
 
 const { debug } = createLogger('hopp')
@@ -343,7 +343,7 @@ export default class Hopp {
     let files = await glob(this.d.src, directory, useDoubleCache, recache)
 
     if (files.length > 0) {
-      const dest = path.resolve(directory, getPath(this.d.dest))
+      const dest = this.d.dest ? path.resolve(directory, getPath(this.d.dest)) : ''
 
       /**
        * Switch to bundling mode if need be.
@@ -355,7 +355,7 @@ export default class Hopp {
       /**
        * Ensure dist directory exists.
        */
-      if (!this.readonly) {
+      if (!this.readonly || !this.d.dest) {
         await mkdirp(dest.replace(directory, ''), directory)
       }
 
@@ -398,8 +398,30 @@ export default class Hopp {
             next(null, data.body)
           }))
 
-          // add the readstream at the end
-          file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+          // add the writestream at the end
+          let output
+
+          if (!this.d.dest) {
+            const { fd: tmp, name: tmppath } = tmpFileSync()
+            output = fs.createWriteStream(null, {
+              fd: tmp
+            })
+
+            file.promise = new Promise((resolve, reject) => {
+              output.on('close', () => {
+                const newStream =
+                  fs.createReadStream(tmppath)
+                    .pipe(fs.createWriteStream(file.file))
+
+                newStream.on('error', reject)
+                newStream.on('close', resolve)
+              })
+            })
+          } else {
+            output = fs.createWriteStream(dest + '/' + path.basename(file.file))
+          }
+
+          file.stream.push(output)
         }
 
         // promisify the current pipeline
@@ -408,7 +430,12 @@ export default class Hopp {
           file.stream = pump(file.stream, err => {
             if (err) reject(err)
           })
-          file.stream.on('close', resolve)
+
+          if (file.promise) {
+            file.promise.then(resolve, reject)
+          } else {
+            file.stream.on('close', resolve)
+          }
         })
       })
 

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mkdirp = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
+exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
 
 var _fs = require('fs');
 
@@ -134,6 +134,13 @@ var tmpFile = exports.tmpFile = function tmpFile() {
       if (err) reject(err);else resolve([fd, fdpath]);
     });
   });
+};
+
+/**
+ * Create temporary file (sync).
+ */
+var tmpFileSync = exports.tmpFileSync = function tmpFileSync() {
+  return _tmp2.default.fileSync();
 };
 
 /**

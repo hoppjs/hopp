@@ -371,7 +371,7 @@ class Hopp {
     let files = await (0, _glob2.default)(this.d.src, directory, useDoubleCache, recache);
 
     if (files.length > 0) {
-      const dest = _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest));
+      const dest = this.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest)) : '';
 
       /**
        * Switch to bundling mode if need be.
@@ -383,7 +383,7 @@ class Hopp {
       /**
        * Ensure dist directory exists.
        */
-      if (!this.readonly) {
+      if (!this.readonly || !this.d.dest) {
         await (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
       }
 
@@ -424,8 +424,28 @@ class Hopp {
             next(null, data.body);
           }));
 
-          // add the readstream at the end
-          file.stream.push(_fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file)));
+          // add the writestream at the end
+          let output;
+
+          if (!this.d.dest) {
+            const { fd: tmp, name: tmppath } = (0, _fs3.tmpFileSync)();
+            output = _fs2.default.createWriteStream(null, {
+              fd: tmp
+            });
+
+            file.promise = new Promise((resolve, reject) => {
+              output.on('close', () => {
+                const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
+
+                newStream.on('error', reject);
+                newStream.on('close', resolve);
+              });
+            });
+          } else {
+            output = _fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file));
+          }
+
+          file.stream.push(output);
         }
 
         // promisify the current pipeline
@@ -434,7 +454,12 @@ class Hopp {
           file.stream = (0, _pump2.default)(file.stream, err => {
             if (err) reject(err);
           });
-          file.stream.on('close', resolve);
+
+          if (file.promise) {
+            file.promise.then(resolve, reject);
+          } else {
+            file.stream.on('close', resolve);
+          }
         });
       });
 

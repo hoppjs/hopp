@@ -89,6 +89,11 @@ export const tmpFile = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Create temporary file (sync).
+ */
+export const tmpFileSync = () => tmp.fileSync()
+
+/**
  * mkdir -p
  */
 export const mkdirp = wrap(async (directory, cwd) => {

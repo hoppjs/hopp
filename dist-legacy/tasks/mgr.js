@@ -668,7 +668,7 @@ var Hopp = function () {
                   break;
                 }
 
-                dest = _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest));
+                dest = this.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest)) : '';
 
                 /**
                  * Switch to bundling mode if need be.
@@ -682,7 +682,7 @@ var Hopp = function () {
                 return _context3.abrupt('return', this.startBundling(name, directory, files, dest, useDoubleCache));
 
               case 11:
-                if (this.readonly) {
+                if (!(!this.readonly || !this.d.dest)) {
                   _context3.next = 14;
                   break;
                 }
@@ -732,8 +732,31 @@ var Hopp = function () {
                       next(null, data.body);
                     }));
 
-                    // add the readstream at the end
-                    file.stream.push(_fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file)));
+                    // add the writestream at the end
+                    var output = void 0;
+
+                    if (!_this3.d.dest) {
+                      var _tmpFileSync = (0, _fs3.tmpFileSync)(),
+                          tmp = _tmpFileSync.fd,
+                          tmppath = _tmpFileSync.name;
+
+                      output = _fs2.default.createWriteStream(null, {
+                        fd: tmp
+                      });
+
+                      file.promise = new Promise(function (resolve, reject) {
+                        output.on('close', function () {
+                          var newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
+
+                          newStream.on('error', reject);
+                          newStream.on('close', resolve);
+                        });
+                      });
+                    } else {
+                      output = _fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file));
+                    }
+
+                    file.stream.push(output);
                   }
 
                   // promisify the current pipeline
@@ -742,7 +765,12 @@ var Hopp = function () {
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
                       if (err) reject(err);
                     });
-                    file.stream.on('close', resolve);
+
+                    if (file.promise) {
+                      file.promise.then(resolve, reject);
+                    } else {
+                      file.stream.on('close', resolve);
+                    }
                   });
                 });
 
