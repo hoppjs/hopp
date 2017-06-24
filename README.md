@@ -21,7 +21,7 @@ make plugins, checkout our official [docs](https://docs.hoppjs.com/).
  We realized how much time was being wasted waiting for builds to finish.
  We also realized that all build tools claim to be the fastest. So we first
  developed benchmarks to verify the performance of build tools under various
- conditions over at [buildjs-benchmarks](https://travis-ci.org/hoppjs/buildjs-benchmarks).
+ conditions over at **[buildjs-benchmarks](https://travis-ci.org/hoppjs/buildjs-benchmarks)**.
  We use these benchmarks to continuously test the performance of hopp as we
  add and remove features.
  2. **Super magical.** This is an opinion-based issue but many developers
@@ -32,6 +32,35 @@ make plugins, checkout our official [docs](https://docs.hoppjs.com/).
  a bit painful, it really affects the build process of really large projects.
  hopp was built to perform well not just for smaller projects but also for large
  projects that their tools to perform at scale.
+
+## Example
+
+Sample `hoppfile.js`:
+
+```javascript
+import hopp from 'hopp'
+
+export const less =
+  hopp([ 'src/less/**/*.less' ])
+    .less()
+    .dest('dist/css')
+
+export const js =
+  hopp([ 'src/js/**/*.js' ])
+    .babel()
+    .concat()
+    .dest()
+
+export const watch = hopp.watch([
+  'less',
+  'css'
+])
+
+export default hopp.all([
+  'less',
+  'css'
+])
+```
 
 ## License
 
