@@ -7,22 +7,19 @@ exports.save = exports.sourcemap = exports.plugin = exports.val = exports.load =
 
 var _fs = require('./fs');
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
 var _semver = require('semver');
 
 var _semver2 = _interopRequireDefault(_semver);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { version } = require('../package.json'); /**
-                                                 * @file src/cache/load.js
-                                                 * @license MIT
-                                                 * @copyright 2017 10244872 Canada Inc.
-                                                 */
+/**
+ * @file src/cache/load.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
+const { version } = require('../package.json');
 const { debug, log } = require('./utils/log')('hopp');
 let lock;
 
@@ -127,7 +124,7 @@ const sourcemap = exports.sourcemap = (taskName, sm) => {
 
 /**
  * Saves the lockfile again.
- * @param {*} directory 
+ * @param {*} directory
  */
 const save = exports.save = async directory => {
   debug('Saving cache');
@@ -145,7 +142,7 @@ async function updateCache(lock) {
 
   let compat;
 
-  // load converter  
+  // load converter
   try {
     compat = require('./compat/' + lock.v);
   } catch (err) {
@@ -156,6 +153,6 @@ async function updateCache(lock) {
   }
 
   // do convert
-  return await compat(lock);
+  return compat(lock);
 }
 //# sourceMappingURL=cache.js.map

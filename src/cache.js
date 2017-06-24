@@ -5,13 +5,10 @@
  */
 
 import {
-  stat,
-  mkdir,
   exists,
   readFile,
-  writeFile,
+  writeFile
 } from './fs'
-import path from 'path'
 import semver from 'semver'
 
 const { version } = require('../package.json')
@@ -77,7 +74,7 @@ export const val = (key, value) => {
   if (value === undefined) {
     return lock[key]
   }
-  
+
   lock[key] = value
 }
 
@@ -119,7 +116,7 @@ export const sourcemap = (taskName, sm) => {
 
 /**
  * Saves the lockfile again.
- * @param {*} directory 
+ * @param {*} directory
  */
 export const save = async directory => {
   debug('Saving cache')
@@ -129,7 +126,7 @@ export const save = async directory => {
 /**
  * Cache updater.
  */
-async function updateCache(lock) {
+async function updateCache (lock) {
   // handle newer lock files
   if (semver.gt(lock.v, version)) {
     throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp')
@@ -137,7 +134,7 @@ async function updateCache(lock) {
 
   let compat
 
-  // load converter  
+  // load converter
   try {
     compat = require('./compat/' + lock.v)
   } catch (err) {
@@ -148,5 +145,5 @@ async function updateCache(lock) {
   }
 
   // do convert
-  return await compat(lock)
+  return compat(lock)
 }

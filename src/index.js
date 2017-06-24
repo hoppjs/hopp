@@ -4,9 +4,7 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import fs from 'fs'
 import path from 'path'
-import util from 'util'
 import Module from 'module'
 import * as cache from './cache'
 import createHopp from './hopp'
@@ -15,7 +13,7 @@ import * as Goal from './tasks/goal'
 import * as hoppfile from './hoppfile'
 import createLogger from './utils/log'
 
-const { log, debug, error } = createLogger('hopp')
+const { debug, error } = createLogger('hopp')
 
 /**
  * Extend the number of default listeners because 10
@@ -68,10 +66,10 @@ process.env.RECACHE = argv.recache
 /**
  * Print help.
  */
-function help() {
+function help () {
   console.log('usage: hopp [OPTIONS] [TASKS]')
   console.log('')
-  
+
   for (let a in args) {
     if (args.hasOwnProperty(a)) {
       console.log('  -%s, --%s%s%s', a, args[a][0], ' '.repeat(largestArg.length - args[a][0].length + 2), args[a][1])
@@ -90,7 +88,7 @@ if (argv.version) {
  * Currently the only way for help to be called.
  * Later, it should also happen on invalid args but we
  * don't have invalid arguments yet.
- * 
+ *
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
@@ -115,13 +113,13 @@ if (argv.require) {
   /**
    * Pass verbosity through to the env.
    */
-  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !! argv.verbose
+  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose
   debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
 
   /**
    * Harmony flag for transpiling hoppfiles.
    */
-  process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !! argv.harmony
+  process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony
 
   /**
    * If project directory not specified, do lookup for the
@@ -144,7 +142,7 @@ if (argv.require) {
 
   /**
    * Set hoppfile location relative to the project.
-   * 
+   *
    * This will cause errors later if the directory was supplied
    * manually but contains no hoppfile. We don't want to do a magic
    * lookup for the user because they overrode the magic with the
@@ -156,7 +154,7 @@ if (argv.require) {
   /**
    * Load cache.
    */
-  const lock = await cache.load(projectDir)
+  await cache.load(projectDir)
 
   /**
    * Create hopp instance creator.
@@ -193,7 +191,7 @@ if (argv.require) {
     let fullList = [].slice.call(tasks)
 
     // walk the full tree
-    function addDependencies(task) {
+    const addDependencies = task => {
       if (taskDefns[task] instanceof Array) {
         fullList = fullList.concat(taskDefns[task][1])
         taskDefns[task].forEach(sub => addDependencies(sub))
@@ -218,7 +216,7 @@ if (argv.require) {
    */
   await cache.save(projectDir)
 })().catch(err => {
-  function end(lastErr) {
+  function end (lastErr) {
     error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
     process.exit(-1)
   }

@@ -1,16 +1,8 @@
 'use strict';
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
-
-var _util = require('util');
-
-var _util2 = _interopRequireDefault(_util);
 
 var _module = require('module');
 
@@ -50,7 +42,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @copyright 2017 10244872 Canada Inc.
  */
 
-const { log, debug, error } = (0, _log2.default)('hopp');
+const { debug, error } = (0, _log2.default)('hopp');
 
 /**
  * Extend the number of default listeners because 10
@@ -124,7 +116,7 @@ if (argv.version) {
  * Currently the only way for help to be called.
  * Later, it should also happen on invalid args but we
  * don't have invalid arguments yet.
- * 
+ *
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
@@ -177,7 +169,7 @@ if (argv.require) {
 
   /**
    * Set hoppfile location relative to the project.
-   * 
+   *
    * This will cause errors later if the directory was supplied
    * manually but contains no hoppfile. We don't want to do a magic
    * lookup for the user because they overrode the magic with the
@@ -189,7 +181,7 @@ if (argv.require) {
   /**
    * Load cache.
    */
-  const lock = await cache.load(projectDir);
+  await cache.load(projectDir);
 
   /**
    * Create hopp instance creator.
@@ -225,12 +217,12 @@ if (argv.require) {
     let fullList = [].slice.call(tasks);
 
     // walk the full tree
-    function addDependencies(task) {
+    const addDependencies = task => {
       if (taskDefns[task] instanceof Array) {
         fullList = fullList.concat(taskDefns[task][1]);
         taskDefns[task].forEach(sub => addDependencies(sub));
       }
-    }
+    };
 
     // start walking from top
     fullList.forEach(task => addDependencies(task));

@@ -4,7 +4,6 @@
  * @copyright 2017 10244872 Canada Inc..
  */
 
-import path from 'path'
 import Hopp from './tasks/mgr'
 import createWatch from './tasks/watch'
 import loadPlugins from './tasks/loadPlugins'
@@ -25,7 +24,7 @@ export default async directory => {
     }
 
     debug('adding plugin %s as %s', name, plugName)
-    
+
     // add the plugin to the hopp prototype so it can be
     // used for the rest of the build process
     Hopp.prototype[plugName] = function () {
@@ -47,7 +46,7 @@ export default async directory => {
    * Expose hopp class for task creation.
    */
   const init = src => new Hopp(src)
-  
+
   init.all = createParallel
   init.watch = createWatch
 

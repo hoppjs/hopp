@@ -25,7 +25,7 @@ var updateCache = function () {
           case 2:
             compat = void 0;
 
-            // load converter  
+            // load converter
 
             _context3.prev = 3;
 
@@ -43,13 +43,9 @@ var updateCache = function () {
             throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
 
           case 11:
-            _context3.next = 13;
-            return compat(lock);
+            return _context3.abrupt('return', compat(lock));
 
-          case 13:
-            return _context3.abrupt('return', _context3.sent);
-
-          case 14:
+          case 12:
           case 'end':
             return _context3.stop();
         }
@@ -63,10 +59,6 @@ var updateCache = function () {
 }();
 
 var _fs = require('./fs');
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
 
 var _semver = require('semver');
 
@@ -273,7 +265,7 @@ var sourcemap = exports.sourcemap = function sourcemap(taskName, sm) {
 
 /**
  * Saves the lockfile again.
- * @param {*} directory 
+ * @param {*} directory
  */
 var save = exports.save = function () {
   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory) {

@@ -2,17 +2,9 @@
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _fs = require('fs');
-
-var _fs2 = _interopRequireDefault(_fs);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
-
-var _util = require('util');
-
-var _util2 = _interopRequireDefault(_util);
 
 var _module = require('module');
 
@@ -53,7 +45,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 var _createLogger = (0, _log2.default)('hopp'),
-    log = _createLogger.log,
     debug = _createLogger.debug,
     error = _createLogger.error;
 
@@ -131,7 +122,7 @@ if (argv.version) {
  * Currently the only way for help to be called.
  * Later, it should also happen on invalid args but we
  * don't have invalid arguments yet.
- * 
+ *
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
@@ -154,7 +145,7 @@ if (argv.require) {
 }
 
 ;_asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-  var file, lock, hopp, _resolve, _ref2, _ref3, fromCache, busted, taskDefns, _addDependencies, fullList;
+  var file, hopp, _resolve, _ref2, _ref3, fromCache, busted, taskDefns, fullList, addDependencies;
 
   return regeneratorRuntime.wrap(function _callee$(_context) {
     while (1) {
@@ -211,7 +202,7 @@ if (argv.require) {
 
           /**
            * Set hoppfile location relative to the project.
-           * 
+           *
            * This will cause errors later if the directory was supplied
            * manually but contains no hoppfile. We don't want to do a magic
            * lookup for the user because they overrode the magic with the
@@ -228,11 +219,10 @@ if (argv.require) {
           return cache.load(projectDir);
 
         case 15:
-          lock = _context.sent;
-          _context.next = 18;
+          _context.next = 17;
           return (0, _hopp2.default)(projectDir);
 
-        case 18:
+        case 17:
           hopp = _context.sent;
 
 
@@ -255,10 +245,10 @@ if (argv.require) {
             /**
              * Load tasks from file.
              */
-          };_context.next = 24;
+          };_context.next = 23;
           return hoppfile.load(file);
 
-        case 24:
+        case 23:
           _ref2 = _context.sent;
           _ref3 = _slicedToArray(_ref2, 3);
           fromCache = _ref3[0];
@@ -270,13 +260,17 @@ if (argv.require) {
            * Parse from cache.
            */
           if (fromCache) {
+            // create copy of tasks, we don't want to modify
+            // the actual goal list
+            fullList = [].slice.call(tasks);
 
             // walk the full tree
-            _addDependencies = function _addDependencies(task) {
+
+            addDependencies = function addDependencies(task) {
               if (taskDefns[task] instanceof Array) {
                 fullList = fullList.concat(taskDefns[task][1]);
                 taskDefns[task].forEach(function (sub) {
-                  return _addDependencies(sub);
+                  return addDependencies(sub);
                 });
               }
             };
@@ -284,11 +278,8 @@ if (argv.require) {
             // start walking from top
 
 
-            // create copy of tasks, we don't want to modify
-            // the actual goal list
-            fullList = [].slice.call(tasks);
             fullList.forEach(function (task) {
-              return _addDependencies(task);
+              return addDependencies(task);
             });
 
             // parse all tasks and their dependencies
@@ -299,14 +290,14 @@ if (argv.require) {
            * Wait for task completion.
            */
           Goal.defineTasks(taskDefns, busted);
-          _context.next = 33;
+          _context.next = 32;
           return Goal.create(tasks, projectDir);
 
-        case 33:
-          _context.next = 35;
+        case 32:
+          _context.next = 34;
           return cache.save(projectDir);
 
-        case 35:
+        case 34:
         case 'end':
           return _context.stop();
       }

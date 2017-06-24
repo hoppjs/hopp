@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
 var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
@@ -26,15 +22,16 @@ var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { debug } = require('./utils/log')('hopp');
-
-/**
- * Create hopp object based on plugins.
- */
 /**
  * @file src/hopp.js
  * @license MIT
  * @copyright 2017 10244872 Canada Inc..
+ */
+
+const { debug } = require('./utils/log')('hopp');
+
+/**
+ * Create hopp object based on plugins.
  */
 
 exports.default = async directory => {
