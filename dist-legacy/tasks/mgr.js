@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * @file src/tasks/mgr.js
@@ -119,6 +119,63 @@ var Hopp = function () {
     value: function dest(out) {
       this.d.dest = out;
       return this;
+    }
+
+    /**
+     * Allow renaming of destination files.
+     * @param {Function} fn a renaming function
+     * @returns {Hopp} current object for chaining
+     */
+
+  }, {
+    key: 'rename',
+    value: function rename(fn) {
+      if (typeof fn !== 'function' && (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) !== 'object') {
+        throw new Error('Rename must be given a function or object.');
+      }
+
+      this.d.rename = fn;
+      return this;
+    }
+
+    /**
+     * Actually do the renaming.
+     * @param {String} filename the original name
+     * @returns {String} renamed filename
+     */
+
+  }, {
+    key: 'doRename',
+    value: function doRename(filename) {
+      // if no rename is defined, just use current filename
+      if (!this.d.rename) return filename;
+
+      // functions are easy, but they break caching
+      if (typeof this.d.rename === 'function') {
+        return this.d.rename(filename);
+      }
+
+      // remove extension
+      var ext = filename.substr(0, filename.lastIndexOf('.'));
+      filename = filename.substr(1 + filename.lastIndexOf('.'));
+
+      // add prefix
+      if (this.d.rename.prefix) {
+        filename = this.d.rename.prefix + filename;
+      }
+
+      // add suffix, before extension
+      if (this.d.rename.suffix) {
+        filename += this.d.rename.suffix;
+      }
+
+      // change extension
+      if (this.d.rename.ext) {
+        ext = this.d.rename.ext;
+      }
+
+      // output final filename
+      return filename + ext;
     }
 
     /**
@@ -759,7 +816,7 @@ var Hopp = function () {
                         });
                       });
                     } else {
-                      output = _fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file));
+                      output = _fs2.default.createWriteStream(dest + '/' + _this3.doRename(_path2.default.basename(file.file)));
                     }
 
                     file.stream.push(output);
@@ -819,9 +876,7 @@ var Hopp = function () {
     key: 'toJSON',
     value: function toJSON() {
       return {
-        dest: this.d.dest,
-        src: this.d.src,
-        stack: this.d.stack,
+        d: this.d,
         needsBundling: this.needsBundling,
         needsRecaching: this.needsRecaching,
         readonly: this.readonly
@@ -837,9 +892,7 @@ var Hopp = function () {
   }, {
     key: 'fromJSON',
     value: function fromJSON(json) {
-      this.d.dest = json.dest;
-      this.d.src = json.src;
-      this.d.stack = json.stack;
+      this.d = json.d;
       this.needsBundling = json.needsBundling;
       this.needsRecaching = json.needsRecaching;
       this.readonly = json.readonly;

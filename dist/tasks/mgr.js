@@ -104,6 +104,57 @@ class Hopp {
   }
 
   /**
+   * Allow renaming of destination files.
+   * @param {Function} fn a renaming function
+   * @returns {Hopp} current object for chaining
+   */
+  rename(fn) {
+    if (typeof fn !== 'function' && typeof fn !== 'object') {
+      throw new Error('Rename must be given a function or object.');
+    }
+
+    this.d.rename = fn;
+    return this;
+  }
+
+  /**
+   * Actually do the renaming.
+   * @param {String} filename the original name
+   * @returns {String} renamed filename
+   */
+  doRename(filename) {
+    // if no rename is defined, just use current filename
+    if (!this.d.rename) return filename;
+
+    // functions are easy, but they break caching
+    if (typeof this.d.rename === 'function') {
+      return this.d.rename(filename);
+    }
+
+    // remove extension
+    let ext = filename.substr(0, filename.lastIndexOf('.'));
+    filename = filename.substr(1 + filename.lastIndexOf('.'));
+
+    // add prefix
+    if (this.d.rename.prefix) {
+      filename = this.d.rename.prefix + filename;
+    }
+
+    // add suffix, before extension
+    if (this.d.rename.suffix) {
+      filename += this.d.rename.suffix;
+    }
+
+    // change extension
+    if (this.d.rename.ext) {
+      ext = this.d.rename.ext;
+    }
+
+    // output final filename
+    return filename + ext;
+  }
+
+  /**
    * Run task in continuous mode.
    */
   watch(name, directory, recache = false) {
@@ -446,7 +497,7 @@ class Hopp {
               });
             });
           } else {
-            output = _fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file));
+            output = _fs2.default.createWriteStream(dest + '/' + this.doRename(_path2.default.basename(file.file)));
           }
 
           file.stream.push(output);
@@ -483,9 +534,7 @@ class Hopp {
    */
   toJSON() {
     return {
-      dest: this.d.dest,
-      src: this.d.src,
-      stack: this.d.stack,
+      d: this.d,
       needsBundling: this.needsBundling,
       needsRecaching: this.needsRecaching,
       readonly: this.readonly
@@ -498,9 +547,7 @@ class Hopp {
    * @return {Hopp} task manager
    */
   fromJSON(json) {
-    this.d.dest = json.dest;
-    this.d.src = json.src;
-    this.d.stack = json.stack;
+    this.d = json.d;
     this.needsBundling = json.needsBundling;
     this.needsRecaching = json.needsRecaching;
     this.readonly = json.readonly;
