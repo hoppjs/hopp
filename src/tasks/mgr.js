@@ -174,7 +174,7 @@ export default class Hopp {
         debug('transform: %s', file)
         stream = pump([
           createReadStream(file, dest + '/' + path.basename(file))
-        ].concat(this.buildStack()))
+        ].concat(this.buildStack(name)))
       }
 
       bundle.add(file, stream)
@@ -208,8 +208,10 @@ export default class Hopp {
   /**
    * Converts all plugins in the stack into streams.
    */
-  buildStack () {
+  buildStack (name) {
+    const { error } = createLogger(`hopp:${name}`)
     const that = this
+
     let mode = 'stream'
 
     return this.d.stack.map(([plugin]) => {
@@ -247,7 +249,9 @@ export default class Hopp {
        */
       if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
         mode = 'buffer'
-        return pump(buffer(), pluginStream)
+        return pump(buffer(), pluginStream, err => {
+          if (err) error(err && err.stack ? err.stack : err)
+        })
       }
 
       /**
@@ -373,7 +377,7 @@ export default class Hopp {
         /**
          * Create streams.
          */
-        const stack = this.buildStack()
+        const stack = this.buildStack(name)
 
         /**
          * Connect plugin streams with pipelines.

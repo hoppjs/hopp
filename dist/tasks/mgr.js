@@ -207,7 +207,7 @@ class Hopp {
         });
       } else {
         debug('transform: %s', file);
-        stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(this.buildStack()));
+        stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(this.buildStack(name)));
       }
 
       bundle.add(file, stream);
@@ -241,8 +241,10 @@ class Hopp {
   /**
    * Converts all plugins in the stack into streams.
    */
-  buildStack() {
+  buildStack(name) {
+    const { error } = (0, _utils.createLogger)(`hopp:${name}`);
     const that = this;
+
     let mode = 'stream';
 
     return this.d.stack.map(([plugin]) => {
@@ -275,7 +277,9 @@ class Hopp {
        */
       if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
         mode = 'buffer';
-        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
+        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, err => {
+          if (err) error(err && err.stack ? err.stack : err);
+        });
       }
 
       /**
@@ -399,7 +403,7 @@ class Hopp {
         /**
          * Create streams.
          */
-        const stack = this.buildStack();
+        const stack = this.buildStack(name);
 
         /**
          * Connect plugin streams with pipelines.

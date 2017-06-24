@@ -351,7 +351,7 @@ var Hopp = function () {
                     });
                   } else {
                     debug('transform: %s', _file);
-                    stream = (0, _pump2.default)([(0, _streams.createReadStream)(_file, dest + '/' + _path2.default.basename(_file))].concat(this.buildStack()));
+                    stream = (0, _pump2.default)([(0, _streams.createReadStream)(_file, dest + '/' + _path2.default.basename(_file))].concat(this.buildStack(name)));
                   }
 
                   bundle.add(_file, stream);
@@ -445,8 +445,12 @@ var Hopp = function () {
 
   }, {
     key: 'buildStack',
-    value: function buildStack() {
+    value: function buildStack(name) {
+      var _createLogger3 = (0, _utils.createLogger)('hopp:' + name),
+          error = _createLogger3.error;
+
       var that = this;
+
       var mode = 'stream';
 
       return this.d.stack.map(function (_ref4) {
@@ -541,7 +545,9 @@ var Hopp = function () {
          */
         if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
           mode = 'buffer';
-          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
+          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, function (err) {
+            if (err) error(err && err.stack ? err.stack : err);
+          });
         }
 
         /**
@@ -612,13 +618,13 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger3, log, debug, files, dest, stack, _start;
+        var _createLogger4, log, debug, files, dest, stack, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger3 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger3.log, debug = _createLogger3.debug;
+                _createLogger4 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger4.log, debug = _createLogger4.debug;
 
                 /**
                  * Figure out if bundling is needed & load plugins.
@@ -706,7 +712,7 @@ var Hopp = function () {
                   /**
                    * Create streams.
                    */
-                  stack = this.buildStack();
+                  stack = this.buildStack(name);
 
                   /**
                    * Connect plugin streams with pipelines.
