@@ -37,6 +37,10 @@ function fromArray(arr) {
     return (0, _parallel2.default)(arr[1]);
   }
 
+  if (arr[0] === 'steps') {
+    return (0, _steps2.default)(arr[1]);
+  }
+
   return (0, _watch2.default)(arr[1]);
 }
 

@@ -17,6 +17,10 @@ function fromArray (arr) {
     return createParallel(arr[1])
   }
 
+  if (arr[0] === 'steps') {
+    return createSteps(arr[1])
+  }
+
   return createWatch(arr[1])
 }
 
