@@ -311,7 +311,7 @@ export default class Hopp {
     /**
      * Figure out if bundling is needed & load plugins.
      */
-    if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || (this.d.stack.length > 0 && !this.loadedPlugins)) {
+    if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || isUndefined(this.readonly) || (this.d.stack.length > 0 && !this.loadedPlugins)) {
       this.loadedPlugins = true
 
       this.d.stack.forEach(([plugin, args]) => {
@@ -321,6 +321,11 @@ export default class Hopp {
 
         this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle)
         this.needsRecaching = !!(this.needsRecaching || pluginConfig[plugin].recache)
+        this.readonly = !!(this.readonly || pluginConfig[plugin].readonly)
+
+        if (this.needsBundling && this.readonly) {
+          throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.')
+        }
       })
     }
 
@@ -350,7 +355,9 @@ export default class Hopp {
       /**
        * Ensure dist directory exists.
        */
-      await mkdirp(dest.replace(directory, ''), directory)
+      if (!this.readonly) {
+        await mkdirp(dest.replace(directory, ''), directory)
+      }
 
       /**
        * Create streams.
@@ -381,15 +388,19 @@ export default class Hopp {
        * Connect with destination.
        */
       files.map(file => {
-        // strip out the actual body and write it
-        file.stream.push(mapStream((data, next) => {
-          if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
-            return next(new Error('A plugin has destroyed the stream by returning a non-object.'))
-          }
+        if (!this.readonly) {
+          // strip out the actual body and write it
+          file.stream.push(mapStream((data, next) => {
+            if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
+              return next(new Error('A plugin has destroyed the stream by returning a non-object.'))
+            }
 
-          next(null, data.body)
-        }))
-        file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+            next(null, data.body)
+          }))
+
+          // add the readstream at the end
+          file.stream.push(fs.createWriteStream(dest + '/' + path.basename(file.file)))
+        }
 
         // promisify the current pipeline
         return new Promise((resolve, reject) => {
@@ -421,7 +432,8 @@ export default class Hopp {
       src: this.d.src,
       stack: this.d.stack,
       needsBundling: this.needsBundling,
-      needsRecaching: this.needsRecaching
+      needsRecaching: this.needsRecaching,
+      readonly: this.readonly
     }
   }
 
@@ -436,6 +448,7 @@ export default class Hopp {
     this.d.stack = json.stack
     this.needsBundling = json.needsBundling
     this.needsRecaching = json.needsRecaching
+    this.readonly = json.readonly
 
     return this
   }

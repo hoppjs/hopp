@@ -624,7 +624,7 @@ var Hopp = function () {
                  * Figure out if bundling is needed & load plugins.
                  */
 
-                if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || this.d.stack.length > 0 && !this.loadedPlugins) {
+                if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || isUndefined(this.readonly) || this.d.stack.length > 0 && !this.loadedPlugins) {
                   this.loadedPlugins = true;
 
                   this.d.stack.forEach(function (_ref8) {
@@ -638,6 +638,11 @@ var Hopp = function () {
 
                     _this3.needsBundling = !!(_this3.needsBundling || pluginConfig[plugin].bundle);
                     _this3.needsRecaching = !!(_this3.needsRecaching || pluginConfig[plugin].recache);
+                    _this3.readonly = !!(_this3.readonly || pluginConfig[plugin].readonly);
+
+                    if (_this3.needsBundling && _this3.readonly) {
+                      throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
+                    }
                   });
                 }
 
@@ -659,7 +664,7 @@ var Hopp = function () {
                 files = _context3.sent;
 
                 if (!(files.length > 0)) {
-                  _context3.next = 23;
+                  _context3.next = 24;
                   break;
                 }
 
@@ -677,10 +682,15 @@ var Hopp = function () {
                 return _context3.abrupt('return', this.startBundling(name, directory, files, dest, useDoubleCache));
 
               case 11:
-                _context3.next = 13;
+                if (this.readonly) {
+                  _context3.next = 14;
+                  break;
+                }
+
+                _context3.next = 14;
                 return (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
 
-              case 13:
+              case 14:
 
                 /**
                  * Create streams.
@@ -712,15 +722,19 @@ var Hopp = function () {
                  * Connect with destination.
                  */
                 files.map(function (file) {
-                  // strip out the actual body and write it
-                  file.stream.push((0, _mapStream2.default)(function (data, next) {
-                    if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || !data.hasOwnProperty('body')) {
-                      return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
-                    }
+                  if (!_this3.readonly) {
+                    // strip out the actual body and write it
+                    file.stream.push((0, _mapStream2.default)(function (data, next) {
+                      if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || !data.hasOwnProperty('body')) {
+                        return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
+                      }
 
-                    next(null, data.body);
-                  }));
-                  file.stream.push(_fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file)));
+                      next(null, data.body);
+                    }));
+
+                    // add the readstream at the end
+                    file.stream.push(_fs2.default.createWriteStream(dest + '/' + _path2.default.basename(file.file)));
+                  }
 
                   // promisify the current pipeline
                   return new Promise(function (resolve, reject) {
@@ -736,18 +750,18 @@ var Hopp = function () {
                 _start = Date.now();
 
                 log('Starting task');
-                _context3.next = 20;
+                _context3.next = 21;
                 return Promise.all(files.val());
 
-              case 20:
+              case 21:
                 log('Task ended (took %s ms)', Date.now() - _start);
-                _context3.next = 24;
+                _context3.next = 25;
                 break;
 
-              case 23:
+              case 24:
                 log('Skipping task');
 
-              case 24:
+              case 25:
               case 'end':
                 return _context3.stop();
             }
@@ -775,7 +789,8 @@ var Hopp = function () {
         src: this.d.src,
         stack: this.d.stack,
         needsBundling: this.needsBundling,
-        needsRecaching: this.needsRecaching
+        needsRecaching: this.needsRecaching,
+        readonly: this.readonly
       };
     }
 
@@ -793,6 +808,7 @@ var Hopp = function () {
       this.d.stack = json.stack;
       this.needsBundling = json.needsBundling;
       this.needsRecaching = json.needsRecaching;
+      this.readonly = json.readonly;
 
       return this;
     }
