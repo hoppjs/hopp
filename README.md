@@ -10,6 +10,8 @@
 
 > hopp is now under a public alpha. Please help us improve it by reporting issues!
 
+[![NPM](https://nodei.co/npm/hopp.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/hopp/)
+
 ## Usage
 
 For all information regarding how to setup hopp, how to use plugins, & how to
