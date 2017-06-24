@@ -24,14 +24,14 @@ export default async (pattern, cwd, useDoubleCache = false, recache = false) => 
   if (statCache === undefined) {
     statCache = cache.val('sc') || {}
   }
-  
+
   // allow overrides from the env
   recache = recache || process.env.RECACHE === 'true'
 
   /**
    * Recursive walk.
    */
-  async function walk(relative, pttn, directory, recursive = false) {
+  async function walk (relative, pttn, directory, recursive = false) {
     if (pttn.length === 0) {
       return
     }

@@ -20,7 +20,7 @@ var parallel = function parallel(tasks) {
   return {
     /**
      * Starts all tasks concurrently.
-     * 
+     *
      * @return {Promise} joins all task promises under .all()
      */
     start: function start(name, directory) {
@@ -35,8 +35,8 @@ var parallel = function parallel(tasks) {
      * Converts tasks to JSON.
      * Just converts them into an array of
      * JSON objects.
-     * 
-     * @return {Array} 
+     *
+     * @return {Array}
      */
     toJSON: function toJSON() {
       return ['parallel', tasks];

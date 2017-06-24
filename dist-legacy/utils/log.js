@@ -90,7 +90,7 @@ function fmt(namespace, log) {
     debugOutput.push((0, _stripAnsi2.default)(str));
 
     // log to console
-    if (log !== 'debug' || process.env.HOPP_DEBUG !== 'false') {
+    if (log !== 'debug' || process.env.HOPP_DEBUG === 'true') {
       return console[log === 'debug' ? 'error' : log](str);
     }
   };

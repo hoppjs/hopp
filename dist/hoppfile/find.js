@@ -36,6 +36,6 @@ exports.default = async function find(directory) {
     throw new Error('Failed to find hoppfile.js');
   }
 
-  return files.length === 1 ? directory : await find(_path2.default.dirname(directory));
+  return files.length === 1 ? directory : find(_path2.default.dirname(directory));
 };
 //# sourceMappingURL=find.js.map

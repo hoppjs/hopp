@@ -86,7 +86,7 @@ var Hopp = function () {
   /**
    * Creates a new task with the glob.
    * DOES NOT START THE TASK.
-   * 
+   *
    * @param {Glob} src
    * @return {Hopp} new hopp object
    */
@@ -488,6 +488,8 @@ var Hopp = function () {
 
                     retval = void 0;
 
+                    // for async generators
+
                   case 8:
                     _context2.next = 10;
                     return handler.next();
@@ -508,6 +510,7 @@ var Hopp = function () {
                     break;
 
                   case 15:
+                    // otherwise, fail
                     this.emit('error', new Error('Unknown return value received from ' + plugin));
 
                   case 16:
@@ -656,7 +659,7 @@ var Hopp = function () {
                 files = _context3.sent;
 
                 if (!(files.length > 0)) {
-                  _context3.next = 25;
+                  _context3.next = 23;
                   break;
                 }
 
@@ -667,21 +670,17 @@ var Hopp = function () {
                  */
 
                 if (!this.needsBundling) {
-                  _context3.next = 13;
+                  _context3.next = 11;
                   break;
                 }
 
-                _context3.next = 12;
-                return this.startBundling(name, directory, files, dest, useDoubleCache);
+                return _context3.abrupt('return', this.startBundling(name, directory, files, dest, useDoubleCache));
 
-              case 12:
-                return _context3.abrupt('return', _context3.sent);
-
-              case 13:
-                _context3.next = 15;
+              case 11:
+                _context3.next = 13;
                 return (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
 
-              case 15:
+              case 13:
 
                 /**
                  * Create streams.
@@ -737,18 +736,18 @@ var Hopp = function () {
                 _start = Date.now();
 
                 log('Starting task');
-                _context3.next = 22;
+                _context3.next = 20;
                 return Promise.all(files.val());
 
-              case 22:
+              case 20:
                 log('Task ended (took %s ms)', Date.now() - _start);
-                _context3.next = 26;
+                _context3.next = 24;
                 break;
 
-              case 25:
+              case 23:
                 log('Skipping task');
 
-              case 26:
+              case 24:
               case 'end':
                 return _context3.stop();
             }

@@ -79,11 +79,45 @@ var disableFSCache = exports.disableFSCache = function disableFSCache() {
  * Transform only needed methods (instead of using mz
  * or doing a promisifyAll).
  */
-var exists = exports.exists = function exists(dir) {
-  return new Promise(function (res) {
-    return _fs2.default.exists(dir, res);
-  });
-};
+var exists = exports.exists = function () {
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(dir) {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return stat(dir);
+
+          case 3:
+            return _context.abrupt('return', true);
+
+          case 6:
+            _context.prev = 6;
+            _context.t0 = _context['catch'](0);
+
+            if (!(String(_context.t0).indexOf('ENOENT') !== -1)) {
+              _context.next = 10;
+              break;
+            }
+
+            throw _context.t0;
+
+          case 10:
+            return _context.abrupt('return', false);
+
+          case 11:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, undefined, [[0, 6]]);
+  }));
+
+  return function exists(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
 var stat = exports.stat = promisify(_fs2.default.stat, 'stat');
 var mkdir = exports.mkdir = promisify(_fs2.default.mkdir, 'mkdir');
 var openFile = exports.openFile = promisify(_fs2.default.open, 'open');
@@ -106,12 +140,12 @@ var tmpFile = exports.tmpFile = function tmpFile() {
  * mkdir -p
  */
 var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(directory, cwd) {
+  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory, cwd) {
     var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, dir;
 
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             // explode into separate
             directory = directory.split(_path2.default.sep);
@@ -120,40 +154,40 @@ var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context.prev = 4;
+            _context2.prev = 4;
             _iterator = directory[Symbol.iterator]();
 
           case 6:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 22;
+              _context2.next = 22;
               break;
             }
 
             dir = _step.value;
 
             if (!dir) {
-              _context.next = 18;
+              _context2.next = 18;
               break;
             }
 
-            _context.prev = 9;
-            _context.next = 12;
+            _context2.prev = 9;
+            _context2.next = 12;
             return mkdir(cwd + _path2.default.sep + dir);
 
           case 12:
-            _context.next = 18;
+            _context2.next = 18;
             break;
 
           case 14:
-            _context.prev = 14;
-            _context.t0 = _context['catch'](9);
+            _context2.prev = 14;
+            _context2.t0 = _context2['catch'](9);
 
-            if (!(String(_context.t0).indexOf('EEXIST') === -1)) {
-              _context.next = 18;
+            if (!(String(_context2.t0).indexOf('EEXIST') === -1)) {
+              _context2.next = 18;
               break;
             }
 
-            throw _context.t0;
+            throw _context2.t0;
 
           case 18:
 
@@ -161,53 +195,53 @@ var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
 
           case 19:
             _iteratorNormalCompletion = true;
-            _context.next = 6;
+            _context2.next = 6;
             break;
 
           case 22:
-            _context.next = 28;
+            _context2.next = 28;
             break;
 
           case 24:
-            _context.prev = 24;
-            _context.t1 = _context['catch'](4);
+            _context2.prev = 24;
+            _context2.t1 = _context2['catch'](4);
             _didIteratorError = true;
-            _iteratorError = _context.t1;
+            _iteratorError = _context2.t1;
 
           case 28:
-            _context.prev = 28;
-            _context.prev = 29;
+            _context2.prev = 28;
+            _context2.prev = 29;
 
             if (!_iteratorNormalCompletion && _iterator.return) {
               _iterator.return();
             }
 
           case 31:
-            _context.prev = 31;
+            _context2.prev = 31;
 
             if (!_didIteratorError) {
-              _context.next = 34;
+              _context2.next = 34;
               break;
             }
 
             throw _iteratorError;
 
           case 34:
-            return _context.finish(31);
+            return _context2.finish(31);
 
           case 35:
-            return _context.finish(28);
+            return _context2.finish(28);
 
           case 36:
           case 'end':
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, undefined, [[4, 24, 28, 36], [9, 14], [29,, 31, 35]]);
+    }, _callee2, undefined, [[4, 24, 28, 36], [9, 14], [29,, 31, 35]]);
   }));
 
-  return function (_x, _x2) {
-    return _ref.apply(this, arguments);
+  return function (_x2, _x3) {
+    return _ref2.apply(this, arguments);
   };
 }());
 //# sourceMappingURL=index.js.map

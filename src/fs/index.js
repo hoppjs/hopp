@@ -18,7 +18,7 @@ let useCache = true
  * @param {Function} fn the async-callback function to transform
  * @return {Function} a new promise-based function
  */
-function promisify(fn, name) {
+function promisify (fn, name) {
   /**
    * Create function call wrapper.
    */
@@ -59,7 +59,18 @@ export const disableFSCache = () => {
  * Transform only needed methods (instead of using mz
  * or doing a promisifyAll).
  */
-export const exists = dir => new Promise(res => fs.exists(dir, res))
+export const exists = async dir => {
+  try {
+    await stat(dir)
+    return true
+  } catch (err) {
+    if (String(err).indexOf('ENOENT') !== -1) {
+      throw err
+    }
+
+    return false
+  }
+}
 export const stat = promisify(fs.stat, 'stat')
 export const mkdir = promisify(fs.mkdir, 'mkdir')
 export const openFile = promisify(fs.open, 'open')

@@ -18,7 +18,7 @@ exports.default = function (tasks) {
   return {
     /**
      * Starts all tasks in watch mode.
-     * 
+     *
      * @return {Promise} joins all watch promises under .all()
      */
     start: function start(name, directory) {
@@ -30,8 +30,8 @@ exports.default = function (tasks) {
      * Converts tasks to JSON.
      * Just converts them into an array of
      * JSON objects.
-     * 
-     * @return {Array} 
+     *
+     * @return {Array}
      */
     toJSON: function toJSON() {
       return ['watch', tasks];

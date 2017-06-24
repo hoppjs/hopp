@@ -17,7 +17,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 exports.default = tasks => ({
   /**
    * Starts all tasks in watch mode.
-   * 
+   *
    * @return {Promise} joins all watch promises under .all()
    */
   start(name, directory) {
@@ -28,8 +28,8 @@ exports.default = tasks => ({
    * Converts tasks to JSON.
    * Just converts them into an array of
    * JSON objects.
-   * 
-   * @return {Array} 
+   *
+   * @return {Array}
    */
   toJSON() {
     return ['watch', tasks];

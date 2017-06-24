@@ -28,7 +28,7 @@ const pluginConfig = {}
 /**
  * Test for undefined or null.
  */
-function isUndefined(value) {
+function isUndefined (value) {
   return value === undefined || value === null
 }
 
@@ -39,7 +39,7 @@ export default class Hopp {
   /**
    * Creates a new task with the glob.
    * DOES NOT START THE TASK.
-   * 
+   *
    * @param {Glob} src
    * @return {Hopp} new hopp object
    */
@@ -111,7 +111,7 @@ export default class Hopp {
   /**
    * Handles bundling.
    */
-  async startBundling(name, directory, modified, dest, useDoubleCache = true) {
+  async startBundling (name, directory, modified, dest, useDoubleCache = true) {
     const { log, debug } = createLogger(`hopp:${name}`)
     debug('Switched to bundling mode')
 
@@ -142,8 +142,8 @@ export default class Hopp {
      * Get old bundle & create new one.
      */
     const originalFd = freshBuild ? null : await openFile(dest, 'r')
-        , [tmpBundle, tmpBundlePath] = await tmpFile()
-    
+    const [tmpBundle, tmpBundlePath] = await tmpFile()
+
     /**
      * Create new bundle to forward to.
      */
@@ -225,20 +225,16 @@ export default class Hopp {
             handler
               .then(newData => this.emit('data', newData))
               .catch(err => this.emit('error', err))
-          }
-
-          // for async generators
-          else if ('next' in handler) {
+          } else if ('next' in handler) {
             let retval
 
+            // for async generators
             do {
               retval = await handler.next()
               this.emit('data', retval.value)
-            } while (!retval.done);
-          }
-
-          // otherwise, fail
-          else {
+            } while (!retval.done)
+          } else {
+            // otherwise, fail
             this.emit('error', new Error('Unknown return value received from ' + plugin))
           }
         } catch (err) {
@@ -266,7 +262,7 @@ export default class Hopp {
    */
   loadPlugin (taskName, plugin, args, directory) {
     let mod = plugins[plugin]
-    
+
     if (!mod) {
       // convert plugin path from relative back to absolute
       try {
@@ -275,7 +271,7 @@ export default class Hopp {
         debug('failed to load plugin: %s', err && err.stack ? err.stack : err)
         throw new Error('Failed to load plugin: %s', plugin)
       }
-      
+
       // expose module config
       pluginConfig[plugin] = mod.config || {}
 
@@ -348,7 +344,7 @@ export default class Hopp {
        * Switch to bundling mode if need be.
        */
       if (this.needsBundling) {
-        return await this.startBundling(name, directory, files, dest, useDoubleCache)
+        return this.startBundling(name, directory, files, dest, useDoubleCache)
       }
 
       /**

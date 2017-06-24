@@ -11,11 +11,11 @@ import createParallel from './parallel'
 let taskDefns
 let bustedTasks
 
-function fromArray(arr) {
+function fromArray (arr) {
   if (arr[0] === 'parallel') {
     return createParallel(arr[1])
   }
-  
+
   return createWatch(arr[1])
 }
 
@@ -32,7 +32,7 @@ export const create = (tasks, projectDir, mode = 'start') => {
   if (tasks.length === 1) {
     let name = tasks[0]
     goal = taskDefns[tasks[0]]
-    
+
     if (goal instanceof Array) {
       goal = fromArray(goal)
     }

@@ -10,7 +10,8 @@ import map from 'map-stream'
 import { stat } from '../fs'
 
 export default (file, dest) => {
-  let size, emitted = 0
+  let size
+  let emitted = 0
 
   return pump(
     fs.createReadStream(file),

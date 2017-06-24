@@ -57,26 +57,9 @@ exports.default = function () {
             throw new Error('Failed to find hoppfile.js');
 
           case 7:
-            if (!(files.length === 1)) {
-              _context.next = 11;
-              break;
-            }
+            return _context.abrupt('return', files.length === 1 ? directory : find(_path2.default.dirname(directory)));
 
-            _context.t1 = directory;
-            _context.next = 14;
-            break;
-
-          case 11:
-            _context.next = 13;
-            return find(_path2.default.dirname(directory));
-
-          case 13:
-            _context.t1 = _context.sent;
-
-          case 14:
-            return _context.abrupt('return', _context.t1);
-
-          case 15:
+          case 8:
           case 'end':
             return _context.stop();
         }

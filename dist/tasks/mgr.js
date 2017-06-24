@@ -74,7 +74,7 @@ class Hopp {
   /**
    * Creates a new task with the glob.
    * DOES NOT START THE TASK.
-   * 
+   *
    * @param {Glob} src
    * @return {Hopp} new hopp object
    */
@@ -176,8 +176,8 @@ class Hopp {
     /**
      * Get old bundle & create new one.
      */
-    const originalFd = freshBuild ? null : await (0, _fs3.openFile)(dest, 'r'),
-          [tmpBundle, tmpBundlePath] = await (0, _fs3.tmpFile)();
+    const originalFd = freshBuild ? null : await (0, _fs3.openFile)(dest, 'r');
+    const [tmpBundle, tmpBundlePath] = await (0, _fs3.tmpFile)();
 
     /**
      * Create new bundle to forward to.
@@ -253,22 +253,18 @@ class Hopp {
           // for async functions/promises
           if (handler instanceof Promise) {
             handler.then(newData => this.emit('data', newData)).catch(err => this.emit('error', err));
-          }
+          } else if ('next' in handler) {
+            let retval;
 
-          // for async generators
-          else if ('next' in handler) {
-              let retval;
-
-              do {
-                retval = await handler.next();
-                this.emit('data', retval.value);
-              } while (!retval.done);
-            }
-
+            // for async generators
+            do {
+              retval = await handler.next();
+              this.emit('data', retval.value);
+            } while (!retval.done);
+          } else {
             // otherwise, fail
-            else {
-                this.emit('error', new Error('Unknown return value received from ' + plugin));
-              }
+            this.emit('error', new Error('Unknown return value received from ' + plugin));
+          }
         } catch (err) {
           this.emit('error', err);
         }
@@ -376,7 +372,7 @@ class Hopp {
        * Switch to bundling mode if need be.
        */
       if (this.needsBundling) {
-        return await this.startBundling(name, directory, files, dest, useDoubleCache);
+        return this.startBundling(name, directory, files, dest, useDoubleCache);
       }
 
       /**

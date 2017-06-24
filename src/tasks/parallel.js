@@ -14,7 +14,7 @@ let bustedTasks
 const parallel = tasks => ({
   /**
    * Starts all tasks concurrently.
-   * 
+   *
    * @return {Promise} joins all task promises under .all()
    */
   start (name, directory) {
@@ -28,8 +28,8 @@ const parallel = tasks => ({
    * Converts tasks to JSON.
    * Just converts them into an array of
    * JSON objects.
-   * 
-   * @return {Array} 
+   *
+   * @return {Array}
    */
   toJSON () {
     return ['parallel', tasks]

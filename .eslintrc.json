@@ -1,5 +1,9 @@
 {
-  "extends": "eslint:recommended",
+  "extends": "standard",
+  "rules": {
+    "no-throw-literal": 0,
+    "no-return-assign": 0
+  },
   "env": {
     "es6": true,
     "node": true

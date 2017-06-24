@@ -76,7 +76,18 @@ const disableFSCache = exports.disableFSCache = () => {
  * Transform only needed methods (instead of using mz
  * or doing a promisifyAll).
  */
-const exists = exports.exists = dir => new Promise(res => _fs2.default.exists(dir, res));
+const exists = exports.exists = async dir => {
+  try {
+    await stat(dir);
+    return true;
+  } catch (err) {
+    if (String(err).indexOf('ENOENT') !== -1) {
+      throw err;
+    }
+
+    return false;
+  }
+};
 const stat = exports.stat = promisify(_fs2.default.stat, 'stat');
 const mkdir = exports.mkdir = promisify(_fs2.default.mkdir, 'mkdir');
 const openFile = exports.openFile = promisify(_fs2.default.open, 'open');

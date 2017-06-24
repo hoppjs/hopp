@@ -27,8 +27,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 exports.default = (file, dest) => {
-  let size,
-      emitted = 0;
+  let size;
+  let emitted = 0;
 
   return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _mapStream2.default)(async (body, next) => {
     if (size === undefined) {

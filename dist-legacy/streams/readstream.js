@@ -27,8 +27,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
 exports.default = function (file, dest) {
-  var size = void 0,
-      emitted = 0;
+  var size = void 0;
+  var emitted = 0;
 
   return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _mapStream2.default)(function () {
     var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(body, next) {

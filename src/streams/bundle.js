@@ -72,7 +72,7 @@ export default class Bundle extends EventEmitter {
       })
 
       // move to next
-      this.flushIndex ++
+      this.flushIndex++
     }
   }
 

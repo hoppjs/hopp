@@ -11,7 +11,7 @@ export default array => {
       maps.push(fn)
       return handler
     },
-    
+
     val () {
       array = array.slice()
 

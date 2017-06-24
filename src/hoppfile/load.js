@@ -10,7 +10,7 @@ import { deepEqual } from '../utils'
 
 export default async file => {
   // if bad args die
-  if ( typeof file !== 'string' ) {
+  if (typeof file !== 'string') {
     throw new Error('Unknown arguments')
   }
 

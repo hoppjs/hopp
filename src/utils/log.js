@@ -25,7 +25,7 @@ const HOPP_COLOR = 6
  * Manage distributed colors.
  */
 let color = -1
-function nextColor() {
+function nextColor () {
   color += 1
   color = color === colors.length ? 0 : color
 
@@ -46,7 +46,7 @@ const ERROR = useColors ? '\u001b[31m✖\u001b[39m' : '✖'
 /**
  * Wraps a string with color escapes.
  */
-function wrapColor( str ) {
+function wrapColor (str) {
   const color = str === 'hopp' ? HOPP_COLOR : nextColor()
   return useColors ? `\u001b[3${color}m${str}\u001b[39m` : str
 }
@@ -54,7 +54,7 @@ function wrapColor( str ) {
 /**
  * Dimify string.
  */
-function dim( str ) {
+function dim (str) {
   return `\u001b[90m${str}\u001b[39m`
 }
 
@@ -66,7 +66,7 @@ const debugOutput = []
 /**
  * Create generic logger function.
  */
-function fmt(namespace, log) {
+function fmt (namespace, log) {
   return function (msg) {
     const str = util.format.apply(
       console,
@@ -78,7 +78,7 @@ function fmt(namespace, log) {
     debugOutput.push(strip(str))
 
     // log to console
-    if (log !== 'debug' || process.env.HOPP_DEBUG !== 'false') {
+    if (log !== 'debug' || process.env.HOPP_DEBUG === 'true') {
       return console[log === 'debug' ? 'error' : log](str)
     }
   }
