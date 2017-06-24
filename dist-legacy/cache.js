@@ -27,30 +27,21 @@ var updateCache = function () {
 
             // load converter
 
-            _context3.prev = 3;
+            try {
+              compat = require('./compat/' + lock.v).default;
+            } catch (err) {
+              compat = require('./compat/else').default;
+            }
 
-            compat = require('./compat/' + lock.v);
-            _context3.next = 11;
-            break;
-
-          case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3['catch'](3);
-
-            debug('failed to update hoppfile: %s', _context3.t0 && _context3.t0.stack ? _context3.t0.stack : _context3.t0);
-
-            // error out for unsupported versions
-            throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
-
-          case 11:
+            // do convert
             return _context3.abrupt('return', compat(lock));
 
-          case 12:
+          case 5:
           case 'end':
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[3, 7]]);
+    }, _callee3, this);
   }));
 
   return function updateCache(_x3) {

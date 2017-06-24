@@ -136,12 +136,9 @@ async function updateCache (lock) {
 
   // load converter
   try {
-    compat = require('./compat/' + lock.v)
+    compat = require('./compat/' + lock.v).default
   } catch (err) {
-    debug('failed to update hoppfile: %s', err && err.stack ? err.stack : err)
-
-    // error out for unsupported versions
-    throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v)
+    compat = require('./compat/else').default
   }
 
   // do convert
