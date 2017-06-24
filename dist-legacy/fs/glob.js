@@ -42,8 +42,8 @@ exports.default = function () {
      * Recursive walk.
      */
     var walk = function () {
-      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(pttn, directory) {
-        var recursive = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(relative, pttn, directory) {
+        var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
         var curr, localResults, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, filepath, fstat;
 
@@ -63,7 +63,7 @@ exports.default = function () {
                 localResults = [];
 
 
-                debug('curr: %s, dir = %s, recur = %s, recache = %s', curr, directory, recursive, recache);
+                debug('cwd = %s, relative = %s, curr: %s, dir = %s, recur = %s, recache = %s', cwd, relative, curr, directory, recursive, recache);
 
                 _iteratorNormalCompletion = true;
                 _didIteratorError = false;
@@ -132,8 +132,8 @@ exports.default = function () {
                   break;
                 }
 
-                if (recache || !statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
-                  statCache[filepath] = +fstat.mtime;
+                if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
+                  statCache[relative] = +fstat.mtime;
                   localResults.push(filepath);
                 }
                 _context.next = 39;
@@ -142,7 +142,7 @@ exports.default = function () {
               case 34:
                 _context.t2 = localResults;
                 _context.next = 37;
-                return walk(pttn, filepath, recursive || curr === '**');
+                return walk(relative + _path2.default.sep + file, pttn, filepath, recursive || curr === '**');
 
               case 37:
                 _context.t3 = _context.sent;
@@ -160,7 +160,7 @@ exports.default = function () {
 
                 _context.t4 = localResults;
                 _context.next = 45;
-                return walk([curr].concat(pttn), filepath, recursive);
+                return walk(relative + _path2.default.sep + file, [curr].concat(pttn), filepath, recursive);
 
               case 45:
                 _context.t5 = _context.sent;
@@ -216,7 +216,7 @@ exports.default = function () {
         }, _callee, this, [[8, 52, 56, 64], [57,, 59, 63]]);
       }));
 
-      return function walk(_x6, _x7) {
+      return function walk(_x6, _x7, _x8) {
         return _ref2.apply(this, arguments);
       };
     }();
@@ -270,7 +270,7 @@ exports.default = function () {
           case 13:
             _context2.t0 = results;
             _context2.next = 16;
-            return walk(pttn.split('/'), cwd);
+            return walk('.', pttn.split('/'), cwd);
 
           case 16:
             _context2.t1 = _context2.sent;

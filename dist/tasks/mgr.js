@@ -46,17 +46,17 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const { debug } = (0, _utils.createLogger)('hopp'); /**
+                                                     * @file src/tasks/mgr.js
+                                                     * @license MIT
+                                                     * @copyright 2017 10244872 Canada Inc.
+                                                     */
+
 const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
  * Plugins storage.
  */
-/**
- * @file src/tasks/mgr.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
-
 const plugins = {};
 const pluginConfig = {};
 
@@ -182,7 +182,7 @@ class Hopp {
     /**
      * Create new bundle to forward to.
      */
-    const bundle = (0, _streams.createBundle)(tmpBundle);
+    const bundle = new _streams.Bundle(directory, tmpBundle);
 
     /**
      * Since bundling starts streaming right away, we can count this
@@ -202,8 +202,8 @@ class Hopp {
         stream = _fs2.default.createReadStream(null, {
           fd: originalFd,
           autoClose: false,
-          start: sourcemap[file].start,
-          end: sourcemap[file].end
+          start: sourcemap[file.replace(directory, '.')].start,
+          end: sourcemap[file.replace(directory, '.')].end
         });
       } else {
         debug('transform: %s', file);
@@ -292,11 +292,17 @@ class Hopp {
   /**
    * Loads a plugin, manages its env.
    */
-  loadPlugin(taskName, plugin, args) {
+  loadPlugin(taskName, plugin, args, directory) {
     let mod = plugins[plugin];
 
     if (!mod) {
-      mod = require(plugin);
+      // convert plugin path from relative back to absolute
+      try {
+        mod = require(_path2.default.join(directory, 'node_modules', plugin));
+      } catch (err) {
+        debug('failed to load plugin: %s', err && err.stack ? err.stack : err);
+        throw new Error('Failed to load plugin: %s', plugin);
+      }
 
       // expose module config
       pluginConfig[plugin] = mod.config || {};
@@ -342,7 +348,7 @@ class Hopp {
 
       this.d.stack.forEach(([plugin, args]) => {
         if (!this.pluginCtx.hasOwnProperty(plugin)) {
-          this.loadPlugin(name, plugin, args);
+          this.loadPlugin(name, plugin, args, directory);
         }
 
         this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle);

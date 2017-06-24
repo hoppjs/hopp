@@ -19,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 class Bundle extends _events.EventEmitter {
-  constructor(fd) {
+  constructor(directory, fd) {
     super();
 
     this.target = _fs2.default.createWriteStream(null, {
@@ -35,6 +35,7 @@ class Bundle extends _events.EventEmitter {
     this.buffers = {};
     this.flushIndex = 0;
     this.id = Math.random();
+    this.directory = directory;
 
     this.goal = [];
   }
@@ -69,10 +70,11 @@ class Bundle extends _events.EventEmitter {
    */
   async flush() {
     const file = this.files[this.flushIndex];
+    const relative = file.replace(this.directory, '.');
 
-    if (this.status[file] && !this.map[file]) {
+    if (this.status[file] && !this.map[relative]) {
       // record sourcemap
-      this.map[file] = [this.offset, this.offset + this.sizes[file]];
+      this.map[relative] = [this.offset, this.offset + this.sizes[file]];
       this.offset += this.sizes[file];
 
       // write to file
@@ -101,6 +103,5 @@ class Bundle extends _events.EventEmitter {
     });
   }
 }
-
-exports.default = fd => new Bundle(fd);
+exports.default = Bundle;
 //# sourceMappingURL=bundle.js.map

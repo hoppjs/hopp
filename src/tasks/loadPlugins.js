@@ -26,5 +26,4 @@ export default async directory => {
     Object.keys(pkg.devDependencies || {}),
     Object.keys(pkg.peerDependencies || {})
   ).filter(dep => dep.startsWith('hopp-plugin-'))
-   .map(dep => `${directory}/node_modules/${dep}`)
 }

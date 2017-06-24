@@ -10,6 +10,6 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 var buffer = exports.buffer = require('./buffer').default;
-var createBundle = exports.createBundle = require('./bundle').default;
+var Bundle = exports.Bundle = require('./bundle').default;
 var createReadStream = exports.createReadStream = require('./readstream').default;
 //# sourceMappingURL=index.js.map

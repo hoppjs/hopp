@@ -50,7 +50,7 @@ exports.default = async (pattern, cwd, useDoubleCache = false, recache = false) 
   /**
    * Recursive walk.
    */
-  async function walk(pttn, directory, recursive = false) {
+  async function walk(relative, pttn, directory, recursive = false) {
     if (pttn.length === 0) {
       return;
     }
@@ -58,7 +58,7 @@ exports.default = async (pattern, cwd, useDoubleCache = false, recache = false) 
     const curr = pttn.shift();
     let localResults = [];
 
-    debug('curr: %s, dir = %s, recur = %s, recache = %s', curr, directory, recursive, recache);
+    debug('cwd = %s, relative = %s, curr: %s, dir = %s, recur = %s, recache = %s', cwd, relative, curr, directory, recursive, recache);
 
     for (let file of await (0, _.readdir)(directory)) {
       // fix file path
@@ -76,15 +76,15 @@ exports.default = async (pattern, cwd, useDoubleCache = false, recache = false) 
       // has been modified
       if ((0, _minimatch2.default)(file, curr)) {
         if (fstat.isFile()) {
-          if (recache || !statCache.hasOwnProperty(filepath) || statCache[filepath] !== +fstat.mtime) {
-            statCache[filepath] = +fstat.mtime;
+          if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
+            statCache[relative] = +fstat.mtime;
             localResults.push(filepath);
           }
         } else {
-          localResults = localResults.concat((await walk(pttn, filepath, recursive || curr === '**')));
+          localResults = localResults.concat((await walk(relative + _path2.default.sep + file, pttn, filepath, recursive || curr === '**')));
         }
       } else if (fstat.isDirectory() && recursive) {
-        localResults = localResults.concat((await walk([curr].concat(pttn), filepath, recursive)));
+        localResults = localResults.concat((await walk(relative + _path2.default.sep + file, [curr].concat(pttn), filepath, recursive)));
       }
     }
 
@@ -100,7 +100,7 @@ exports.default = async (pattern, cwd, useDoubleCache = false, recache = false) 
       throw new Error('Not sure what to do with the / in your glob.');
     }
 
-    results = results.concat((await walk(pttn.split('/'), cwd)));
+    results = results.concat((await walk('.', pttn.split('/'), cwd)));
   }
 
   /**

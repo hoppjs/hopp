@@ -14,8 +14,9 @@ import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
 import { _, createLogger } from '../utils'
 import { disableFSCache, mkdirp, openFile, tmpFile } from '../fs'
-import { buffer, createBundle, createReadStream } from '../streams'
+import { buffer, Bundle, createReadStream } from '../streams'
 
+const { debug } = createLogger('hopp')
 const watchlog = createLogger('hopp:watch').log
 
 /**
@@ -146,7 +147,7 @@ export default class Hopp {
     /**
      * Create new bundle to forward to.
      */
-    const bundle = createBundle(tmpBundle)
+    const bundle = new Bundle(directory, tmpBundle)
 
     /**
      * Since bundling starts streaming right away, we can count this
@@ -166,8 +167,8 @@ export default class Hopp {
         stream = fs.createReadStream(null, {
           fd: originalFd,
           autoClose: false,
-          start: sourcemap[file].start,
-          end: sourcemap[file].end
+          start: sourcemap[file.replace(directory, '.')].start,
+          end: sourcemap[file.replace(directory, '.')].end
         })
       } else {
         debug('transform: %s', file)
@@ -263,11 +264,17 @@ export default class Hopp {
   /**
    * Loads a plugin, manages its env.
    */
-  loadPlugin (taskName, plugin, args) {
+  loadPlugin (taskName, plugin, args, directory) {
     let mod = plugins[plugin]
     
     if (!mod) {
-      mod = require(plugin)
+      // convert plugin path from relative back to absolute
+      try {
+        mod = require(path.join(directory, 'node_modules', plugin))
+      } catch (err) {
+        debug('failed to load plugin: %s', err && err.stack ? err.stack : err)
+        throw new Error('Failed to load plugin: %s', plugin)
+      }
       
       // expose module config
       pluginConfig[plugin] = mod.config || {}
@@ -313,7 +320,7 @@ export default class Hopp {
 
       this.d.stack.forEach(([plugin, args]) => {
         if (!this.pluginCtx.hasOwnProperty(plugin)) {
-          this.loadPlugin(name, plugin, args)
+          this.loadPlugin(name, plugin, args, directory)
         }
 
         this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle)

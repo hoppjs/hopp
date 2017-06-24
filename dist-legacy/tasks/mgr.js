@@ -60,6 +60,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var _createLogger = (0, _utils.createLogger)('hopp'),
+    debug = _createLogger.debug;
+
 var watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
@@ -201,13 +204,13 @@ var Hopp = function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name, directory, modified, dest) {
         var useDoubleCache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
 
-        var _createLogger, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, _file, stream;
+        var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, _file, stream;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _createLogger = (0, _utils.createLogger)('hopp:' + name), log = _createLogger.log, debug = _createLogger.debug;
+                _createLogger2 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger2.log, debug = _createLogger2.debug;
 
                 debug('Switched to bundling mode');
 
@@ -315,7 +318,7 @@ var Hopp = function () {
                 /**
                  * Create new bundle to forward to.
                  */
-                bundle = (0, _streams.createBundle)(tmpBundle);
+                bundle = new _streams.Bundle(directory, tmpBundle);
 
                 /**
                  * Since bundling starts streaming right away, we can count this
@@ -343,8 +346,8 @@ var Hopp = function () {
                     stream = _fs2.default.createReadStream(null, {
                       fd: originalFd,
                       autoClose: false,
-                      start: sourcemap[_file].start,
-                      end: sourcemap[_file].end
+                      start: sourcemap[_file.replace(directory, '.')].start,
+                      end: sourcemap[_file.replace(directory, '.')].end
                     });
                   } else {
                     debug('transform: %s', _file);
@@ -551,11 +554,17 @@ var Hopp = function () {
 
   }, {
     key: 'loadPlugin',
-    value: function loadPlugin(taskName, plugin, args) {
+    value: function loadPlugin(taskName, plugin, args, directory) {
       var mod = plugins[plugin];
 
       if (!mod) {
-        mod = require(plugin);
+        // convert plugin path from relative back to absolute
+        try {
+          mod = require(_path2.default.join(directory, 'node_modules', plugin));
+        } catch (err) {
+          debug('failed to load plugin: %s', err && err.stack ? err.stack : err);
+          throw new Error('Failed to load plugin: %s', plugin);
+        }
 
         // expose module config
         pluginConfig[plugin] = mod.config || {};
@@ -600,13 +609,13 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger2, log, debug, files, dest, stack, _start;
+        var _createLogger3, log, debug, files, dest, stack, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger2 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger2.log, debug = _createLogger2.debug;
+                _createLogger3 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger3.log, debug = _createLogger3.debug;
 
                 /**
                  * Figure out if bundling is needed & load plugins.
@@ -621,7 +630,7 @@ var Hopp = function () {
                         args = _ref9[1];
 
                     if (!_this3.pluginCtx.hasOwnProperty(plugin)) {
-                      _this3.loadPlugin(name, plugin, args);
+                      _this3.loadPlugin(name, plugin, args, directory);
                     }
 
                     _this3.needsBundling = !!(_this3.needsBundling || pluginConfig[plugin].bundle);

@@ -29,7 +29,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Bundle = function (_EventEmitter) {
   _inherits(Bundle, _EventEmitter);
 
-  function Bundle(fd) {
+  function Bundle(directory, fd) {
     _classCallCheck(this, Bundle);
 
     var _this = _possibleConstructorReturn(this, (Bundle.__proto__ || Object.getPrototypeOf(Bundle)).call(this));
@@ -47,6 +47,7 @@ var Bundle = function (_EventEmitter) {
     _this.buffers = {};
     _this.flushIndex = 0;
     _this.id = Math.random();
+    _this.directory = directory;
 
     _this.goal = [];
     return _this;
@@ -91,34 +92,35 @@ var Bundle = function (_EventEmitter) {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
         var _this3 = this;
 
-        var file;
+        var file, relative;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 file = this.files[this.flushIndex];
+                relative = file.replace(this.directory, '.');
 
-                if (!(this.status[file] && !this.map[file])) {
-                  _context.next = 7;
+                if (!(this.status[file] && !this.map[relative])) {
+                  _context.next = 8;
                   break;
                 }
 
                 // record sourcemap
-                this.map[file] = [this.offset, this.offset + this.sizes[file]];
+                this.map[relative] = [this.offset, this.offset + this.sizes[file]];
                 this.offset += this.sizes[file];
 
                 // write to file
-                _context.next = 6;
+                _context.next = 7;
                 return new Promise(function (resolve) {
                   _this3.target.write(Buffer.concat(_this3.buffers[file]), resolve);
                 });
 
-              case 6:
+              case 7:
 
                 // move to next
                 this.flushIndex++;
 
-              case 7:
+              case 8:
               case 'end':
                 return _context.stop();
             }
@@ -174,7 +176,5 @@ var Bundle = function (_EventEmitter) {
   return Bundle;
 }(_events.EventEmitter);
 
-exports.default = function (fd) {
-  return new Bundle(fd);
-};
+exports.default = Bundle;
 //# sourceMappingURL=bundle.js.map

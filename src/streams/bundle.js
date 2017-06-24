@@ -7,8 +7,8 @@
 import fs from 'fs'
 import { EventEmitter } from 'events'
 
-class Bundle extends EventEmitter {
-  constructor (fd) {
+export default class Bundle extends EventEmitter {
+  constructor (directory, fd) {
     super()
 
     this.target = fs.createWriteStream(null, {
@@ -24,6 +24,7 @@ class Bundle extends EventEmitter {
     this.buffers = {}
     this.flushIndex = 0
     this.id = Math.random()
+    this.directory = directory
 
     this.goal = []
   }
@@ -58,10 +59,11 @@ class Bundle extends EventEmitter {
    */
   async flush () {
     const file = this.files[this.flushIndex]
+    const relative = file.replace(this.directory, '.')
 
-    if (this.status[file] && !this.map[file]) {
+    if (this.status[file] && !this.map[relative]) {
       // record sourcemap
-      this.map[file] = [this.offset, this.offset + this.sizes[file]]
+      this.map[relative] = [this.offset, this.offset + this.sizes[file]]
       this.offset += this.sizes[file]
 
       // write to file
@@ -90,5 +92,3 @@ class Bundle extends EventEmitter {
     })
   }
 }
-
-export default fd => new Bundle(fd)

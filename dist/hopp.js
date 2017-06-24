@@ -41,11 +41,12 @@ exports.default = async directory => {
   ;(await (0, _loadPlugins2.default)(directory)).forEach(name => {
     let plugName = '';
 
-    for (let tmp = _path2.default.basename(name), i = 12; i < tmp.length; i += 1) {
-      plugName += tmp[i] === '-' ? tmp[i++].toUpperCase() : tmp[i];
+    // convert plugin name to camelcase
+    for (let i = 12; i < name.length; i += 1) {
+      plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i];
     }
 
-    debug('adding plugin %s from %s', plugName, name);
+    debug('adding plugin %s as %s', name, plugName);
 
     // add the plugin to the hopp prototype so it can be
     // used for the rest of the build process
