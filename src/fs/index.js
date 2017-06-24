@@ -64,7 +64,7 @@ export const exists = async dir => {
     await stat(dir)
     return true
   } catch (err) {
-    if (String(err).indexOf('ENOENT') !== -1) {
+    if (String(err).indexOf('ENOENT') === -1) {
       throw err
     }
 

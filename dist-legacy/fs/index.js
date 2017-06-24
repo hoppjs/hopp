@@ -96,7 +96,7 @@ var exists = exports.exists = function () {
             _context.prev = 6;
             _context.t0 = _context['catch'](0);
 
-            if (!(String(_context.t0).indexOf('ENOENT') !== -1)) {
+            if (!(String(_context.t0).indexOf('ENOENT') === -1)) {
               _context.next = 10;
               break;
             }
