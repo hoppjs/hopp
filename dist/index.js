@@ -64,6 +64,7 @@ const args = {
   d: ['directory', 'set path to project directory'],
   r: ['require', 'require a module before doing anything'],
   R: ['recache', 'force cache busting'],
+  j: ['jobs', 'set number of jobs to use for parallel tasks'],
   v: ['verbose', 'enable debug messages'],
   V: ['version', 'get version info'],
   h: ['help', 'display this message']
@@ -88,8 +89,9 @@ const argv = require('minimist')(process.argv.slice(2), {
   })()
 });
 
-// expose to env
+// expose argv to env
 process.env.RECACHE = argv.recache;
+process.env.WEB_CONCURRENCY = argv.jobs;
 
 /**
  * Print help.
