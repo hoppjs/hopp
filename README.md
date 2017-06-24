@@ -8,7 +8,7 @@
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
-> [UNSTABLE] It's under development. Don't use it yet.
+> hopp is now under a public alpha. Please help us improve it by reporting issues!
 
 ## Usage
 
