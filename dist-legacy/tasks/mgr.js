@@ -566,7 +566,7 @@ var Hopp = function () {
           mod = require(_path2.default.join(directory, 'node_modules', plugin));
         } catch (err) {
           debug('failed to load plugin: %s', err && err.stack ? err.stack : err);
-          throw new Error('Failed to load plugin: %s', plugin);
+          throw new Error('Failed to load plugin: ' + plugin);
         }
 
         // expose module config
