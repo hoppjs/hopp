@@ -195,39 +195,7 @@ var Hopp = function () {
 
       this.d.src.forEach(function (src) {
         // get most definitive path possible
-        var newpath = '';
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = src.split('/')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var sub = _step.value;
-
-            if (sub) {
-              if (sub.indexOf('*') !== -1) {
-                break;
-              }
-
-              newpath += _path2.default.sep + sub;
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
-        newpath = _path2.default.resolve(directory, newpath.substr(1));
+        var newpath = _path2.default.resolve(directory, _glob2.default.nonMagic(src));
 
         // disable fs caching for watch
         (0, _fs3.disableFSCache)();
@@ -261,7 +229,7 @@ var Hopp = function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name, directory, modified, dest) {
         var useDoubleCache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
 
-        var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, _file, stream;
+        var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, _file, stream;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -292,14 +260,14 @@ var Hopp = function () {
                  */
                 freshBuild = true;
                 unmodified = {};
-                _iteratorNormalCompletion2 = true;
-                _didIteratorError2 = false;
-                _iteratorError2 = undefined;
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
                 _context.prev = 11;
 
 
-                for (_iterator2 = files[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                  file = _step2.value;
+                for (_iterator = files[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  file = _step.value;
 
                   if (modified.indexOf(file) === -1) {
                     unmodified[file] = true;
@@ -316,26 +284,26 @@ var Hopp = function () {
               case 15:
                 _context.prev = 15;
                 _context.t0 = _context['catch'](11);
-                _didIteratorError2 = true;
-                _iteratorError2 = _context.t0;
+                _didIteratorError = true;
+                _iteratorError = _context.t0;
 
               case 19:
                 _context.prev = 19;
                 _context.prev = 20;
 
-                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                  _iterator2.return();
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                  _iterator.return();
                 }
 
               case 22:
                 _context.prev = 22;
 
-                if (!_didIteratorError2) {
+                if (!_didIteratorError) {
                   _context.next = 25;
                   break;
                 }
 
-                throw _iteratorError2;
+                throw _iteratorError;
 
               case 25:
                 return _context.finish(22);
@@ -389,12 +357,12 @@ var Hopp = function () {
                 /**
                  * Add all files.
                  */
-                _iteratorNormalCompletion3 = true;
-                _didIteratorError3 = false;
-                _iteratorError3 = undefined;
+                _iteratorNormalCompletion2 = true;
+                _didIteratorError2 = false;
+                _iteratorError2 = undefined;
                 _context.prev = 47;
-                for (_iterator3 = files[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                  _file = _step3.value;
+                for (_iterator2 = files[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                  _file = _step2.value;
                   stream = void 0;
 
 
@@ -423,26 +391,26 @@ var Hopp = function () {
               case 51:
                 _context.prev = 51;
                 _context.t2 = _context['catch'](47);
-                _didIteratorError3 = true;
-                _iteratorError3 = _context.t2;
+                _didIteratorError2 = true;
+                _iteratorError2 = _context.t2;
 
               case 55:
                 _context.prev = 55;
                 _context.prev = 56;
 
-                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                  _iterator3.return();
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                  _iterator2.return();
                 }
 
               case 58:
                 _context.prev = 58;
 
-                if (!_didIteratorError3) {
+                if (!_didIteratorError2) {
                   _context.next = 61;
                   break;
                 }
 
-                throw _iteratorError3;
+                throw _iteratorError2;
 
               case 61:
                 return _context.finish(58);
@@ -675,7 +643,7 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger4, log, debug, files, dest, stack, _start;
+        var _createLogger4, log, debug, files, dest, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
@@ -765,18 +733,12 @@ var Hopp = function () {
                   };
                 });
 
+                /**
+                 * Connect plugin streams with pipelines.
+                 */
                 if (this.d.stack.length > 0) {
-                  /**
-                   * Create streams.
-                   */
-                  stack = this.buildStack(name);
-
-                  /**
-                   * Connect plugin streams with pipelines.
-                   */
-
                   files.map(function (file) {
-                    file.stream = file.stream.concat(stack);
+                    file.stream = file.stream.concat(_this3.buildStack(name));
                     return file;
                   });
                 }

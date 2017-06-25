@@ -4,37 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _minimatch = require('minimatch');
-
-var _minimatch2 = _interopRequireDefault(_minimatch);
-
-var _cache = require('../cache');
-
-var cache = _interopRequireWildcard(_cache);
-
-var _ = require('./');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/glob.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
-
-var _require = require('../utils/log')('hopp:glob'),
-    debug = _require.debug;
-
-var statCache = void 0;
-var tempCache = {};
-
-exports.default = function () {
+var glob = function () {
   var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(pattern, cwd) {
     var useDoubleCache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -56,7 +26,7 @@ exports.default = function () {
                   break;
                 }
 
-                return _context.abrupt('return');
+                return _context.abrupt('return', []);
 
               case 2:
                 curr = pttn.shift();
@@ -228,7 +198,7 @@ exports.default = function () {
 
     var recache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-    var results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn;
+    var results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn, nm;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -254,7 +224,7 @@ exports.default = function () {
 
           case 9:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 21;
+              _context2.next = 30;
               break;
             }
 
@@ -268,54 +238,72 @@ exports.default = function () {
             throw new Error('Not sure what to do with the / in your glob.');
 
           case 13:
+            nm = glob.nonMagic(pttn);
+
+            if (!(nm === '.')) {
+              _context2.next = 22;
+              break;
+            }
+
             _context2.t0 = results;
-            _context2.next = 16;
+            _context2.next = 18;
             return walk('.', pttn.split('/'), cwd);
 
-          case 16:
+          case 18:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
+            _context2.next = 27;
+            break;
 
-          case 18:
+          case 22:
+            _context2.t2 = results;
+            _context2.next = 25;
+            return walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm));
+
+          case 25:
+            _context2.t3 = _context2.sent;
+            results = _context2.t2.concat.call(_context2.t2, _context2.t3);
+
+          case 27:
             _iteratorNormalCompletion2 = true;
             _context2.next = 9;
             break;
 
-          case 21:
-            _context2.next = 27;
+          case 30:
+            _context2.next = 36;
             break;
 
-          case 23:
-            _context2.prev = 23;
-            _context2.t2 = _context2['catch'](7);
+          case 32:
+            _context2.prev = 32;
+            _context2.t4 = _context2['catch'](7);
             _didIteratorError2 = true;
-            _iteratorError2 = _context2.t2;
+            _iteratorError2 = _context2.t4;
 
-          case 27:
-            _context2.prev = 27;
-            _context2.prev = 28;
+          case 36:
+            _context2.prev = 36;
+            _context2.prev = 37;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 30:
-            _context2.prev = 30;
+          case 39:
+            _context2.prev = 39;
 
             if (!_didIteratorError2) {
-              _context2.next = 33;
+              _context2.next = 42;
               break;
             }
 
             throw _iteratorError2;
 
-          case 33:
-            return _context2.finish(30);
+          case 42:
+            return _context2.finish(39);
 
-          case 34:
-            return _context2.finish(27);
+          case 43:
+            return _context2.finish(36);
 
-          case 35:
+          case 44:
 
             /**
              * Update cache.
@@ -327,16 +315,92 @@ exports.default = function () {
              */
             return _context2.abrupt('return', results);
 
-          case 37:
+          case 46:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, undefined, [[7, 23, 27, 35], [28,, 30, 34]]);
+    }, _callee2, this, [[7, 32, 36, 44], [37,, 39, 43]]);
   }));
 
-  return function (_x3, _x4) {
+  return function glob(_x3, _x4) {
     return _ref.apply(this, arguments);
   };
 }();
+
+/**
+ * Get non-magical start of glob.
+ * @param {String} pattern glob pattern
+ * @returns {String} definitive path
+ */
+
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _minimatch = require('minimatch');
+
+var _minimatch2 = _interopRequireDefault(_minimatch);
+
+var _cache = require('../cache');
+
+var cache = _interopRequireWildcard(_cache);
+
+var _ = require('./');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/glob.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+
+var _require = require('../utils/log')('hopp:glob'),
+    debug = _require.debug;
+
+var statCache = void 0;
+var tempCache = {};
+
+glob.nonMagic = function (pattern) {
+  var newpath = '';
+
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = pattern.split('/')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var sub = _step3.value;
+
+      if (sub) {
+        if (sub.indexOf('*') !== -1) {
+          break;
+        }
+
+        newpath += _path2.default.sep + sub;
+      }
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+
+  return newpath.substr(1);
+};
+
+exports.default = glob;
 //# sourceMappingURL=glob.js.map

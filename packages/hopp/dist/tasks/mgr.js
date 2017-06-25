@@ -164,17 +164,7 @@ class Hopp {
 
     this.d.src.forEach(src => {
       // get most definitive path possible
-      let newpath = '';
-      for (let sub of src.split('/')) {
-        if (sub) {
-          if (sub.indexOf('*') !== -1) {
-            break;
-          }
-
-          newpath += _path2.default.sep + sub;
-        }
-      }
-      newpath = _path2.default.resolve(directory, newpath.substr(1));
+      let newpath = _path2.default.resolve(directory, _glob2.default.nonMagic(src));
 
       // disable fs caching for watch
       (0, _fs3.disableFSCache)();
@@ -450,17 +440,12 @@ class Hopp {
         stream: [(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))]
       }));
 
+      /**
+       * Connect plugin streams with pipelines.
+       */
       if (this.d.stack.length > 0) {
-        /**
-         * Create streams.
-         */
-        const stack = this.buildStack(name);
-
-        /**
-         * Connect plugin streams with pipelines.
-         */
         files.map(file => {
-          file.stream = file.stream.concat(stack);
+          file.stream = file.stream.concat(this.buildStack(name));
           return file;
         });
       }

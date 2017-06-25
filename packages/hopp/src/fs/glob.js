@@ -14,7 +14,7 @@ const { debug } = require('../utils/log')('hopp:glob')
 let statCache
 const tempCache = {}
 
-export default async (pattern, cwd, useDoubleCache = false, recache = false) => {
+async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]
@@ -33,7 +33,7 @@ export default async (pattern, cwd, useDoubleCache = false, recache = false) => 
    */
   async function walk (relative, pttn, directory, recursive = false) {
     if (pttn.length === 0) {
-      return
+      return []
     }
 
     const curr = pttn.shift()
@@ -81,7 +81,21 @@ export default async (pattern, cwd, useDoubleCache = false, recache = false) => 
       throw new Error('Not sure what to do with the / in your glob.')
     }
 
-    results = results.concat(await walk('.', pttn.split('/'), cwd))
+    const nm = glob.nonMagic(pttn)
+
+    if (nm === '.') {
+      results = results.concat(await walk(
+        '.',
+        pttn.split('/'),
+        cwd
+      ))
+    } else {
+      results = results.concat(await walk(
+        nm,
+        pttn.replace(nm, '').substr(1).split('/'),
+        path.resolve(cwd, nm)
+      ))
+    }
   }
 
   /**
@@ -94,3 +108,26 @@ export default async (pattern, cwd, useDoubleCache = false, recache = false) => 
    */
   return results
 }
+
+/**
+ * Get non-magical start of glob.
+ * @param {String} pattern glob pattern
+ * @returns {String} definitive path
+ */
+glob.nonMagic = function (pattern) {
+  let newpath = ''
+
+  for (let sub of pattern.split('/')) {
+    if (sub) {
+      if (sub.indexOf('*') !== -1) {
+        break
+      }
+
+      newpath += path.sep + sub
+    }
+  }
+
+  return newpath.substr(1)
+}
+
+export default glob
