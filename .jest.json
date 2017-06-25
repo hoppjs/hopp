@@ -1,0 +1,14 @@
+{
+  "collectCoverage": true,
+  "coverageReporters": [
+    "lcov",
+    "html"
+  ],
+  "collectCoverageFrom": [
+    "**/packages/*/dist/**",
+    "**/packages/hopp/dist-legacy/**"
+  ],
+  "testMatch": [
+    "**/test/test-*.js"
+  ]
+}

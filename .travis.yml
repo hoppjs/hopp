@@ -11,6 +11,8 @@ matrix:
     - node_js: stable
     - node_js: 7
       before_install: npm i -g npm-check-updates && ncu -a
+script:
+  - npm test && node_modules/.bin/codecov
 deploy:
   provider: npm
   email: karim@alibhai.co

@@ -5,6 +5,11 @@ packages/*/node_modules
 packages/*/example/hopp.lock
 packages/*/example/node_modules
 
+test/fixtures/*/hopp.lock
+
+coverage
+.nyc_output
+
 # testing files
 *.txt
 *.sh

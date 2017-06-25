@@ -2,7 +2,9 @@
   "scripts": {
     "prebuild": "npm run lintfix",
     "build": "./node_modules/.bin/hopp",
-    "test": "npm run lint",
+    "pretest": "npm run lint",
+    "test": "jest --config=.jest.json",
+    "testwatch": "jest --watch --config=.jest.json",
     "lint": "eslint packages",
     "lintfix": "eslint --fix packages"
   },
@@ -11,6 +13,7 @@
     "babel-eslint": "^7.2.3",
     "babel-preset-env": "^1.5.2",
     "babel-register": "^6.24.1",
+    "codecov": "^2.2.0",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.6.0",
@@ -19,7 +22,11 @@
     "eslint-plugin-standard": "^3.0.1",
     "hopp": "^1.0.0-alpha.6",
     "hopp-plugin-babel": "^1.0.0-alpha.5",
+    "jest": "^20.0.4",
     "lerna": "^2.0.0-rc.5",
-    "regenerator-runtime": "^0.10.5"
+    "nyc": "^11.0.2",
+    "regenerator-runtime": "^0.10.5",
+    "rimraf": "^2.6.1",
+    "tmp": "0.0.31"
   }
 }

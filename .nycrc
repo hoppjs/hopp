@@ -1,0 +1,16 @@
+{
+  "reporter": [
+    "lcov",
+    "html"
+  ],
+  "all": true,
+  "exclude": [
+    "test",
+    "coverage",
+    ".nyc_output",
+    "node_modules",
+    "packages/*/src",
+    "packages/*/example",
+    "packages/*/node_modules"
+  ]
+}
