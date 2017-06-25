@@ -4,7 +4,7 @@
     "build": "./node_modules/.bin/hopp",
     "pretest": "npm run lint",
     "test": "jest --config=.jest.json",
-    "testwatch": "jest --watch --config=.jest.json",
+    "testwatch": "jest --watch --testMatch '**/test/test-*.js'",
     "lint": "eslint packages",
     "lintfix": "eslint --fix packages"
   },
