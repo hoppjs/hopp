@@ -1,0 +1,4 @@
+packages/*/dist
+packages/*/example
+packages/*/dist-legacy
+packages/*/node_modules

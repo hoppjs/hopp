@@ -1,0 +1,1 @@
+export default name => console.log('Hello, %s', name)

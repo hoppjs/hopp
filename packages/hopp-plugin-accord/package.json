@@ -1,0 +1,27 @@
+{
+  "name": "hopp-plugin-accord",
+  "version": "1.0.0-alpha.4",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "hopp -r babel-register -r regenerator-runtime/runtime",
+    "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-accord; mkdir example/node_modules/hopp-plugin-accord; npm run test-copy",
+    "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-accord/; done",
+    "test": "hopp -r babel-register -v -d example"
+  },
+  "keywords": [
+    "hopp-plugin",
+    "accord",
+    "preprocessors",
+    "compile",
+    "less",
+    "jade"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "hopp-plugin-babel": "*"
+  },
+  "dependencies": {
+    "accord": "^0.27.3",
+    "regenerator-runtime": "^0.10.5"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "lerna": "2.0.0-rc.5",
+  "packages": [
+    "packages/*"
+  ],
+  "version": "1.0.0-alpha.4",
+  "commands": {
+    "publish": {
+      "ignore": [
+        "src",
+        "example",
+        ".babelrc"
+      ]
+    }
+  }
+}

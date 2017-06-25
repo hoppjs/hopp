@@ -1,0 +1,49 @@
+{
+  "preferGlobal": true,
+  "name": "hopp",
+  "version": "1.0.0-alpha.4",
+  "description": "Rapid & lightweight build system.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "bin": {
+    "hopp": "index.js"
+  },
+  "scripts": {
+    "prebuild": "rm -rf dist dist-legacy",
+    "build": "npm run build-latest && npm run build-legacy",
+    "build-latest": "babel src -d dist --source-maps --no-babelrc --plugins=babel-plugin-transform-es2015-modules-commonjs",
+    "build-legacy": "babel src -d dist-legacy --source-maps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoppjs/hopp.git"
+  },
+  "keywords": [
+    "build",
+    "hopp"
+  ],
+  "author": "10244872 Canada Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hoppjs/hopp/issues"
+  },
+  "homepage": "https://github.com/hoppjs/hopp#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1"
+  },
+  "dependencies": {
+    "map-stream": "0.0.7",
+    "minimatch": "^3.0.4",
+    "minimist": "^1.2.0",
+    "pump": "^1.0.2",
+    "regenerator-runtime": "^0.10.5",
+    "require-like": "^0.1.2",
+    "semver": "^5.3.0",
+    "strip-ansi": "^4.0.0",
+    "through": "^2.3.8",
+    "tmp": "0.0.31"
+  }
+}

@@ -1,6 +1,9 @@
 node_modules
 *.log
-example/hopp.lock
+
+packages/*/node_modules
+packages/*/example/hopp.lock
+packages/*/example/node_modules
 
 # testing files
 *.txt

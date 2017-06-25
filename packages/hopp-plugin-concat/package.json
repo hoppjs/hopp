@@ -1,0 +1,24 @@
+{
+  "name": "hopp-plugin-concat",
+  "version": "1.0.0-alpha.4",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "hopp -r babel-register -r regenerator-runtime/runtime",
+    "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-concat; mkdir example/node_modules/hopp-plugin-concat; npm run test-copy",
+    "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-concat/; done",
+    "test": "hopp -r babel-register -r regenerator-runtime/runtime -v -d example"
+  },
+  "keywords": [
+    "hopp-plugin",
+    "concat",
+    "aggregate",
+    "bundle"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "hopp-plugin-babel": "*"
+  },
+  "dependencies": {
+    "regenerator-runtime": "^0.10.5"
+  }
+}
