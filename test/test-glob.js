@@ -4,9 +4,12 @@
  * @copyright 10244872 Canada Inc.
  */
 
-const tmp = require('tmp');
-const glob = require('../packages/hopp/dist/fs/glob').default
+const tmp = require('tmp')
+const path = require('path')
 const cache = require('../packages/hopp/dist/cache')
+const glob = require('../packages/hopp/dist/fs/glob').default
+
+const PROJECT_ROOT = path.resolve(__dirname, '..')
 
 describe('glob', async () => {
   it('should recursively match files relative to current dir', async () => {
@@ -15,9 +18,15 @@ describe('glob', async () => {
 
     // tests with no .; these snapshots are assumed to be correct
     // in later tests
-    expect(await glob('*.js', `${__dirname}/fixtures/glob`, false, true)).toMatchSnapshot()
-    expect(await glob('*/*.js', `${__dirname}/fixtures/glob`, false, true)).toMatchSnapshot()
-    expect(await glob('**/*.js', `${__dirname}/fixtures/glob`, false, true)).toMatchSnapshot()
+    expect((await glob('*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+      p => p.replace(PROJECT_ROOT, '')
+    )).toMatchSnapshot()
+    expect((await glob('*/*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+      p => p.replace(PROJECT_ROOT, '')
+    )).toMatchSnapshot()
+    expect((await glob('**/*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+      p => p.replace(PROJECT_ROOT, '')
+    )).toMatchSnapshot()
   })
 
   it('should recursively match files relative to ./', async () => {
