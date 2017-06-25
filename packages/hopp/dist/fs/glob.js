@@ -73,12 +73,16 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
         fstat = await (0, _.stat)(filepath);
       }
 
+      debug('match(%s,%s) => %s', filepath, curr, (0, _minimatch2.default)(file, curr));
+
       // has been modified
       if ((0, _minimatch2.default)(file, curr)) {
         if (fstat.isFile()) {
           if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
             statCache[relative] = +fstat.mtime;
             localResults.push(filepath);
+
+            debug('add: %s', filepath);
           }
         } else {
           localResults = localResults.concat((await walk(relative + _path2.default.sep + file, pttn, filepath, recursive || curr === '**')));
@@ -101,8 +105,9 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
     }
 
     const nm = glob.nonMagic(pttn);
+    debug('nm = %j', nm);
 
-    if (nm === '.') {
+    if (!nm) {
       results = results.concat((await walk('.', pttn.split('/'), cwd)));
     } else {
       results = results.concat((await walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm))));

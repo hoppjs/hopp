@@ -54,12 +54,16 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
         fstat = await stat(filepath)
       }
 
+      debug('match(%s,%s) => %s', filepath, curr, match(file, curr))
+
       // has been modified
       if (match(file, curr)) {
         if (fstat.isFile()) {
           if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
             statCache[relative] = +fstat.mtime
             localResults.push(filepath)
+
+            debug('add: %s', filepath)
           }
         } else {
           localResults = localResults.concat(await walk(relative + path.sep + file, pttn, filepath, recursive || curr === '**'))
@@ -82,8 +86,9 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
     }
 
     const nm = glob.nonMagic(pttn)
+    debug('nm = %j', nm)
 
-    if (nm === '.') {
+    if (!nm) {
       results = results.concat(await walk(
         '.',
         pttn.split('/'),
