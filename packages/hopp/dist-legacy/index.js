@@ -78,6 +78,10 @@ var args = {
   // parse via minimist
 };var largestArg = '';
 var argv = require('minimist')(process.argv.slice(2), {
+  string: ['directory', 'require', 'jobs'],
+
+  boolean: ['recache', 'verbose', 'version', 'help'],
+
   alias: function () {
     var o = {};
 

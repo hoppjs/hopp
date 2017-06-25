@@ -44,6 +44,19 @@ const args = {
 // parse via minimist
 let largestArg = ''
 const argv = require('minimist')(process.argv.slice(2), {
+  string: [
+    'directory',
+    'require',
+    'jobs'
+  ],
+
+  boolean: [
+    'recache',
+    'verbose',
+    'version',
+    'help'
+  ],
+
   alias: (() => {
     const o = {}
 
