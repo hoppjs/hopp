@@ -5,6 +5,9 @@
 
 <p align="center">
   <a href="https://travis-ci.org/hoppjs/hopp"><img alt="Travis CI" src="https://travis-ci.org/hoppjs/hopp.svg?branch=master"></a>
+  <a href="https://codecov.io/gh/hoppjs/hopp">
+    <img src="https://codecov.io/gh/hoppjs/hopp/branch/master/graph/badge.svg" alt="Codecov" />
+  </a>
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
