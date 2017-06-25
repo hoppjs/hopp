@@ -1,6 +1,6 @@
 {
   "name": "hopp-sample-plugin",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "main": "dist/index.js",
   "scripts": {
     "build": "hopp -r babel-register -r regenerator-runtime/runtime",
@@ -15,8 +15,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "standard": "^10.0.2",
-    "hopp-plugin-babel": "*"
+    "hopp-plugin-babel": "*",
+    "standard": "^10.0.2"
   },
   "dependencies": {
     "regenerator-runtime": "^0.10.5"
