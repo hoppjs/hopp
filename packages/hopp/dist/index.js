@@ -36,11 +36,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file index.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file index.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
 
 const { debug, error } = (0, _log2.default)('hopp');
 
@@ -142,7 +142,7 @@ if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require]).forEach(mod => require(mod));
 }
 
-;(async () => {
+;_asyncToGenerator(function* () {
   /**
    * Pass verbosity through to the env.
    */
@@ -158,7 +158,7 @@ if (argv.require) {
    * If project directory not specified, do lookup for the
    * hoppfile.js
    */
-  projectDir = (directory => {
+  projectDir = function (directory) {
     // absolute paths don't need correcting
     if (directory[0] === '/') {
       return directory;
@@ -171,7 +171,7 @@ if (argv.require) {
 
     // map to current directory
     return _path2.default.resolve(process.cwd(), directory);
-  })(argv.directory || (await hoppfile.find(process.cwd())));
+  }(argv.directory || (yield hoppfile.find(process.cwd())));
 
   /**
    * Set hoppfile location relative to the project.
@@ -187,19 +187,19 @@ if (argv.require) {
   /**
    * Load cache.
    */
-  await cache.load(projectDir);
+  yield cache.load(projectDir);
 
   /**
    * Create hopp instance creator.
    */
-  const hopp = await (0, _hopp2.default)(projectDir);
+  const hopp = yield (0, _hopp2.default)(projectDir);
 
   /**
    * Cache the hopp handler to make `require()` work
    * in the hoppfile.
    */
   const _resolve = _module2.default._resolveFilename;
-  _module2.default._resolveFilename = (what, parent) => {
+  _module2.default._resolveFilename = function (what, parent) {
     return what === 'hopp' ? what : _resolve(what, parent);
   };
 
@@ -212,7 +212,7 @@ if (argv.require) {
     /**
      * Load tasks from file.
      */
-  };const [fromCache, busted, taskDefns] = await hoppfile.load(file);
+  };const [fromCache, busted, taskDefns] = yield hoppfile.load(file);
 
   /**
    * Parse from cache.
@@ -223,15 +223,19 @@ if (argv.require) {
     let fullList = [].slice.call(tasks);
 
     // walk the full tree
-    const addDependencies = task => {
+    const addDependencies = function (task) {
       if (taskDefns[task] instanceof Array) {
         fullList = fullList.concat(taskDefns[task][1]);
-        taskDefns[task].forEach(sub => addDependencies(sub));
+        taskDefns[task].forEach(function (sub) {
+          return addDependencies(sub);
+        });
       }
     };
 
     // start walking from top
-    fullList.forEach(task => addDependencies(task));
+    fullList.forEach(function (task) {
+      return addDependencies(task);
+    });
 
     // parse all tasks and their dependencies
     (0, _tree2.default)(taskDefns, fullList);
@@ -241,12 +245,12 @@ if (argv.require) {
    * Wait for task completion.
    */
   Goal.defineTasks(taskDefns, busted);
-  await Goal.create(tasks, projectDir);
+  yield Goal.create(tasks, projectDir);
 
   /**
    * Store cache for later.
    */
-  await cache.save(projectDir);
+  yield cache.save(projectDir);
 })().catch(err => {
   function end(lastErr) {
     error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
@@ -255,4 +259,3 @@ if (argv.require) {
 
   _log2.default.saveLog(projectDir).then(() => end(err)).catch(err => end(err));
 });
-//# sourceMappingURL=index.js.map

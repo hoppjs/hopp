@@ -25,6 +25,8 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
     statCache = cache.val('sc') || {}
   }
 
+  console.log('cache at start: %j', statCache)
+
   // allow overrides from the env
   recache = recache || process.env.RECACHE === 'true'
 
@@ -44,6 +46,7 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
     for (let file of (await readdir(directory))) {
       // fix file path
       const filepath = directory + path.sep + file
+      const relativepath = relative + path.sep + file
 
       // get stat from temp cache (for non-watch tasks) or stat()
       let fstat
@@ -59,8 +62,8 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
       // has been modified
       if (match(file, curr)) {
         if (fstat.isFile()) {
-          if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
-            statCache[relative] = +fstat.mtime
+          if (recache || !statCache.hasOwnProperty(relativepath) || statCache[relativepath] !== +fstat.mtime) {
+            statCache[relativepath] = +fstat.mtime
             localResults.push(filepath)
 
             debug('add: %s', filepath)

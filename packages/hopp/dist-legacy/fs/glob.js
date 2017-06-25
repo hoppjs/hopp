@@ -15,7 +15,7 @@ var glob = function () {
       var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(relative, pttn, directory) {
         var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-        var curr, localResults, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, filepath, fstat;
+        var curr, localResults, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, filepath, relativepath, fstat;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -48,7 +48,7 @@ var glob = function () {
 
               case 13:
                 if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context.next = 51;
+                  _context.next = 52;
                   break;
                 }
 
@@ -56,141 +56,142 @@ var glob = function () {
 
                 // fix file path
                 filepath = directory + _path2.default.sep + file;
+                relativepath = relative + _path2.default.sep + file;
 
                 // get stat from temp cache (for non-watch tasks) or stat()
 
                 fstat = void 0;
 
                 if (!useDoubleCache) {
-                  _context.next = 26;
+                  _context.next = 27;
                   break;
                 }
 
                 _context.t1 = tempCache[filepath];
 
                 if (_context.t1) {
-                  _context.next = 23;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.next = 22;
+                _context.next = 23;
                 return (0, _.stat)(filepath);
-
-              case 22:
-                _context.t1 = _context.sent;
 
               case 23:
+                _context.t1 = _context.sent;
+
+              case 24:
                 fstat = tempCache[filepath] = _context.t1;
-                _context.next = 29;
+                _context.next = 30;
                 break;
 
-              case 26:
-                _context.next = 28;
+              case 27:
+                _context.next = 29;
                 return (0, _.stat)(filepath);
 
-              case 28:
+              case 29:
                 fstat = _context.sent;
 
-              case 29:
+              case 30:
 
                 debug('match(%s,%s) => %s', filepath, curr, (0, _minimatch2.default)(file, curr));
 
                 // has been modified
 
                 if (!(0, _minimatch2.default)(file, curr)) {
-                  _context.next = 42;
+                  _context.next = 43;
                   break;
                 }
 
                 if (!fstat.isFile()) {
-                  _context.next = 35;
+                  _context.next = 36;
                   break;
                 }
 
-                if (recache || !statCache.hasOwnProperty(relative) || statCache[relative] !== +fstat.mtime) {
-                  statCache[relative] = +fstat.mtime;
+                if (recache || !statCache.hasOwnProperty(relativepath) || statCache[relativepath] !== +fstat.mtime) {
+                  statCache[relativepath] = +fstat.mtime;
                   localResults.push(filepath);
 
                   debug('add: %s', filepath);
                 }
-                _context.next = 40;
+                _context.next = 41;
                 break;
 
-              case 35:
+              case 36:
                 _context.t2 = localResults;
-                _context.next = 38;
+                _context.next = 39;
                 return walk(relative + _path2.default.sep + file, pttn, filepath, recursive || curr === '**');
 
-              case 38:
+              case 39:
                 _context.t3 = _context.sent;
                 localResults = _context.t2.concat.call(_context.t2, _context.t3);
 
-              case 40:
-                _context.next = 48;
+              case 41:
+                _context.next = 49;
                 break;
 
-              case 42:
+              case 43:
                 if (!(fstat.isDirectory() && recursive)) {
-                  _context.next = 48;
+                  _context.next = 49;
                   break;
                 }
 
                 _context.t4 = localResults;
-                _context.next = 46;
+                _context.next = 47;
                 return walk(relative + _path2.default.sep + file, [curr].concat(pttn), filepath, recursive);
 
-              case 46:
+              case 47:
                 _context.t5 = _context.sent;
                 localResults = _context.t4.concat.call(_context.t4, _context.t5);
 
-              case 48:
+              case 49:
                 _iteratorNormalCompletion = true;
                 _context.next = 13;
                 break;
 
-              case 51:
-                _context.next = 57;
+              case 52:
+                _context.next = 58;
                 break;
 
-              case 53:
-                _context.prev = 53;
+              case 54:
+                _context.prev = 54;
                 _context.t6 = _context['catch'](8);
                 _didIteratorError = true;
                 _iteratorError = _context.t6;
 
-              case 57:
-                _context.prev = 57;
+              case 58:
                 _context.prev = 58;
+                _context.prev = 59;
 
                 if (!_iteratorNormalCompletion && _iterator.return) {
                   _iterator.return();
                 }
 
-              case 60:
-                _context.prev = 60;
+              case 61:
+                _context.prev = 61;
 
                 if (!_didIteratorError) {
-                  _context.next = 63;
+                  _context.next = 64;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 63:
-                return _context.finish(60);
-
               case 64:
-                return _context.finish(57);
+                return _context.finish(61);
 
               case 65:
-                return _context.abrupt('return', localResults);
+                return _context.finish(58);
 
               case 66:
+                return _context.abrupt('return', localResults);
+
+              case 67:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[8, 53, 57, 65], [58,, 60, 64]]);
+        }, _callee, this, [[8, 54, 58, 66], [59,, 61, 65]]);
       }));
 
       return function walk(_x6, _x7, _x8) {
@@ -221,98 +222,100 @@ var glob = function () {
               statCache = cache.val('sc') || {};
             }
 
+            console.log('cache at start: %j', statCache);
+
             // allow overrides from the env
             recache = recache || process.env.RECACHE === 'true';results = [];
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context2.prev = 7;
+            _context2.prev = 8;
             _iterator2 = pattern[Symbol.iterator]();
 
-          case 9:
+          case 10:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 31;
+              _context2.next = 32;
               break;
             }
 
             pttn = _step2.value;
 
             if (!(pttn[0] === '/')) {
-              _context2.next = 13;
+              _context2.next = 14;
               break;
             }
 
             throw new Error('Not sure what to do with the / in your glob.');
 
-          case 13:
+          case 14:
             nm = glob.nonMagic(pttn);
 
             debug('nm = %j', nm);
 
             if (nm) {
-              _context2.next = 23;
+              _context2.next = 24;
               break;
             }
 
             _context2.t0 = results;
-            _context2.next = 19;
+            _context2.next = 20;
             return walk('.', pttn.split('/'), cwd);
 
-          case 19:
+          case 20:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
-            _context2.next = 28;
+            _context2.next = 29;
             break;
 
-          case 23:
+          case 24:
             _context2.t2 = results;
-            _context2.next = 26;
+            _context2.next = 27;
             return walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm));
 
-          case 26:
+          case 27:
             _context2.t3 = _context2.sent;
             results = _context2.t2.concat.call(_context2.t2, _context2.t3);
 
-          case 28:
+          case 29:
             _iteratorNormalCompletion2 = true;
-            _context2.next = 9;
+            _context2.next = 10;
             break;
 
-          case 31:
-            _context2.next = 37;
+          case 32:
+            _context2.next = 38;
             break;
 
-          case 33:
-            _context2.prev = 33;
-            _context2.t4 = _context2['catch'](7);
+          case 34:
+            _context2.prev = 34;
+            _context2.t4 = _context2['catch'](8);
             _didIteratorError2 = true;
             _iteratorError2 = _context2.t4;
 
-          case 37:
-            _context2.prev = 37;
+          case 38:
             _context2.prev = 38;
+            _context2.prev = 39;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 40:
-            _context2.prev = 40;
+          case 41:
+            _context2.prev = 41;
 
             if (!_didIteratorError2) {
-              _context2.next = 43;
+              _context2.next = 44;
               break;
             }
 
             throw _iteratorError2;
 
-          case 43:
-            return _context2.finish(40);
-
           case 44:
-            return _context2.finish(37);
+            return _context2.finish(41);
 
           case 45:
+            return _context2.finish(38);
+
+          case 46:
 
             /**
              * Update cache.
@@ -324,12 +327,12 @@ var glob = function () {
              */
             return _context2.abrupt('return', results);
 
-          case 47:
+          case 48:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[7, 33, 37, 45], [38,, 40, 44]]);
+    }, _callee2, this, [[8, 34, 38, 46], [39,, 41, 45]]);
   }));
 
   return function glob(_x3, _x4) {
