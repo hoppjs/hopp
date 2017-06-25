@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "prebuild": "npm run lintfix && cd packages/hopp && npm run build && cd ../..",
-    "build": "hopp",
+    "prebuild": "npm run lintfix",
+    "build": "./node_modules/.bin/hopp",
     "test": "npm run lint",
     "lint": "eslint packages",
     "lintfix": "eslint --fix packages"
@@ -17,8 +17,8 @@
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "hopp": "^1.0.0-alpha.4",
-    "hopp-plugin-babel": "^1.0.0-alpha.4",
+    "hopp": "^1.0.0-alpha.6",
+    "hopp-plugin-babel": "^1.0.0-alpha.5",
     "lerna": "^2.0.0-rc.5",
     "regenerator-runtime": "^0.10.5"
   }
