@@ -1,3 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`glob *.js 1`] = `Array []`;
+exports[`glob should recursively match files relative to current dir 1`] = `
+Array [
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/test.js",
+]
+`;
+
+exports[`glob should recursively match files relative to current dir 2`] = `
+Array [
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/test.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/test.js",
+]
+`;
+
+exports[`glob should recursively match files relative to current dir 3`] = `
+Array [
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/2/3/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/2/3/test.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/2/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/2/test.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/1/test.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/index.js",
+  "/Users/karimsa/projects/hoppjs/hopp/test/fixtures/glob/test.js",
+]
+`;
