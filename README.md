@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.png">
+  <a href="http://hoppjs.com/"><img src=".github/logo.png"></a>
 </p>
 <p align="center">Crazy rapid build system.</p>
 
