@@ -26,51 +26,59 @@ var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/hopp.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc..
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+
 const { debug } = require('./utils/log')('hopp');
 
 /**
  * Create hopp object based on plugins.
  */
-/**
- * @file src/hopp.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc..
- */
 
-exports.default = async directory => {
-  ;(await (0, _loadPlugins2.default)(directory)).forEach(name => {
-    let plugName = '';
+exports.default = (() => {
+  var _ref = _asyncToGenerator(function* (directory) {
+    ;(yield (0, _loadPlugins2.default)(directory)).forEach(function (name) {
+      let plugName = '';
 
-    // convert plugin name to camelcase
-    for (let i = 12; i < name.length; i += 1) {
-      plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i];
-    }
+      // convert plugin name to camelcase
+      for (let i = 12; i < name.length; i += 1) {
+        plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i];
+      }
 
-    debug('adding plugin %s as %s', name, plugName);
+      debug('adding plugin %s as %s', name, plugName);
 
-    // add the plugin to the hopp prototype so it can be
-    // used for the rest of the build process
-    _mgr2.default.prototype[plugName] = function () {
-      // instead of actually loading the plugin at this stage,
-      // we will just pop its call into our internal call stack
-      // for use later. this is useful when we are stepping through
-      // an entire hoppfile but might only be running a single task
+      // add the plugin to the hopp prototype so it can be
+      // used for the rest of the build process
+      _mgr2.default.prototype[plugName] = function () {
+        // instead of actually loading the plugin at this stage,
+        // we will just pop its call into our internal call stack
+        // for use later. this is useful when we are stepping through
+        // an entire hoppfile but might only be running a single task
 
-      this.d.stack.push([name, [].slice.call(arguments)]);
+        this.d.stack.push([name, [].slice.call(arguments)]);
 
-      return this;
+        return this;
+      };
+    });
+
+    /**
+     * Expose hopp class for task creation.
+     */
+    const init = function (src) {
+      return new _mgr2.default(src);
     };
+
+    init.all = _parallel2.default;
+    init.steps = _steps2.default;
+    init.watch = _watch2.default;
+
+    return init;
   });
 
-  /**
-   * Expose hopp class for task creation.
-   */
-  const init = src => new _mgr2.default(src);
-
-  init.all = _parallel2.default;
-  init.steps = _steps2.default;
-  init.watch = _watch2.default;
-
-  return init;
-};
-//# sourceMappingURL=hopp.js.map
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+})();

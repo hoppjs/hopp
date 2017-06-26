@@ -11,4 +11,3 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 exports.default = url => url[0] !== '.' && url[0] !== '/' ? './' + url : url;
-//# sourceMappingURL=get-path.js.map

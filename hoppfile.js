@@ -40,6 +40,9 @@ plugins.forEach(name => {
  */
 function buildHopp(presets, dest) {
   return hopp('./packages/hopp/src/**/**.js')
+    .rename((file, dir, src) => {
+      return dir + src.substr(src.indexOf('hopp/src') + 'hopp/src'.length)
+    })
     .babel({
       babelrc: false,
       sourceMaps: true,

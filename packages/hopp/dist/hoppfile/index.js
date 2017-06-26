@@ -11,4 +11,3 @@ Object.defineProperty(exports, "__esModule", {
 
 const load = exports.load = require('./load').default;
 const find = exports.find = require('./find').default;
-//# sourceMappingURL=index.js.map
