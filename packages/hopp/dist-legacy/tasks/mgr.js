@@ -146,13 +146,13 @@ var Hopp = function () {
 
   }, {
     key: 'doRename',
-    value: function doRename(filename) {
+    value: function doRename(filename, dirname, source) {
       // if no rename is defined, just use current filename
-      if (!this.d.rename) return filename;
+      if (!this.d.rename) return dirname + '/' + filename;
 
       // functions are easy, but they break caching
       if (typeof this.d.rename === 'function') {
-        return this.d.rename(filename);
+        return this.d.rename(filename, dirname, source);
       }
 
       // remove extension
@@ -174,8 +174,8 @@ var Hopp = function () {
         ext = this.d.rename.ext;
       }
 
-      // output final filename
-      return filename + ext;
+      // output final filename into same dest directory
+      return dirname + '/' + filename + ext;
     }
 
     /**
@@ -778,7 +778,8 @@ var Hopp = function () {
                         });
                       });
                     } else {
-                      output = _fs2.default.createWriteStream(dest + '/' + _this3.doRename(_path2.default.basename(file.file)));
+                      var fname = _path2.default.basename(file.file);
+                      output = _fs2.default.createWriteStream(_this3.doRename(fname, dest, file.file));
                     }
 
                     file.stream.push(output);

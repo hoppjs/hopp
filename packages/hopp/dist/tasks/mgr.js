@@ -122,13 +122,13 @@ class Hopp {
    * @param {String} filename the original name
    * @returns {String} renamed filename
    */
-  doRename(filename) {
+  doRename(filename, dirname, source) {
     // if no rename is defined, just use current filename
-    if (!this.d.rename) return filename;
+    if (!this.d.rename) return dirname + '/' + filename;
 
     // functions are easy, but they break caching
     if (typeof this.d.rename === 'function') {
-      return this.d.rename(filename);
+      return this.d.rename(filename, dirname, source);
     }
 
     // remove extension
@@ -150,8 +150,8 @@ class Hopp {
       ext = this.d.rename.ext;
     }
 
-    // output final filename
-    return filename + ext;
+    // output final filename into same dest directory
+    return dirname + '/' + filename + ext;
   }
 
   /**
@@ -482,7 +482,8 @@ class Hopp {
               });
             });
           } else {
-            output = _fs2.default.createWriteStream(dest + '/' + this.doRename(_path2.default.basename(file.file)));
+            const fname = _path2.default.basename(file.file);
+            output = _fs2.default.createWriteStream(this.doRename(fname, dest, file.file));
           }
 
           file.stream.push(output);
