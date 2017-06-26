@@ -10,7 +10,7 @@
 export default fn => {
   const cache = {}
 
-  return async function () {
+  return process.env.RECACHE === 'true' ? fn : async function () {
     const args = [].slice.call(arguments)
     const last = args.pop()
 

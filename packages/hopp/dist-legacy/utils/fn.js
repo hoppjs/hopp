@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -18,7 +18,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 exports.default = function (fn) {
   var cache = {};
 
-  return _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+  return process.env.RECACHE === 'true' ? fn : _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
     var args,
         last,
         val,
@@ -46,13 +46,13 @@ exports.default = function (fn) {
             return fn.apply(this, args.concat([last]));
 
           case 7:
-            return _context.abrupt("return", val[last] = _context.sent);
+            return _context.abrupt('return', val[last] = _context.sent);
 
           case 8:
-            return _context.abrupt("return", val[last]);
+            return _context.abrupt('return', val[last]);
 
           case 9:
-          case "end":
+          case 'end':
             return _context.stop();
         }
       }

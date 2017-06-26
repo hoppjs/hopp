@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -16,7 +16,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = fn => {
   const cache = {};
 
-  return async function () {
+  return process.env.RECACHE === 'true' ? fn : async function () {
     const args = [].slice.call(arguments);
     const last = args.pop();
 

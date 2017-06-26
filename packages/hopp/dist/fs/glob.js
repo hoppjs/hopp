@@ -44,8 +44,6 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
     statCache = cache.val('sc') || {};
   }
 
-  console.log('cache at start: %j', statCache);
-
   // allow overrides from the env
   recache = recache || process.env.RECACHE === 'true';
 
@@ -53,14 +51,16 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
    * Recursive walk.
    */
   async function walk(relative, pttn, directory, recursive = false) {
+    debug('walk(relative = %s, pttn = %s, directory = %s, recursive = %s) in %s [recache:%s, curr:%s]', relative, pttn, directory, recursive, cwd, recache, pttn[0]);
+
     if (pttn.length === 0) {
       return [];
     }
 
+    pttn = pttn.slice();
+
     const curr = pttn.shift();
     let localResults = [];
-
-    debug('cwd = %s, relative = %s, curr: %s, dir = %s, recur = %s, recache = %s', cwd, relative, curr, directory, recursive, recache);
 
     for (let file of await (0, _.readdir)(directory)) {
       // fix file path
@@ -76,9 +76,11 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
         fstat = await (0, _.stat)(filepath);
       }
 
-      debug('match(%s,%s) => %s', filepath, curr, (0, _minimatch2.default)(file, curr));
+      debug('match(%s,%s) => %s [%s]', filepath, curr, (0, _minimatch2.default)(file, curr), fstat.isFile() ? 'file' : 'dir');
 
       // has been modified
+      debug('stat(%s) :: %s', +fstat.mtime, statCache[relativepath]);
+
       if ((0, _minimatch2.default)(file, curr)) {
         if (fstat.isFile()) {
           if (recache || !statCache.hasOwnProperty(relativepath) || statCache[relativepath] !== +fstat.mtime) {
@@ -88,10 +90,10 @@ async function glob(pattern, cwd, useDoubleCache = false, recache = false) {
             debug('add: %s', filepath);
           }
         } else {
-          localResults = localResults.concat((await walk(relative + _path2.default.sep + file, pttn, filepath, recursive || curr === '**')));
+          localResults = localResults.concat((await walk(relativepath, pttn, filepath, recursive || curr === '**')));
         }
       } else if (fstat.isDirectory() && recursive) {
-        localResults = localResults.concat((await walk(relative + _path2.default.sep + file, [curr].concat(pttn), filepath, recursive)));
+        localResults = localResults.concat((await walk(relativepath, [curr].concat(pttn), filepath, recursive)));
       }
     }
 

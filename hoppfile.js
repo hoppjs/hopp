@@ -38,38 +38,36 @@ plugins.forEach(name => {
 /**
  * Handle hopp building.
  */
-exports['hopp:latest'] =
-  hopp('./packages/hopp/src/**/**.js')
+function buildHopp(presets, dest) {
+  return hopp('./packages/hopp/src/**/**.js')
     .babel({
       babelrc: false,
       sourceMaps: true,
-      presets: [
-        ['env', {
-          targets: {
-            node: '7'
-          }
-        }]
-      ]
+      presets
     })
-    .dest('./packages/hopp/dist')
+    .dest('./packages/hopp/' + dest)
+}
+
+exports['hopp:latest'] =
+  buildHopp([
+    ['env', {
+      targets: {
+        node: '7'
+      }
+    }]
+  ], 'dist')
 
 exports['hopp:legacy'] =
-  hopp('./packages/hopp/src/**/**.js')
-    .babel({
-      babelrc: false,
-      sourceMaps: true,
-      presets: [
-        ['env', {
-          targets: {
-            node: '4'
-          }
-        }]
-      ]
-    })
-    .dest('./packages/hopp/dist-legacy')
+  buildHopp([
+    ['env', {
+      targets: {
+        node: '4'
+      }
+    }]
+  ], 'dist-legacy')
 
 exports['hopp'] =
-  hopp.all([
+  hopp.steps([
     'hopp:latest',
     'hopp:legacy'
   ])
