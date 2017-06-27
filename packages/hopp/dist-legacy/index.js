@@ -309,7 +309,9 @@ if (argv.require) {
       }
     }
   }, _callee, undefined);
-}))().catch(function (err) {
+}))().then(function () {
+  process.exit(0);
+}, function (err) {
   function end(lastErr) {
     error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
     process.exit(-1);

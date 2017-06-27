@@ -247,7 +247,9 @@ if (argv.require) {
    * Store cache for later.
    */
   await cache.save(projectDir);
-})().catch(err => {
+})().then(() => {
+  process.exit(0);
+}, err => {
   function end(lastErr) {
     error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
     process.exit(-1);
