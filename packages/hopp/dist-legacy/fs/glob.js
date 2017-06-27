@@ -49,7 +49,7 @@ var glob = function () {
 
               case 14:
                 if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context.next = 54;
+                  _context.next = 55;
                   break;
                 }
 
@@ -95,18 +95,23 @@ var glob = function () {
 
               case 31:
 
+                // pull from old cache, if it still exists
+                if (retrievedCache.hasOwnProperty(relativepath)) {
+                  statCache[relativepath] = retrievedCache[relativepath];
+                }
+
                 debug('match(%s,%s) => %s [%s]', filepath, curr, (0, _minimatch2.default)(file, curr), fstat.isFile() ? 'file' : 'dir');
 
                 // has been modified
                 debug('stat(%s) :: %s', +fstat.mtime, statCache[relativepath]);
 
                 if (!(0, _minimatch2.default)(file, curr)) {
-                  _context.next = 45;
+                  _context.next = 46;
                   break;
                 }
 
                 if (!fstat.isFile()) {
-                  _context.next = 38;
+                  _context.next = 39;
                   break;
                 }
 
@@ -116,84 +121,84 @@ var glob = function () {
 
                   debug('add: %s', filepath);
                 }
-                _context.next = 43;
+                _context.next = 44;
                 break;
 
-              case 38:
+              case 39:
                 _context.t2 = localResults;
-                _context.next = 41;
+                _context.next = 42;
                 return walk(relativepath, pttn, filepath, recursive || curr === '**');
 
-              case 41:
+              case 42:
                 _context.t3 = _context.sent;
                 localResults = _context.t2.concat.call(_context.t2, _context.t3);
 
-              case 43:
-                _context.next = 51;
+              case 44:
+                _context.next = 52;
                 break;
 
-              case 45:
+              case 46:
                 if (!(fstat.isDirectory() && recursive)) {
-                  _context.next = 51;
+                  _context.next = 52;
                   break;
                 }
 
                 _context.t4 = localResults;
-                _context.next = 49;
+                _context.next = 50;
                 return walk(relativepath, [curr].concat(pttn), filepath, recursive);
 
-              case 49:
+              case 50:
                 _context.t5 = _context.sent;
                 localResults = _context.t4.concat.call(_context.t4, _context.t5);
 
-              case 51:
+              case 52:
                 _iteratorNormalCompletion = true;
                 _context.next = 14;
                 break;
 
-              case 54:
-                _context.next = 60;
+              case 55:
+                _context.next = 61;
                 break;
 
-              case 56:
-                _context.prev = 56;
+              case 57:
+                _context.prev = 57;
                 _context.t6 = _context['catch'](9);
                 _didIteratorError = true;
                 _iteratorError = _context.t6;
 
-              case 60:
-                _context.prev = 60;
+              case 61:
                 _context.prev = 61;
+                _context.prev = 62;
 
                 if (!_iteratorNormalCompletion && _iterator.return) {
                   _iterator.return();
                 }
 
-              case 63:
-                _context.prev = 63;
+              case 64:
+                _context.prev = 64;
 
                 if (!_didIteratorError) {
-                  _context.next = 66;
+                  _context.next = 67;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 66:
-                return _context.finish(63);
-
               case 67:
-                return _context.finish(60);
+                return _context.finish(64);
 
               case 68:
-                return _context.abrupt('return', localResults);
+                return _context.finish(61);
 
               case 69:
+                return _context.abrupt('return', localResults);
+
+              case 70:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[9, 56, 60, 68], [61,, 63, 67]]);
+        }, _callee, this, [[9, 57, 61, 69], [62,, 64, 68]]);
       }));
 
       return function walk(_x7, _x8, _x9) {
@@ -208,7 +213,7 @@ var glob = function () {
 
     var recache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
-    var statCache, results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn, nm;
+    var retrievedCache, statCache, results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn, nm;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -230,110 +235,115 @@ var glob = function () {
               gstatCache[task] = {};
             }
 
-            // set local cache
-            statCache = gstatCache[task];
+            // create new local cache and load the retreived cache
+            retrievedCache = gstatCache[task];
+            statCache = {};
+
+            // replace the retreived with new cache to get rid of stale
+            // entries
+
+            gstatCache[task] = statCache;
 
             // allow overrides from the env
-
             recache = recache || process.env.RECACHE === 'true';results = [];
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context2.prev = 9;
+            _context2.prev = 11;
             _iterator2 = pattern[Symbol.iterator]();
 
-          case 11:
+          case 13:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 33;
+              _context2.next = 35;
               break;
             }
 
             pttn = _step2.value;
 
             if (!(pttn[0] === '/')) {
-              _context2.next = 15;
+              _context2.next = 17;
               break;
             }
 
             throw new Error('Not sure what to do with the / in your glob.');
 
-          case 15:
+          case 17:
             nm = glob.nonMagic(pttn);
 
             debug('nm = %j', nm);
 
             if (nm) {
-              _context2.next = 25;
+              _context2.next = 27;
               break;
             }
 
             _context2.t0 = results;
-            _context2.next = 21;
+            _context2.next = 23;
             return walk('.', pttn.split('/'), cwd);
 
-          case 21:
+          case 23:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
-            _context2.next = 30;
+            _context2.next = 32;
             break;
 
-          case 25:
+          case 27:
             _context2.t2 = results;
-            _context2.next = 28;
+            _context2.next = 30;
             return walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm));
 
-          case 28:
+          case 30:
             _context2.t3 = _context2.sent;
             results = _context2.t2.concat.call(_context2.t2, _context2.t3);
 
-          case 30:
+          case 32:
             _iteratorNormalCompletion2 = true;
-            _context2.next = 11;
-            break;
-
-          case 33:
-            _context2.next = 39;
+            _context2.next = 13;
             break;
 
           case 35:
-            _context2.prev = 35;
-            _context2.t4 = _context2['catch'](9);
+            _context2.next = 41;
+            break;
+
+          case 37:
+            _context2.prev = 37;
+            _context2.t4 = _context2['catch'](11);
             _didIteratorError2 = true;
             _iteratorError2 = _context2.t4;
 
-          case 39:
-            _context2.prev = 39;
-            _context2.prev = 40;
+          case 41:
+            _context2.prev = 41;
+            _context2.prev = 42;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 42:
-            _context2.prev = 42;
+          case 44:
+            _context2.prev = 44;
 
             if (!_didIteratorError2) {
-              _context2.next = 45;
+              _context2.next = 47;
               break;
             }
 
             throw _iteratorError2;
 
-          case 45:
-            return _context2.finish(42);
-
-          case 46:
-            return _context2.finish(39);
-
           case 47:
-            return _context2.abrupt('return', results);
+            return _context2.finish(44);
 
           case 48:
+            return _context2.finish(41);
+
+          case 49:
+            return _context2.abrupt('return', results);
+
+          case 50:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[9, 35, 39, 47], [40,, 42, 46]]);
+    }, _callee2, this, [[11, 37, 41, 49], [42,, 44, 48]]);
   }));
 
   return function glob(_x3, _x4, _x5) {

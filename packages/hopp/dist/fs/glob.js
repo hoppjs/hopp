@@ -50,8 +50,13 @@ async function glob(task, pattern, cwd, useDoubleCache = false, recache = false)
     gstatCache[task] = {};
   }
 
-  // set local cache
-  let statCache = gstatCache[task];
+  // create new local cache and load the retreived cache
+  let retrievedCache = gstatCache[task];
+  let statCache = {};
+
+  // replace the retreived with new cache to get rid of stale
+  // entries
+  gstatCache[task] = statCache;
 
   // allow overrides from the env
   recache = recache || process.env.RECACHE === 'true';
@@ -83,6 +88,11 @@ async function glob(task, pattern, cwd, useDoubleCache = false, recache = false)
         fstat = tempCache[filepath] = tempCache[filepath] || (await (0, _.stat)(filepath));
       } else {
         fstat = await (0, _.stat)(filepath);
+      }
+
+      // pull from old cache, if it still exists
+      if (retrievedCache.hasOwnProperty(relativepath)) {
+        statCache[relativepath] = retrievedCache[relativepath];
       }
 
       debug('match(%s,%s) => %s [%s]', filepath, curr, (0, _minimatch2.default)(file, curr), fstat.isFile() ? 'file' : 'dir');
