@@ -28,13 +28,9 @@ var _glob = require('../fs/glob');
 
 var _glob2 = _interopRequireDefault(_glob);
 
-var _through = require('through');
+var _through = require('through2');
 
 var _through2 = _interopRequireDefault(_through);
-
-var _through3 = require('through2');
-
-var _through4 = _interopRequireDefault(_through3);
 
 var _cache = require('../cache');
 
@@ -484,7 +480,7 @@ var Hopp = function () {
         var _ref5 = _slicedToArray(_ref4, 1),
             plugin = _ref5[0];
 
-        var pluginStream = _through4.default.obj(function () {
+        var pluginStream = _through2.default.obj(function () {
           var _ref6 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(data, _, done) {
             var handler, retval;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {

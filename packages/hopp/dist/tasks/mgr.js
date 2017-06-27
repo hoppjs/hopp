@@ -20,13 +20,9 @@ var _glob = require('../fs/glob');
 
 var _glob2 = _interopRequireDefault(_glob);
 
-var _through = require('through');
+var _through = require('through2');
 
 var _through2 = _interopRequireDefault(_through);
-
-var _through3 = require('through2');
-
-var _through4 = _interopRequireDefault(_through3);
 
 var _cache = require('../cache');
 
@@ -50,13 +46,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/tasks/mgr.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+const { debug } = (0, _utils.createLogger)('hopp'); /**
+                                                     * @file src/tasks/mgr.js
+                                                     * @license MIT
+                                                     * @copyright 2017 10244872 Canada Inc.
+                                                     */
 
-const { debug } = (0, _utils.createLogger)('hopp');
 const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
@@ -294,7 +289,7 @@ class Hopp {
     let mode = 'stream';
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = _through4.default.obj(async function (data, _, done) {
+      const pluginStream = _through2.default.obj(async function (data, _, done) {
         try {
           const handler = plugins[plugin](that.pluginCtx[plugin], data);
 
