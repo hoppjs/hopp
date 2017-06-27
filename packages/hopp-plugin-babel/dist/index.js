@@ -68,10 +68,7 @@ exports.default = function () {
             _context.next = 7;
             return new Promise(function (resolve, reject) {
               fs.writeFile(data.dest + '.map', JSON.stringify(output.map), function (err) {
-                if (err) reject(err);else {
-                  console.log('resolving');
-                  resolve();
-                }
+                if (err) reject(err);else resolve();
               });
             });
 

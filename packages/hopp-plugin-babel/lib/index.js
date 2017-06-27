@@ -43,10 +43,7 @@ export default async (ctx, data) => {
     await new Promise((resolve, reject) => {
       fs.writeFile(data.dest + '.map', JSON.stringify(output.map), err => {
         if (err) reject(err)
-        else {
-          console.log('resolving')
-          resolve()
-        }
+        else resolve()
       })
     })
   }
