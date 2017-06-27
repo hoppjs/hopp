@@ -1,7 +1,7 @@
 {
   "preferGlobal": true,
   "name": "hopp",
-  "version": "1.0.0-alpha.10",
+  "version": "1.0.0-alpha.11",
   "description": "Rapid & lightweight build system.",
   "main": "index.js",
   "directories": {
