@@ -24,6 +24,7 @@ plugins.forEach(name => {
     hopp(`./packages/${name}/lib/**/**.js`)
       .babel({
         babelrc: false,
+        sourceMaps: true,
         presets: [
           ['env', {
             targets: {
