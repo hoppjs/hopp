@@ -24,6 +24,10 @@ var _through = require('through');
 
 var _through2 = _interopRequireDefault(_through);
 
+var _through3 = require('through2');
+
+var _through4 = _interopRequireDefault(_through3);
+
 var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
@@ -46,12 +50,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { debug } = (0, _utils.createLogger)('hopp'); /**
-                                                     * @file src/tasks/mgr.js
-                                                     * @license MIT
-                                                     * @copyright 2017 10244872 Canada Inc.
-                                                     */
+/**
+ * @file src/tasks/mgr.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
+const { debug } = (0, _utils.createLogger)('hopp');
 const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
@@ -289,27 +294,34 @@ class Hopp {
     let mode = 'stream';
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = (0, _through2.default)(async function (data) {
+      const pluginStream = _through4.default.obj(async function (data, _, done) {
         try {
           const handler = plugins[plugin](that.pluginCtx[plugin], data);
 
           // for async functions/promises
           if (handler instanceof Promise) {
-            handler.then(newData => this.emit('data', newData)).catch(err => this.emit('error', err));
+            try {
+              this.push((await handler));
+              done();
+            } catch (err) {
+              done(err);
+            }
           } else if ('next' in handler) {
             let retval;
 
             // for async generators
             do {
               retval = await handler.next();
-              this.emit('data', retval.value);
+              this.push(retval.value);
             } while (!retval.done);
+
+            done();
           } else {
             // otherwise, fail
-            this.emit('error', new Error('Unknown return value received from ' + plugin));
+            done(new Error('Unknown return value received from ' + plugin));
           }
         } catch (err) {
-          this.emit('error', err);
+          done(err);
         }
       });
 

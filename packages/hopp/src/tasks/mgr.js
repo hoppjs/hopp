@@ -9,6 +9,7 @@ import path from 'path'
 import pump from 'pump'
 import glob from '../fs/glob'
 import through from 'through'
+import through2 from 'through2'
 import * as cache from '../cache'
 import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
@@ -256,7 +257,7 @@ export default class Hopp {
     let mode = 'stream'
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = through(async function (data) {
+      const pluginStream = through2.obj(async function (data, _, done) {
         try {
           const handler = plugins[plugin](
             that.pluginCtx[plugin],
@@ -265,23 +266,28 @@ export default class Hopp {
 
           // for async functions/promises
           if (handler instanceof Promise) {
-            handler
-              .then(newData => this.emit('data', newData))
-              .catch(err => this.emit('error', err))
+            try {
+              this.push(await handler)
+              done()
+            } catch (err) {
+              done(err)
+            }
           } else if ('next' in handler) {
             let retval
 
             // for async generators
             do {
               retval = await handler.next()
-              this.emit('data', retval.value)
+              this.push(retval.value)
             } while (!retval.done)
+
+            done()
           } else {
             // otherwise, fail
-            this.emit('error', new Error('Unknown return value received from ' + plugin))
+            done(new Error('Unknown return value received from ' + plugin))
           }
         } catch (err) {
-          this.emit('error', err)
+          done(err)
         }
       })
 

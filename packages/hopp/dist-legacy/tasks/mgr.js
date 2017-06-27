@@ -34,6 +34,10 @@ var _through = require('through');
 
 var _through2 = _interopRequireDefault(_through);
 
+var _through3 = require('through2');
+
+var _through4 = _interopRequireDefault(_through3);
+
 var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
@@ -482,10 +486,8 @@ var Hopp = function () {
         var _ref5 = _slicedToArray(_ref4, 1),
             plugin = _ref5[0];
 
-        var pluginStream = (0, _through2.default)(function () {
-          var _ref6 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(data) {
-            var _this2 = this;
-
+        var pluginStream = _through4.default.obj(function () {
+          var _ref6 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(data, _, done) {
             var handler, retval;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
               while (1) {
@@ -497,21 +499,37 @@ var Hopp = function () {
                     // for async functions/promises
 
                     if (!(handler instanceof Promise)) {
-                      _context2.next = 6;
+                      _context2.next = 17;
                       break;
                     }
 
-                    handler.then(function (newData) {
-                      return _this2.emit('data', newData);
-                    }).catch(function (err) {
-                      return _this2.emit('error', err);
-                    });
-                    _context2.next = 16;
+                    _context2.prev = 3;
+                    _context2.t0 = this;
+                    _context2.next = 7;
+                    return handler;
+
+                  case 7:
+                    _context2.t1 = _context2.sent;
+
+                    _context2.t0.push.call(_context2.t0, _context2.t1);
+
+                    done();
+                    _context2.next = 15;
                     break;
 
-                  case 6:
+                  case 12:
+                    _context2.prev = 12;
+                    _context2.t2 = _context2['catch'](3);
+
+                    done(_context2.t2);
+
+                  case 15:
+                    _context2.next = 28;
+                    break;
+
+                  case 17:
                     if (!('next' in handler)) {
-                      _context2.next = 15;
+                      _context2.next = 27;
                       break;
                     }
 
@@ -519,48 +537,50 @@ var Hopp = function () {
 
                     // for async generators
 
-                  case 8:
-                    _context2.next = 10;
+                  case 19:
+                    _context2.next = 21;
                     return handler.next();
 
-                  case 10:
+                  case 21:
                     retval = _context2.sent;
 
-                    this.emit('data', retval.value);
+                    this.push(retval.value);
 
-                  case 12:
+                  case 23:
                     if (!retval.done) {
-                      _context2.next = 8;
+                      _context2.next = 19;
                       break;
                     }
 
-                  case 13:
-                    _context2.next = 16;
+                  case 24:
+
+                    done();
+                    _context2.next = 28;
                     break;
 
-                  case 15:
+                  case 27:
                     // otherwise, fail
-                    this.emit('error', new Error('Unknown return value received from ' + plugin));
+                    done(new Error('Unknown return value received from ' + plugin));
 
-                  case 16:
-                    _context2.next = 21;
+                  case 28:
+                    _context2.next = 33;
                     break;
 
-                  case 18:
-                    _context2.prev = 18;
-                    _context2.t0 = _context2['catch'](0);
+                  case 30:
+                    _context2.prev = 30;
+                    _context2.t3 = _context2['catch'](0);
 
-                    this.emit('error', _context2.t0);
+                    done(_context2.t3);
 
-                  case 21:
+                  case 33:
                   case 'end':
                     return _context2.stop();
                 }
               }
-            }, _callee2, this, [[0, 18]]);
+            }, _callee2, this, [[0, 30], [3, 12]]);
           }));
 
-          return function (_x7) {
+          return function (_x7, _x8, _x9) {
             return _ref6.apply(this, arguments);
           };
         }());
@@ -638,7 +658,7 @@ var Hopp = function () {
     key: 'start',
     value: function () {
       var _ref7 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(name, directory) {
-        var _this3 = this;
+        var _this2 = this;
 
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
@@ -663,15 +683,15 @@ var Hopp = function () {
                         plugin = _ref9[0],
                         args = _ref9[1];
 
-                    if (!_this3.pluginCtx.hasOwnProperty(plugin)) {
-                      _this3.loadPlugin(name, plugin, args, directory);
+                    if (!_this2.pluginCtx.hasOwnProperty(plugin)) {
+                      _this2.loadPlugin(name, plugin, args, directory);
                     }
 
-                    _this3.needsBundling = !!(_this3.needsBundling || pluginConfig[plugin].bundle);
-                    _this3.needsRecaching = !!(_this3.needsRecaching || pluginConfig[plugin].recache);
-                    _this3.readonly = !!(_this3.readonly || pluginConfig[plugin].readonly);
+                    _this2.needsBundling = !!(_this2.needsBundling || pluginConfig[plugin].bundle);
+                    _this2.needsRecaching = !!(_this2.needsRecaching || pluginConfig[plugin].recache);
+                    _this2.readonly = !!(_this2.readonly || pluginConfig[plugin].readonly);
 
-                    if (_this3.needsBundling && _this3.readonly) {
+                    if (_this2.needsBundling && _this2.readonly) {
                       throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
                     }
                   });
@@ -738,7 +758,7 @@ var Hopp = function () {
                  */
                 if (this.d.stack.length > 0) {
                   files.map(function (file) {
-                    file.stream = file.stream.concat(_this3.buildStack(name));
+                    file.stream = file.stream.concat(_this2.buildStack(name));
                     return file;
                   });
                 }
@@ -747,7 +767,7 @@ var Hopp = function () {
                  * Connect with destination.
                  */
                 files.map(function (file) {
-                  if (!_this3.readonly) {
+                  if (!_this2.readonly) {
                     // strip out the actual body and write it
                     file.stream.push((0, _mapStream2.default)(function (data, next) {
                       if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || !data.hasOwnProperty('body')) {
@@ -760,7 +780,7 @@ var Hopp = function () {
                     // add the writestream at the end
                     var output = void 0;
 
-                    if (!_this3.d.dest) {
+                    if (!_this2.d.dest) {
                       var _tmpFileSync = (0, _fs3.tmpFileSync)(),
                           tmp = _tmpFileSync.fd,
                           tmppath = _tmpFileSync.name;
@@ -779,7 +799,7 @@ var Hopp = function () {
                       });
                     } else {
                       var fname = _path2.default.basename(file.file);
-                      var outfile = _this3.doRename(fname, dest, file.file);
+                      var outfile = _this2.doRename(fname, dest, file.file);
 
                       debug('Set output: %s', outfile);
                       output = _fs2.default.createWriteStream(outfile);
@@ -826,7 +846,7 @@ var Hopp = function () {
         }, _callee3, this);
       }));
 
-      function start(_x10, _x11) {
+      function start(_x12, _x13) {
         return _ref7.apply(this, arguments);
       }
 
