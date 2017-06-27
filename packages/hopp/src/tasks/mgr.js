@@ -459,7 +459,10 @@ export default class Hopp {
             })
           } else {
             const fname = path.basename(file.file)
-            output = fs.createWriteStream(this.doRename(fname, dest, file.file))
+            const outfile = this.doRename(fname, dest, file.file)
+
+            debug('Set output: %s', outfile)
+            output = fs.createWriteStream(outfile)
           }
 
           file.stream.push(output)

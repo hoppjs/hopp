@@ -779,7 +779,10 @@ var Hopp = function () {
                       });
                     } else {
                       var fname = _path2.default.basename(file.file);
-                      output = _fs2.default.createWriteStream(_this3.doRename(fname, dest, file.file));
+                      var outfile = _this3.doRename(fname, dest, file.file);
+
+                      debug('Set output: %s', outfile);
+                      output = _fs2.default.createWriteStream(outfile);
                     }
 
                     file.stream.push(output);

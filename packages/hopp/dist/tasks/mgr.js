@@ -46,13 +46,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/tasks/mgr.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+const { debug } = (0, _utils.createLogger)('hopp'); /**
+                                                     * @file src/tasks/mgr.js
+                                                     * @license MIT
+                                                     * @copyright 2017 10244872 Canada Inc.
+                                                     */
 
-const { debug } = (0, _utils.createLogger)('hopp');
 const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
@@ -188,100 +187,96 @@ class Hopp {
   /**
    * Handles bundling.
    */
-  startBundling(name, directory, modified, dest, useDoubleCache = true) {
-    var _this = this;
+  async startBundling(name, directory, modified, dest, useDoubleCache = true) {
+    const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
+    debug('Switched to bundling mode');
 
-    return _asyncToGenerator(function* () {
-      const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
-      debug('Switched to bundling mode');
+    /**
+     * Fetch sourcemap from cache.
+     */
+    const sourcemap = cache.sourcemap(name);
 
-      /**
-       * Fetch sourcemap from cache.
-       */
-      const sourcemap = cache.sourcemap(name);
+    /**
+     * Get full list of current files.
+     */
+    const files = await (0, _glob2.default)(this.d.src, directory, useDoubleCache, true);
 
-      /**
-       * Get full list of current files.
-       */
-      const files = yield (0, _glob2.default)(_this.d.src, directory, useDoubleCache, true);
+    /**
+     * Create list of unmodified.
+     */
+    let freshBuild = true;
+    const unmodified = {};
 
-      /**
-       * Create list of unmodified.
-       */
-      let freshBuild = true;
-      const unmodified = {};
+    for (let file of files) {
+      if (modified.indexOf(file) === -1) {
+        unmodified[file] = true;
+        freshBuild = false;
+      }
+    }
 
-      for (let file of files) {
-        if (modified.indexOf(file) === -1) {
-          unmodified[file] = true;
-          freshBuild = false;
-        }
+    /**
+     * Get old bundle & create new one.
+     */
+    const originalFd = freshBuild ? null : await (0, _fs3.openFile)(dest, 'r');
+    const [tmpBundle, tmpBundlePath] = await (0, _fs3.tmpFile)();
+
+    /**
+     * Create new bundle to forward to.
+     */
+    const bundle = new _streams.Bundle(directory, tmpBundle);
+
+    /**
+     * Since bundling starts streaming right away, we can count this
+     * as the start of the build.
+     */
+    const start = Date.now();
+    log('Starting task');
+
+    /**
+     * Add all files.
+     */
+    for (let file of files) {
+      let stream;
+
+      if (unmodified[file]) {
+        debug('forward: %s', file);
+        stream = _fs2.default.createReadStream(null, {
+          fd: originalFd,
+          autoClose: false,
+          start: sourcemap[file.replace(directory, '.')].start,
+          end: sourcemap[file.replace(directory, '.')].end
+        });
+      } else {
+        debug('transform: %s', file);
+        stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(this.buildStack(name)));
       }
 
-      /**
-       * Get old bundle & create new one.
-       */
-      const originalFd = freshBuild ? null : yield (0, _fs3.openFile)(dest, 'r');
-      const [tmpBundle, tmpBundlePath] = yield (0, _fs3.tmpFile)();
+      bundle.add(file, stream);
+    }
 
-      /**
-       * Create new bundle to forward to.
-       */
-      const bundle = new _streams.Bundle(directory, tmpBundle);
+    /**
+     * Wait for bundling to end.
+     */
+    await bundle.end(tmpBundlePath);
 
-      /**
-       * Since bundling starts streaming right away, we can count this
-       * as the start of the build.
-       */
-      const start = Date.now();
-      log('Starting task');
+    /**
+     * Move the bundle to the new location.
+     */
+    if (originalFd) originalFd.close();
+    await (0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory);
+    await new Promise((resolve, reject) => {
+      const stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
 
-      /**
-       * Add all files.
-       */
-      for (let file of files) {
-        let stream;
+      stream.on('close', resolve);
+      stream.on('error', reject);
+    });
 
-        if (unmodified[file]) {
-          debug('forward: %s', file);
-          stream = _fs2.default.createReadStream(null, {
-            fd: originalFd,
-            autoClose: false,
-            start: sourcemap[file.replace(directory, '.')].start,
-            end: sourcemap[file.replace(directory, '.')].end
-          });
-        } else {
-          debug('transform: %s', file);
-          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(_this.buildStack(name)));
-        }
+    /**
+     * Update sourcemap.
+     */
+    cache.sourcemap(name, bundle.map);
 
-        bundle.add(file, stream);
-      }
-
-      /**
-       * Wait for bundling to end.
-       */
-      yield bundle.end(tmpBundlePath);
-
-      /**
-       * Move the bundle to the new location.
-       */
-      if (originalFd) originalFd.close();
-      yield (0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory);
-      yield new Promise(function (resolve, reject) {
-        const stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
-
-        stream.on('close', resolve);
-        stream.on('error', reject);
-      });
-
-      /**
-       * Update sourcemap.
-       */
-      cache.sourcemap(name, bundle.map);
-
-      log('Task ended (took %s ms)', Date.now() - start);
-    })();
+    log('Task ended (took %s ms)', Date.now() - start);
   }
 
   /**
@@ -294,41 +289,29 @@ class Hopp {
     let mode = 'stream';
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = (0, _through2.default)((() => {
-        var _ref = _asyncToGenerator(function* (data) {
-          var _this2 = this;
+      const pluginStream = (0, _through2.default)(async function (data) {
+        try {
+          const handler = plugins[plugin](that.pluginCtx[plugin], data);
 
-          try {
-            const handler = plugins[plugin](that.pluginCtx[plugin], data);
+          // for async functions/promises
+          if (handler instanceof Promise) {
+            handler.then(newData => this.emit('data', newData)).catch(err => this.emit('error', err));
+          } else if ('next' in handler) {
+            let retval;
 
-            // for async functions/promises
-            if (handler instanceof Promise) {
-              handler.then(function (newData) {
-                return _this2.emit('data', newData);
-              }).catch(function (err) {
-                return _this2.emit('error', err);
-              });
-            } else if ('next' in handler) {
-              let retval;
-
-              // for async generators
-              do {
-                retval = yield handler.next();
-                this.emit('data', retval.value);
-              } while (!retval.done);
-            } else {
-              // otherwise, fail
-              this.emit('error', new Error('Unknown return value received from ' + plugin));
-            }
-          } catch (err) {
-            this.emit('error', err);
+            // for async generators
+            do {
+              retval = await handler.next();
+              this.emit('data', retval.value);
+            } while (!retval.done);
+          } else {
+            // otherwise, fail
+            this.emit('error', new Error('Unknown return value received from ' + plugin));
           }
-        });
-
-        return function (_x) {
-          return _ref.apply(this, arguments);
-        };
-      })());
+        } catch (err) {
+          this.emit('error', err);
+        }
+      });
 
       /**
        * Enable buffer mode if required.
@@ -395,146 +378,143 @@ class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  start(name, directory, recache = false, useDoubleCache = true) {
-    var _this3 = this;
+  async start(name, directory, recache = false, useDoubleCache = true) {
+    const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
 
-    return _asyncToGenerator(function* () {
-      const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
+    /**
+     * Figure out if bundling is needed & load plugins.
+     */
+    if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || isUndefined(this.readonly) || this.d.stack.length > 0 && !this.loadedPlugins) {
+      this.loadedPlugins = true;
+
+      this.d.stack.forEach(([plugin, args]) => {
+        if (!this.pluginCtx.hasOwnProperty(plugin)) {
+          this.loadPlugin(name, plugin, args, directory);
+        }
+
+        this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle);
+        this.needsRecaching = !!(this.needsRecaching || pluginConfig[plugin].recache);
+        this.readonly = !!(this.readonly || pluginConfig[plugin].readonly);
+
+        if (this.needsBundling && this.readonly) {
+          throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
+        }
+      });
+    }
+
+    /**
+     * Override recaching.
+     */
+    if (this.needsRecaching) {
+      recache = true;
+    }
+
+    /**
+     * Get the modified files.
+     */
+    debug('task recache = %s', recache);
+    let files = await (0, _glob2.default)(this.d.src, directory, useDoubleCache, recache);
+
+    if (files.length > 0) {
+      const dest = this.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest)) : '';
 
       /**
-       * Figure out if bundling is needed & load plugins.
+       * Switch to bundling mode if need be.
        */
-      if (isUndefined(_this3.needsBundling) || isUndefined(_this3.needsRecaching) || isUndefined(_this3.readonly) || _this3.d.stack.length > 0 && !_this3.loadedPlugins) {
-        _this3.loadedPlugins = true;
+      if (this.needsBundling) {
+        return this.startBundling(name, directory, files, dest, useDoubleCache);
+      }
 
-        _this3.d.stack.forEach(function ([plugin, args]) {
-          if (!_this3.pluginCtx.hasOwnProperty(plugin)) {
-            _this3.loadPlugin(name, plugin, args, directory);
-          }
+      /**
+       * Ensure dist directory exists.
+       */
+      if (!this.readonly || !this.d.dest) {
+        await (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
+      }
 
-          _this3.needsBundling = !!(_this3.needsBundling || pluginConfig[plugin].bundle);
-          _this3.needsRecaching = !!(_this3.needsRecaching || pluginConfig[plugin].recache);
-          _this3.readonly = !!(_this3.readonly || pluginConfig[plugin].readonly);
+      /**
+       * Create streams.
+       */
+      files = (0, _utils._)(files).map(file => ({
+        file,
+        stream: [(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))]
+      }));
 
-          if (_this3.needsBundling && _this3.readonly) {
-            throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
-          }
+      /**
+       * Connect plugin streams with pipelines.
+       */
+      if (this.d.stack.length > 0) {
+        files.map(file => {
+          file.stream = file.stream.concat(this.buildStack(name));
+          return file;
         });
       }
 
       /**
-       * Override recaching.
+       * Connect with destination.
        */
-      if (_this3.needsRecaching) {
-        recache = true;
-      }
-
-      /**
-       * Get the modified files.
-       */
-      debug('task recache = %s', recache);
-      let files = yield (0, _glob2.default)(_this3.d.src, directory, useDoubleCache, recache);
-
-      if (files.length > 0) {
-        const dest = _this3.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(_this3.d.dest)) : '';
-
-        /**
-         * Switch to bundling mode if need be.
-         */
-        if (_this3.needsBundling) {
-          return _this3.startBundling(name, directory, files, dest, useDoubleCache);
-        }
-
-        /**
-         * Ensure dist directory exists.
-         */
-        if (!_this3.readonly || !_this3.d.dest) {
-          yield (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
-        }
-
-        /**
-         * Create streams.
-         */
-        files = (0, _utils._)(files).map(function (file) {
-          return {
-            file,
-            stream: [(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))]
-          };
-        });
-
-        /**
-         * Connect plugin streams with pipelines.
-         */
-        if (_this3.d.stack.length > 0) {
-          files.map(function (file) {
-            file.stream = file.stream.concat(_this3.buildStack(name));
-            return file;
-          });
-        }
-
-        /**
-         * Connect with destination.
-         */
-        files.map(function (file) {
-          if (!_this3.readonly) {
-            // strip out the actual body and write it
-            file.stream.push((0, _mapStream2.default)(function (data, next) {
-              if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
-                return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
-              }
-
-              next(null, data.body);
-            }));
-
-            // add the writestream at the end
-            let output;
-
-            if (!_this3.d.dest) {
-              const { fd: tmp, name: tmppath } = (0, _fs3.tmpFileSync)();
-              output = _fs2.default.createWriteStream(null, {
-                fd: tmp
-              });
-
-              file.promise = new Promise(function (resolve, reject) {
-                output.on('close', function () {
-                  const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
-
-                  newStream.on('error', reject);
-                  newStream.on('close', resolve);
-                });
-              });
-            } else {
-              const fname = _path2.default.basename(file.file);
-              output = _fs2.default.createWriteStream(_this3.doRename(fname, dest, file.file));
+      files.map(file => {
+        if (!this.readonly) {
+          // strip out the actual body and write it
+          file.stream.push((0, _mapStream2.default)((data, next) => {
+            if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
+              return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
             }
 
-            file.stream.push(output);
-          }
+            next(null, data.body);
+          }));
 
-          // promisify the current pipeline
-          return new Promise(function (resolve, reject) {
-            // connect all streams together to form pipeline
-            file.stream = (0, _pump2.default)(file.stream, function (err) {
-              if (err) reject(err);
+          // add the writestream at the end
+          let output;
+
+          if (!this.d.dest) {
+            const { fd: tmp, name: tmppath } = (0, _fs3.tmpFileSync)();
+            output = _fs2.default.createWriteStream(null, {
+              fd: tmp
             });
 
-            if (file.promise) {
-              file.promise.then(resolve, reject);
-            } else {
-              file.stream.on('close', resolve);
-            }
-          });
-        });
+            file.promise = new Promise((resolve, reject) => {
+              output.on('close', () => {
+                const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
 
-        // start & wait for all pipelines to end
-        const start = Date.now();
-        log('Starting task');
-        yield Promise.all(files.val());
-        log('Task ended (took %s ms)', Date.now() - start);
-      } else {
-        log('Skipping task');
-      }
-    })();
+                newStream.on('error', reject);
+                newStream.on('close', resolve);
+              });
+            });
+          } else {
+            const fname = _path2.default.basename(file.file);
+            const outfile = this.doRename(fname, dest, file.file);
+
+            debug('Set output: %s', outfile);
+            output = _fs2.default.createWriteStream(outfile);
+          }
+
+          file.stream.push(output);
+        }
+
+        // promisify the current pipeline
+        return new Promise((resolve, reject) => {
+          // connect all streams together to form pipeline
+          file.stream = (0, _pump2.default)(file.stream, err => {
+            if (err) reject(err);
+          });
+
+          if (file.promise) {
+            file.promise.then(resolve, reject);
+          } else {
+            file.stream.on('close', resolve);
+          }
+        });
+      });
+
+      // start & wait for all pipelines to end
+      const start = Date.now();
+      log('Starting task');
+      await Promise.all(files.val());
+      log('Task ended (took %s ms)', Date.now() - start);
+    } else {
+      log('Skipping task');
+    }
   }
 
   /**
@@ -565,3 +545,4 @@ class Hopp {
   }
 }
 exports.default = Hopp;
+//# sourceMappingURL=mgr.js.map
