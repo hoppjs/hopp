@@ -747,9 +747,12 @@ var Hopp = function () {
                  * Create streams.
                  */
                 files = (0, _utils._)(files).map(function (file) {
+                  var outfile = _this2.doRename(_path2.default.basename(file), dest, file);
+
                   return {
                     file: file,
-                    stream: [(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))]
+                    outfile: outfile,
+                    stream: [(0, _streams.createReadStream)(file, outfile)]
                   };
                 });
 
@@ -798,11 +801,8 @@ var Hopp = function () {
                         });
                       });
                     } else {
-                      var fname = _path2.default.basename(file.file);
-                      var outfile = _this2.doRename(fname, dest, file.file);
-
-                      debug('Set output: %s', outfile);
-                      output = _fs2.default.createWriteStream(outfile);
+                      debug('Set output: %s', file.outfile);
+                      output = _fs2.default.createWriteStream(file.outfile);
                     }
 
                     file.stream.push(output);

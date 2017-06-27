@@ -413,12 +413,17 @@ export default class Hopp {
       /**
        * Create streams.
        */
-      files = _(files).map(file => ({
-        file,
-        stream: [
-          createReadStream(file, dest + '/' + path.basename(file))
-        ]
-      }))
+      files = _(files).map(file => {
+        const outfile = this.doRename(path.basename(file), dest, file)
+
+        return {
+          file,
+          outfile,
+          stream: [
+            createReadStream(file, outfile)
+          ]
+        }
+      })
 
       /**
        * Connect plugin streams with pipelines.
@@ -464,11 +469,8 @@ export default class Hopp {
               })
             })
           } else {
-            const fname = path.basename(file.file)
-            const outfile = this.doRename(fname, dest, file.file)
-
-            debug('Set output: %s', outfile)
-            output = fs.createWriteStream(outfile)
+            debug('Set output: %s', file.outfile)
+            output = fs.createWriteStream(file.outfile)
           }
 
           file.stream.push(output)

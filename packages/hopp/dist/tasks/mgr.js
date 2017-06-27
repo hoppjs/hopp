@@ -447,10 +447,15 @@ class Hopp {
       /**
        * Create streams.
        */
-      files = (0, _utils._)(files).map(file => ({
-        file,
-        stream: [(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))]
-      }));
+      files = (0, _utils._)(files).map(file => {
+        const outfile = this.doRename(_path2.default.basename(file), dest, file);
+
+        return {
+          file,
+          outfile,
+          stream: [(0, _streams.createReadStream)(file, outfile)]
+        };
+      });
 
       /**
        * Connect plugin streams with pipelines.
@@ -494,11 +499,8 @@ class Hopp {
               });
             });
           } else {
-            const fname = _path2.default.basename(file.file);
-            const outfile = this.doRename(fname, dest, file.file);
-
-            debug('Set output: %s', outfile);
-            output = _fs2.default.createWriteStream(outfile);
+            debug('Set output: %s', file.outfile);
+            output = _fs2.default.createWriteStream(file.outfile);
           }
 
           file.stream.push(output);
