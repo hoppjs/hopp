@@ -12,9 +12,9 @@ var _pump = require('pump');
 
 var _pump2 = _interopRequireDefault(_pump);
 
-var _mapStream = require('map-stream');
+var _map = require('./map');
 
-var _mapStream2 = _interopRequireDefault(_mapStream);
+var _map2 = _interopRequireDefault(_map);
 
 var _fs3 = require('../fs');
 
@@ -30,7 +30,7 @@ exports.default = function (file, dest) {
   var size = void 0;
   var emitted = 0;
 
-  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _mapStream2.default)(function () {
+  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _map2.default)(function () {
     var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(body, next) {
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {

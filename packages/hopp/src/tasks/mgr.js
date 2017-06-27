@@ -10,11 +10,10 @@ import pump from 'pump'
 import glob from '../fs/glob'
 import through2 from 'through2'
 import * as cache from '../cache'
-import mapStream from 'map-stream'
 import getPath from '../fs/get-path'
 import { _, createLogger } from '../utils'
 import { disableFSCache, mkdirp, openFile, tmpFile, tmpFileSync } from '../fs'
-import { buffer, Bundle, createReadStream } from '../streams'
+import { buffer, Bundle, createReadStream, map as mapStream } from '../streams'
 
 const { debug } = createLogger('hopp')
 const watchlog = createLogger('hopp:watch').log

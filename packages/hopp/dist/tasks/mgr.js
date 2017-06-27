@@ -28,10 +28,6 @@ var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
 
-var _mapStream = require('map-stream');
-
-var _mapStream2 = _interopRequireDefault(_mapStream);
-
 var _getPath = require('../fs/get-path');
 
 var _getPath2 = _interopRequireDefault(_getPath);
@@ -46,12 +42,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { debug } = (0, _utils.createLogger)('hopp'); /**
-                                                     * @file src/tasks/mgr.js
-                                                     * @license MIT
-                                                     * @copyright 2017 10244872 Canada Inc.
-                                                     */
+/**
+ * @file src/tasks/mgr.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
+const { debug } = (0, _utils.createLogger)('hopp');
 const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 
 /**
@@ -468,7 +465,7 @@ class Hopp {
       files.map(file => {
         if (!this.readonly) {
           // strip out the actual body and write it
-          file.stream.push((0, _mapStream2.default)((data, next) => {
+          file.stream.push((0, _streams.map)((data, next) => {
             if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
               return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
             }

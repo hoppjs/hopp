@@ -4,16 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapStream = require('map-stream');
+var _map = require('./map');
 
-var _mapStream2 = _interopRequireDefault(_mapStream);
+var _map2 = _interopRequireDefault(_map);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function () {
   var buffers = [];
 
-  return (0, _mapStream2.default)(function (data, next) {
+  return (0, _map2.default)(function (data, next) {
     // add to buffer
     buffers.push(data.body);
 

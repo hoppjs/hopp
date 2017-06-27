@@ -4,7 +4,7 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import map from 'map-stream'
+import map from './map'
 
 export default () => {
   const buffers = []

@@ -36,10 +36,6 @@ var _cache = require('../cache');
 
 var cache = _interopRequireWildcard(_cache);
 
-var _mapStream = require('map-stream');
-
-var _mapStream2 = _interopRequireDefault(_mapStream);
-
 var _getPath = require('../fs/get-path');
 
 var _getPath2 = _interopRequireDefault(_getPath);
@@ -766,7 +762,7 @@ var Hopp = function () {
                 files.map(function (file) {
                   if (!_this2.readonly) {
                     // strip out the actual body and write it
-                    file.stream.push((0, _mapStream2.default)(function (data, next) {
+                    file.stream.push((0, _streams.map)(function (data, next) {
                       if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
                         return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
                       }

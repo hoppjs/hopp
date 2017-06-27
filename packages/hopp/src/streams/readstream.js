@@ -6,7 +6,7 @@
 
 import fs from 'fs'
 import pump from 'pump'
-import map from 'map-stream'
+import map from './map'
 import { stat } from '../fs'
 
 export default (file, dest) => {

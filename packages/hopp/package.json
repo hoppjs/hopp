@@ -35,7 +35,6 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1"
   },
   "dependencies": {
-    "map-stream": "0.0.7",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
     "pump": "^1.0.2",

@@ -12,9 +12,9 @@ var _pump = require('pump');
 
 var _pump2 = _interopRequireDefault(_pump);
 
-var _mapStream = require('map-stream');
+var _map = require('./map');
 
-var _mapStream2 = _interopRequireDefault(_mapStream);
+var _map2 = _interopRequireDefault(_map);
 
 var _fs3 = require('../fs');
 
@@ -30,7 +30,7 @@ exports.default = (file, dest) => {
   let size;
   let emitted = 0;
 
-  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _mapStream2.default)(async (body, next) => {
+  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _map2.default)(async (body, next) => {
     if (size === undefined) {
       size = (await (0, _fs3.stat)(file)).size;
     }
