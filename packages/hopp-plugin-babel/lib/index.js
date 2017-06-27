@@ -39,11 +39,14 @@ export default async (ctx, data) => {
   /**
    * Write sourcemap.
    */
-  if (options.sourceMap) {
+  if (options.sourceMaps) {
     await new Promise((resolve, reject) => {
-      fs.writeFile(data.dest.substr(0, data.dest.lastIndexOf('.')) + '.map', JSON.stringify(output.map), err => {
+      fs.writeFile(data.dest + '.map', JSON.stringify(output.map), err => {
         if (err) reject(err)
-        else resolve()
+        else {
+          console.log('resolving')
+          resolve()
+        }
       })
     })
   }

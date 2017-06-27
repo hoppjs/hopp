@@ -60,15 +60,18 @@ exports.default = function () {
              * Write sourcemap.
              */
 
-            if (!options.sourceMap) {
+            if (!options.sourceMaps) {
               _context.next = 7;
               break;
             }
 
             _context.next = 7;
             return new Promise(function (resolve, reject) {
-              fs.writeFile(data.dest.substr(0, data.dest.lastIndexOf('.')) + '.map', JSON.stringify(output.map), function (err) {
-                if (err) reject(err);else resolve();
+              fs.writeFile(data.dest + '.map', JSON.stringify(output.map), function (err) {
+                if (err) reject(err);else {
+                  console.log('resolving');
+                  resolve();
+                }
               });
             });
 
@@ -97,4 +100,4 @@ exports.default = function () {
   };
 }();
 
-//# sourceMappingURL=index.map
+//# sourceMappingURL=index.js.map
