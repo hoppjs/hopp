@@ -29,6 +29,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * @copyright 2017 10244872 Canada Inc.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             */
 
+var _createLogger = (0, _log2.default)('hopp'),
+    error = _createLogger.error;
+
 var taskDefns = void 0;
 var bustedTasks = void 0;
 
@@ -55,87 +58,60 @@ var defineTasks = exports.defineTasks = function defineTasks(defns, busted) {
 var create = exports.create = function create(tasks, projectDir) {
   var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'start';
 
-  var goal = void 0;
+  /**
+   * Set timeout for hung tasks.
+   */
+  if (mode === 'start') {
+    setTimeout(function () {
+      error('Timeout exceeded! A task is hung.');
+      process.exit(-1);
+    }, 10 * 60 * 1000);
+  }
 
+  /**
+   * If single task, don't bother wrapping with .all().
+   */
   if (tasks.length === 1) {
     var name = tasks[0];
-    goal = taskDefns[tasks[0]];
+    var goal = taskDefns[tasks[0]];
 
     if (goal instanceof Array) {
       goal = fromArray(goal);
     }
 
-    goal = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+    return goal[mode](name, projectDir, !!bustedTasks[name]);
+  }
+
+  /**
+   * Otherwise wrap all.
+   */
+  return Promise.all(tasks.map(function () {
+    var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name) {
+      var task;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return goal[mode](name, projectDir, !!bustedTasks[name]);
+              task = taskDefns[name];
+
+
+              if (task instanceof Array) {
+                task = fromArray(task);
+              }
+
+              return _context.abrupt('return', task[mode](name, projectDir, !!bustedTasks[name]));
 
             case 3:
-              _context.next = 9;
-              break;
-
-            case 5:
-              _context.prev = 5;
-              _context.t0 = _context['catch'](0);
-
-              (0, _log2.default)('hopp:' + name).error(_context.t0 && _context.t0.stack ? _context.t0.stack : _context.t0);
-              throw 'Build failed.';
-
-            case 9:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, undefined, [[0, 5]]);
-    }))();
-  } else {
-    goal = Promise.all(tasks.map(function () {
-      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(name) {
-        var task;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                task = taskDefns[name];
+      }, _callee, undefined);
+    }));
 
-
-                if (task instanceof Array) {
-                  task = fromArray(task);
-                }
-
-                _context2.prev = 2;
-                _context2.next = 5;
-                return task[mode](name, projectDir, !!bustedTasks[name]);
-
-              case 5:
-                _context2.next = 11;
-                break;
-
-              case 7:
-                _context2.prev = 7;
-                _context2.t0 = _context2['catch'](2);
-
-                (0, _log2.default)('hopp:' + name).error(_context2.t0.stack || _context2.t0);
-                throw 'Build failed.';
-
-              case 11:
-              case 'end':
-                return _context2.stop();
-            }
-          }
-        }, _callee2, undefined, [[2, 7]]);
-      }));
-
-      return function (_x2) {
-        return _ref2.apply(this, arguments);
-      };
-    }()));
-  }
-
-  return goal;
+    return function (_x2) {
+      return _ref.apply(this, arguments);
+    };
+  }()));
 };
 //# sourceMappingURL=goal.js.map
