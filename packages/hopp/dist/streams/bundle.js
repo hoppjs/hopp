@@ -12,11 +12,11 @@ var _events = require('events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/streams/bundle.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+/**
+ * @file src/streams/bundle.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
 class Bundle extends _events.EventEmitter {
   constructor(directory, fd) {
@@ -68,45 +68,40 @@ class Bundle extends _events.EventEmitter {
   /**
    * Flush, in order.
    */
-  flush() {
-    var _this = this;
+  async flush() {
+    const file = this.files[this.flushIndex];
+    const relative = file.replace(this.directory, '.');
 
-    return _asyncToGenerator(function* () {
-      const file = _this.files[_this.flushIndex];
-      const relative = file.replace(_this.directory, '.');
+    if (this.status[file] && !this.map[relative]) {
+      // record sourcemap
+      this.map[relative] = [this.offset, this.offset + this.sizes[file]];
+      this.offset += this.sizes[file];
 
-      if (_this.status[file] && !_this.map[relative]) {
-        // record sourcemap
-        _this.map[relative] = [_this.offset, _this.offset + _this.sizes[file]];
-        _this.offset += _this.sizes[file];
+      // write to file
+      await new Promise(resolve => {
+        this.target.write(Buffer.concat(this.buffers[file]), resolve);
+      });
 
-        // write to file
-        yield new Promise(function (resolve) {
-          _this.target.write(Buffer.concat(_this.buffers[file]), resolve);
-        });
-
-        // move to next
-        _this.flushIndex++;
-      }
-    })();
+      // move to next
+      this.flushIndex++;
+    }
   }
 
   end() {
-    var _this2 = this;
-
-    return Promise.all(this.goal).then(_asyncToGenerator(function* () {
+    return Promise.all(this.goal).then(async () => {
       /**
        * Ensure all data has been written.
        */
-      while (_this2.flushIndex < _this2.files.length) {
-        yield _this2.flush();
+      while (this.flushIndex < this.files.length) {
+        await this.flush();
       }
 
       /**
        * Close the bundle.
        */
-      _this2.target.close();
-    }));
+      this.target.close();
+    });
   }
 }
 exports.default = Bundle;
+//# sourceMappingURL=bundle.js.map

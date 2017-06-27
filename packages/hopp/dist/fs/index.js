@@ -21,11 +21,11 @@ var _utils = require('../utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/fs.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+/**
+ * @file src/fs.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
 const { debug } = require('../utils/log')('hopp:fs');
 
@@ -76,24 +76,18 @@ const disableFSCache = exports.disableFSCache = () => {
  * Transform only needed methods (instead of using mz
  * or doing a promisifyAll).
  */
-const exists = exports.exists = (() => {
-  var _ref = _asyncToGenerator(function* (dir) {
-    try {
-      yield stat(dir);
-      return true;
-    } catch (err) {
-      if (String(err).indexOf('ENOENT') === -1) {
-        throw err;
-      }
-
-      return false;
+const exists = exports.exists = async dir => {
+  try {
+    await stat(dir);
+    return true;
+  } catch (err) {
+    if (String(err).indexOf('ENOENT') === -1) {
+      throw err;
     }
-  });
 
-  return function exists(_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
+    return false;
+  }
+};
 const stat = exports.stat = promisify(_fs2.default.stat, 'stat');
 const mkdir = exports.mkdir = promisify(_fs2.default.mkdir, 'mkdir');
 const openFile = exports.openFile = promisify(_fs2.default.open, 'open');
@@ -118,28 +112,23 @@ const tmpFileSync = exports.tmpFileSync = () => _tmp2.default.fileSync();
 /**
  * mkdir -p
  */
-const mkdirp = exports.mkdirp = (0, _utils.fn)((() => {
-  var _ref2 = _asyncToGenerator(function* (directory, cwd) {
-    // explode into separate
-    directory = directory.split(_path2.default.sep);
+const mkdirp = exports.mkdirp = (0, _utils.fn)(async (directory, cwd) => {
+  // explode into separate
+  directory = directory.split(_path2.default.sep);
 
-    // walk
-    for (let dir of directory) {
-      if (dir) {
-        try {
-          yield mkdir(cwd + _path2.default.sep + dir);
-        } catch (err) {
-          if (String(err).indexOf('EEXIST') === -1) {
-            throw err;
-          }
+  // walk
+  for (let dir of directory) {
+    if (dir) {
+      try {
+        await mkdir(cwd + _path2.default.sep + dir);
+      } catch (err) {
+        if (String(err).indexOf('EEXIST') === -1) {
+          throw err;
         }
       }
-
-      cwd += _path2.default.sep + dir;
     }
-  });
 
-  return function (_x2, _x3) {
-    return _ref2.apply(this, arguments);
-  };
-})());
+    cwd += _path2.default.sep + dir;
+  }
+});
+//# sourceMappingURL=index.js.map

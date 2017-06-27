@@ -20,13 +20,6 @@ var _fs = require('../fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/utils/log.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
-/* eslint no-console: 'off' */
-
 /**
  * Selected colors - borrowed from `debug`.
  */
@@ -35,6 +28,13 @@ const colors = [2, 3, 4, 5, 1];
 /**
  * This color is reserved for `hopp` logs.
  */
+/**
+ * @file src/utils/log.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
+/* eslint no-console: 'off' */
+
 const HOPP_COLOR = 6;
 
 /**
@@ -126,15 +126,10 @@ module.exports = namespace => {
 /**
  * Write debug log to file on failure.
  */
-module.exports.saveLog = (() => {
-  var _ref = _asyncToGenerator(function* (directory) {
-    yield (0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL));
+module.exports.saveLog = async directory => {
+  await (0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL));
 
-    console.error('\nSaved debug info to: %s.', directory);
-    console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
-  });
-
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
+  console.error('\nSaved debug info to: %s.', directory);
+  console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
+};
+//# sourceMappingURL=log.js.map
