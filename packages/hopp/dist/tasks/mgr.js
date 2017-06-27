@@ -196,7 +196,7 @@ class Hopp {
     /**
      * Get full list of current files.
      */
-    const files = await (0, _glob2.default)(this.d.src, directory, useDoubleCache, true);
+    const files = await (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, true);
 
     /**
      * Create list of unmodified.
@@ -417,7 +417,7 @@ class Hopp {
      * Get the modified files.
      */
     debug('task recache = %s', recache);
-    let files = await (0, _glob2.default)(this.d.src, directory, useDoubleCache, recache);
+    let files = await (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache);
 
     if (files.length > 0) {
       const dest = this.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest)) : '';

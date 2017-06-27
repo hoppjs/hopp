@@ -163,7 +163,7 @@ export default class Hopp {
     /**
      * Get full list of current files.
      */
-    const files = await glob(this.d.src, directory, useDoubleCache, true)
+    const files = await glob(name, this.d.src, directory, useDoubleCache, true)
 
     /**
      * Create list of unmodified.
@@ -389,7 +389,7 @@ export default class Hopp {
      * Get the modified files.
      */
     debug('task recache = %s', recache)
-    let files = await glob(this.d.src, directory, useDoubleCache, recache)
+    let files = await glob(name, this.d.src, directory, useDoubleCache, recache)
 
     if (files.length > 0) {
       const dest = this.d.dest ? path.resolve(directory, getPath(this.d.dest)) : ''

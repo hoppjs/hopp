@@ -11,19 +11,28 @@ import { readdir, stat } from './'
 
 const { debug } = require('../utils/log')('hopp:glob')
 
-let statCache
+let gstatCache
 const tempCache = {}
 
-async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
+async function glob (task, pattern, cwd, useDoubleCache = false, recache = false) {
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]
   }
 
-  // get cache
-  if (statCache === undefined) {
-    statCache = cache.val('sc') || {}
+  // ensure global cache is present
+  if (gstatCache === undefined) {
+    gstatCache = cache.val('sc') || {}
+    cache.val('sc', gstatCache)
   }
+
+  // create local cache
+  if (gstatCache[task] === undefined) {
+    gstatCache[task] = {}
+  }
+
+  // set local cache
+  let statCache = gstatCache[task]
 
   // allow overrides from the env
   recache = recache || process.env.RECACHE === 'true'
@@ -107,11 +116,6 @@ async function glob (pattern, cwd, useDoubleCache = false, recache = false) {
       ))
     }
   }
-
-  /**
-   * Update cache.
-   */
-  cache.val('sc', statCache)
 
   /**
    * Return final results object.

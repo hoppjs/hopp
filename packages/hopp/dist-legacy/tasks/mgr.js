@@ -243,7 +243,7 @@ var Hopp = function () {
                  */
 
                 _context.next = 5;
-                return (0, _glob2.default)(this.d.src, directory, useDoubleCache, true);
+                return (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, true);
 
               case 5:
                 files = _context.sent;
@@ -699,7 +699,7 @@ var Hopp = function () {
                  */
                 debug('task recache = %s', recache);
                 _context3.next = 6;
-                return (0, _glob2.default)(this.d.src, directory, useDoubleCache, recache);
+                return (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache);
 
               case 6:
                 files = _context3.sent;

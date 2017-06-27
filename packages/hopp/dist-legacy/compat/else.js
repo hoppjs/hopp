@@ -25,18 +25,33 @@ exports.default = function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            if (!_semver2.default.lt(lock.v, '1.0.0-alpha.11')) {
+              _context.next = 4;
+              break;
+            }
+
+            lock.v = version;
+
+            // below alpha 11, there are race conditions with
+            // the state cache - so discard it and let it be
+            // reconstructed
+            delete lock.sc;
+
+            return _context.abrupt('return', lock);
+
+          case 4:
             if (!_semver2.default.lt(lock.v, '1.0.0')) {
-              _context.next = 3;
+              _context.next = 7;
               break;
             }
 
             lock.v = version;
             return _context.abrupt('return', lock);
 
-          case 3:
+          case 7:
             throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
 
-          case 4:
+          case 8:
           case 'end':
             return _context.stop();
         }

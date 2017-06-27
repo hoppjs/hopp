@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var glob = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(pattern, cwd) {
-    var useDoubleCache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(task, pattern, cwd) {
+    var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     /**
      * Recursive walk.
@@ -196,7 +196,7 @@ var glob = function () {
         }, _callee, this, [[9, 56, 60, 68], [61,, 63, 67]]);
       }));
 
-      return function walk(_x6, _x7, _x8) {
+      return function walk(_x7, _x8, _x9) {
         return _ref2.apply(this, arguments);
       };
     }();
@@ -206,9 +206,9 @@ var glob = function () {
      */
 
 
-    var recache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+    var recache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
-    var results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn, nm;
+    var statCache, results, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, pttn, nm;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -219,123 +219,124 @@ var glob = function () {
               pattern = [pattern];
             }
 
-            // get cache
-            if (statCache === undefined) {
-              statCache = cache.val('sc') || {};
+            // ensure global cache is present
+            if (gstatCache === undefined) {
+              gstatCache = cache.val('sc') || {};
+              cache.val('sc', gstatCache);
             }
 
+            // create local cache
+            if (gstatCache[task] === undefined) {
+              gstatCache[task] = {};
+            }
+
+            // set local cache
+            statCache = gstatCache[task];
+
             // allow overrides from the env
+
             recache = recache || process.env.RECACHE === 'true';results = [];
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context2.prev = 7;
+            _context2.prev = 9;
             _iterator2 = pattern[Symbol.iterator]();
 
-          case 9:
+          case 11:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 31;
+              _context2.next = 33;
               break;
             }
 
             pttn = _step2.value;
 
             if (!(pttn[0] === '/')) {
-              _context2.next = 13;
+              _context2.next = 15;
               break;
             }
 
             throw new Error('Not sure what to do with the / in your glob.');
 
-          case 13:
+          case 15:
             nm = glob.nonMagic(pttn);
 
             debug('nm = %j', nm);
 
             if (nm) {
-              _context2.next = 23;
+              _context2.next = 25;
               break;
             }
 
             _context2.t0 = results;
-            _context2.next = 19;
+            _context2.next = 21;
             return walk('.', pttn.split('/'), cwd);
 
-          case 19:
+          case 21:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
-            _context2.next = 28;
+            _context2.next = 30;
             break;
 
-          case 23:
+          case 25:
             _context2.t2 = results;
-            _context2.next = 26;
+            _context2.next = 28;
             return walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm));
 
-          case 26:
+          case 28:
             _context2.t3 = _context2.sent;
             results = _context2.t2.concat.call(_context2.t2, _context2.t3);
 
-          case 28:
+          case 30:
             _iteratorNormalCompletion2 = true;
-            _context2.next = 9;
-            break;
-
-          case 31:
-            _context2.next = 37;
+            _context2.next = 11;
             break;
 
           case 33:
-            _context2.prev = 33;
-            _context2.t4 = _context2['catch'](7);
+            _context2.next = 39;
+            break;
+
+          case 35:
+            _context2.prev = 35;
+            _context2.t4 = _context2['catch'](9);
             _didIteratorError2 = true;
             _iteratorError2 = _context2.t4;
 
-          case 37:
-            _context2.prev = 37;
-            _context2.prev = 38;
+          case 39:
+            _context2.prev = 39;
+            _context2.prev = 40;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 40:
-            _context2.prev = 40;
+          case 42:
+            _context2.prev = 42;
 
             if (!_didIteratorError2) {
-              _context2.next = 43;
+              _context2.next = 45;
               break;
             }
 
             throw _iteratorError2;
 
-          case 43:
-            return _context2.finish(40);
-
-          case 44:
-            return _context2.finish(37);
-
           case 45:
+            return _context2.finish(42);
 
-            /**
-             * Update cache.
-             */
-            cache.val('sc', statCache);
-
-            /**
-             * Return final results object.
-             */
-            return _context2.abrupt('return', results);
+          case 46:
+            return _context2.finish(39);
 
           case 47:
+            return _context2.abrupt('return', results);
+
+          case 48:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[7, 33, 37, 45], [38,, 40, 44]]);
+    }, _callee2, this, [[9, 35, 39, 47], [40,, 42, 46]]);
   }));
 
-  return function glob(_x3, _x4) {
+  return function glob(_x3, _x4, _x5) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -374,7 +375,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var _require = require('../utils/log')('hopp:glob'),
     debug = _require.debug;
 
-var statCache = void 0;
+var gstatCache = void 0;
 var tempCache = {};
 
 glob.nonMagic = function (pattern) {

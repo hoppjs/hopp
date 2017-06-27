@@ -17,6 +17,17 @@ const { version } = require('../../package.json'); /**
                                                     */
 
 exports.default = async lock => {
+  if (_semver2.default.lt(lock.v, '1.0.0-alpha.11')) {
+    lock.v = version;
+
+    // below alpha 11, there are race conditions with
+    // the state cache - so discard it and let it be
+    // reconstructed
+    delete lock.sc;
+
+    return lock;
+  }
+
   if (_semver2.default.lt(lock.v, '1.0.0')) {
     lock.v = version;
     return lock;
