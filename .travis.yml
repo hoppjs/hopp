@@ -16,12 +16,3 @@ install:
  - node_modules/.bin/lerna bootstrap
 script:
   - npm test && node_modules/.bin/codecov
-deploy:
-  provider: npm
-  email: karim@alibhai.co
-  api_key:
-    secure: WhEVrFbEfSvff3PrhUhOk9Rr9RjtnYFlOdVtro7FPB6Agju7W4uzsA0W1urtVxqDX/IO0Fjq+PWhccTUz3OHdUzilLvpTmbcMYm9G4ssNNa+OJrp4s1QNEoTDiIavV46CQ152qq+TG82CIele0bkfHjF3KtKalNiZsZSAYKr3iECLZQLWraDVdhf3jcf0yz/B7TpPUQ4GSxFRPL9Fdhm0ptMp1C7otESd8rUm3x4CtJXsM3FzILv8ZF9mOrv9ysx/9ukkY5W/3+mEzDSqv322KFgNa6DSbEa86gFyyrtvxyfEcsgcFu8pxh1tZ/33/b4fw56qwIPbMjNyDoMF1yAgy/SpWxHDMB+yXfm1kZs6uzV5kF2HgzUrNYxk7h/o7gQ+AmWlr1s41//JtFVh+VzCDA5MlDgmXd2V4bixBwZ1MkM+28FqZwm5m7vOXNhMLwKda7JqHmfwqm1yYLjW7wzA+neqjJtQ33PZM0GS5Q5drhDmcRbhA+SaAenHeX/X0iQGQwHgwRC6OxcyOZsktPdX9vDGjN+qRYpVLUNhXJ96Hx6OBwG8tgveHbIKvJPJBSWi581cbamN37pY2M+2NUsSpsXc9r6z/Z4PtTadGkaUIsssFCnpGwBziqHhoTr27KGB+HhuwcCzmcB8rkBdKCDlfmj7guo2BuUOcw/cKhryhc=
-  on:
-    tags: true
-    repo: hoppjs/hopp
-    branch: master
