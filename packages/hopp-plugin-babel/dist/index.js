@@ -77,7 +77,7 @@ exports.default = function () {
             /**
              * Replace code.
              */
-            data.body = output.code;
+            data.body = `${output.code}\n\n//# sourceMappingURL=${data.dest.substr(0, data.dest.lastIndexOf('.'))}.map`;
 
             /**
              * Return final object.
