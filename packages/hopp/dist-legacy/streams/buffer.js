@@ -30,4 +30,5 @@ exports.default = function () {
     * @license MIT
     * @copyright 2017 10244872 Canada Inc.
     */
+
 //# sourceMappingURL=buffer.js.map

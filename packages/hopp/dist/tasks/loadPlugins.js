@@ -29,4 +29,5 @@ exports.default = async directory => {
    */
   return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => dep.startsWith('hopp-plugin-'));
 };
+
 //# sourceMappingURL=loadPlugins.js.map

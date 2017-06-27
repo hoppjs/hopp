@@ -32,4 +32,5 @@ exports.default = fn => {
     return val[last];
   };
 };
+
 //# sourceMappingURL=fn.js.map

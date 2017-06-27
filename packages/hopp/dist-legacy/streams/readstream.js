@@ -65,13 +65,13 @@ exports.default = function (file, dest) {
 
               next(null, {
                 // metadata
-                file: file,
-                dest: dest,
-                size: size,
+                file,
+                dest,
+                size,
                 done: emitted === size,
 
                 // contents
-                body: body
+                body
               });
 
             case 8:
@@ -87,4 +87,5 @@ exports.default = function (file, dest) {
     };
   }()));
 };
+
 //# sourceMappingURL=readstream.js.map

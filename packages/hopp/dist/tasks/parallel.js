@@ -147,4 +147,5 @@ parallel.defineTasks = (defns, busted) => {
 };
 
 exports.default = parallel;
+
 //# sourceMappingURL=parallel.js.map

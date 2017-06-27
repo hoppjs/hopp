@@ -59,4 +59,5 @@ exports.default = function (fn) {
     }, _callee, this);
   }));
 };
+
 //# sourceMappingURL=fn.js.map

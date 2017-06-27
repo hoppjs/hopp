@@ -35,7 +35,7 @@ var Bundle = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, (Bundle.__proto__ || Object.getPrototypeOf(Bundle)).call(this));
 
     _this.target = _fs2.default.createWriteStream(null, {
-      fd: fd,
+      fd,
       autoClose: false
     });
 
@@ -177,4 +177,5 @@ var Bundle = function (_EventEmitter) {
 }(_events.EventEmitter);
 
 exports.default = Bundle;
+
 //# sourceMappingURL=bundle.js.map

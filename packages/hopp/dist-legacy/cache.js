@@ -126,7 +126,7 @@ var load = exports.load = function () {
           case 9:
 
             // set cache file
-            lockfile = directory + '/hopp.lock';
+            lockfile = `${directory}/hopp.lock`;
 
             // bring cache into existence
 
@@ -280,4 +280,5 @@ var save = exports.save = function () {
     return _ref2.apply(this, arguments);
   };
 }();
+
 //# sourceMappingURL=cache.js.map

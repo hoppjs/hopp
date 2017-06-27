@@ -24,4 +24,5 @@ exports.default = async lock => {
 
   throw new Error('Sorry, this version of hopp does not support lockfiles from hopp v' + lock.v);
 };
+
 //# sourceMappingURL=else.js.map

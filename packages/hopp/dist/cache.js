@@ -152,4 +152,5 @@ async function updateCache(lock) {
   // do convert
   return compat(lock);
 }
+
 //# sourceMappingURL=cache.js.map

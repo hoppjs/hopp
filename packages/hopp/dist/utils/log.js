@@ -132,4 +132,5 @@ module.exports.saveLog = async directory => {
   console.error('\nSaved debug info to: %s.', directory);
   console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
 };
+
 //# sourceMappingURL=log.js.map

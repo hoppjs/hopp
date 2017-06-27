@@ -21,10 +21,9 @@ exports.default = function (tasks) {
      *
      * @return {Promise} joins all watch promises under .all()
      */
-    start: function start(name, directory) {
+    start(name, directory) {
       return Goal.create(tasks, directory, 'watch');
     },
-
 
     /**
      * Converts tasks to JSON.
@@ -33,7 +32,7 @@ exports.default = function (tasks) {
      *
      * @return {Array}
      */
-    toJSON: function toJSON() {
+    toJSON() {
       return ['watch', tasks];
     }
   };
@@ -42,4 +41,5 @@ exports.default = function (tasks) {
     * @license MIT
     * @copyright 2017 10244872 Canada Inc.
     */
+
 //# sourceMappingURL=watch.js.map

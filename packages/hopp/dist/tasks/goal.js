@@ -92,4 +92,5 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
     return task[mode](name, projectDir, !!bustedTasks[name]);
   }));
 };
+
 //# sourceMappingURL=goal.js.map

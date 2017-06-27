@@ -64,7 +64,7 @@ function runParallel(jobs, tasks, name, directory) {
 
         // if any worker fails, reject the promise
         if (code !== 0) {
-          return reject(new Error('Job ' + id + ' failed.'));
+          return reject(new Error(`Job ${id} failed.`));
         }
 
         // once all workers successfully return, resolve promise
@@ -105,7 +105,7 @@ function runAsync(tasks, name, directory) {
  * Run individual task.
  */
 function runTask(task, name, directory) {
-  return taskTree[task].start(name + ':' + task, directory, !!bustedTasks[task]);
+  return taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]);
 }
 
 /**
@@ -119,7 +119,7 @@ var parallel = function parallel(tasks) {
      *
      * @return {Promise} joins all task promises under .all()
      */
-    start: function start(name, directory) {
+    start(name, directory) {
       var jobs = parseInt(process.env.WEB_CONCURRENCY);
 
       // if jobs not specified, just stick to async
@@ -135,7 +135,6 @@ var parallel = function parallel(tasks) {
       return runParallel(jobs, tasks, name, directory);
     },
 
-
     /**
      * Converts tasks to JSON.
      * Just converts them into an tasksay of
@@ -143,7 +142,7 @@ var parallel = function parallel(tasks) {
      *
      * @return {tasksay}
      */
-    toJSON: function toJSON() {
+    toJSON() {
       return ['parallel', tasks];
     }
   };
@@ -155,4 +154,5 @@ parallel.defineTasks = function (defns, busted) {
 };
 
 exports.default = parallel;
+
 //# sourceMappingURL=parallel.js.map

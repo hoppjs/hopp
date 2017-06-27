@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * @file src/tasks/mgr.js
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * @license MIT
@@ -106,7 +104,7 @@ var Hopp = function () {
 
     // persistent info
     this.d = {
-      src: src,
+      src,
       stack: []
     };
   }
@@ -134,7 +132,7 @@ var Hopp = function () {
   }, {
     key: 'rename',
     value: function rename(fn) {
-      if (typeof fn !== 'function' && (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) !== 'object') {
+      if (typeof fn !== 'function' && typeof fn !== 'object') {
         throw new Error('Rename must be given a function or object.');
       }
 
@@ -193,7 +191,7 @@ var Hopp = function () {
 
       var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      name = 'watch:' + name;
+      name = `watch:${name}`;
 
       var watchers = [];
 
@@ -239,7 +237,7 @@ var Hopp = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _createLogger2 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger2.log, debug = _createLogger2.debug;
+                _createLogger2 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger2.log, debug = _createLogger2.debug;
 
                 debug('Switched to bundling mode');
 
@@ -475,7 +473,7 @@ var Hopp = function () {
   }, {
     key: 'buildStack',
     value: function buildStack(name) {
-      var _createLogger3 = (0, _utils.createLogger)('hopp:' + name),
+      var _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`),
           error = _createLogger3.error;
 
       var that = this;
@@ -634,14 +632,14 @@ var Hopp = function () {
       }
 
       // create plugin logger
-      var logger = (0, _utils.createLogger)('hopp:' + taskName + ':' + _path2.default.basename(plugin).substr(5));
+      var logger = (0, _utils.createLogger)(`hopp:${taskName}:${_path2.default.basename(plugin).substr(5)}`);
 
       // load/create cache for plugin
       var pluginCache = cache.plugin(plugin);
 
       // create a new context for this plugin
       this.pluginCtx[plugin] = {
-        args: args,
+        args,
         cache: pluginCache,
         log: logger.log,
         debug: logger.debug,
@@ -669,7 +667,7 @@ var Hopp = function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger4 = (0, _utils.createLogger)('hopp:' + name), log = _createLogger4.log, debug = _createLogger4.debug;
+                _createLogger4 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger4.log, debug = _createLogger4.debug;
 
                 /**
                  * Figure out if bundling is needed & load plugins.
@@ -750,8 +748,8 @@ var Hopp = function () {
                   var outfile = _this2.doRename(_path2.default.basename(file), dest, file);
 
                   return {
-                    file: file,
-                    outfile: outfile,
+                    file,
+                    outfile,
                     stream: [(0, _streams.createReadStream)(file, outfile)]
                   };
                 });
@@ -773,7 +771,7 @@ var Hopp = function () {
                   if (!_this2.readonly) {
                     // strip out the actual body and write it
                     file.stream.push((0, _mapStream2.default)(function (data, next) {
-                      if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || !data.hasOwnProperty('body')) {
+                      if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
                         return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
                       }
 
@@ -891,4 +889,5 @@ var Hopp = function () {
 }();
 
 exports.default = Hopp;
+
 //# sourceMappingURL=mgr.js.map

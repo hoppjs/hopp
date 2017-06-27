@@ -114,4 +114,5 @@ var create = exports.create = function create(tasks, projectDir) {
     };
   }()));
 };
+
 //# sourceMappingURL=goal.js.map

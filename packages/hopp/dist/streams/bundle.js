@@ -104,4 +104,5 @@ class Bundle extends _events.EventEmitter {
   }
 }
 exports.default = Bundle;
+
 //# sourceMappingURL=bundle.js.map

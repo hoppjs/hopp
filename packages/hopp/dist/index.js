@@ -257,4 +257,5 @@ if (argv.require) {
 
   _log2.default.saveLog(projectDir).then(() => end(err)).catch(err => end(err));
 });
+
 //# sourceMappingURL=index.js.map

@@ -26,8 +26,10 @@ var steps = function steps(tasks) {
      *
      * @return {Promise} a promise that will be resolved when all tasks are done
      */
-    start: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name, directory) {
+    start(name, directory) {
+      var _this = this;
+
+      return _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
         var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, task;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -48,7 +50,7 @@ var steps = function steps(tasks) {
 
                 task = _step.value;
                 _context.next = 9;
-                return taskTree[task].start(name + ':' + task, directory, !!bustedTasks[task]);
+                return taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]);
 
               case 9:
                 _iteratorNormalCompletion = true;
@@ -94,16 +96,9 @@ var steps = function steps(tasks) {
                 return _context.stop();
             }
           }
-        }, _callee, this, [[3, 14, 18, 26], [19,, 21, 25]]);
-      }));
-
-      function start(_x, _x2) {
-        return _ref.apply(this, arguments);
-      }
-
-      return start;
-    }(),
-
+        }, _callee, _this, [[3, 14, 18, 26], [19,, 21, 25]]);
+      }))();
+    },
 
     /**
      * Converts tasks to JSON.
@@ -112,7 +107,7 @@ var steps = function steps(tasks) {
      *
      * @return {tasksay}
      */
-    toJSON: function toJSON() {
+    toJSON() {
       return ['steps', tasks];
     }
   };
@@ -124,4 +119,5 @@ steps.defineTasks = function (defns, busted) {
 };
 
 exports.default = steps;
+
 //# sourceMappingURL=steps.js.map

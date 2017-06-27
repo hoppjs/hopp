@@ -152,4 +152,5 @@ glob.nonMagic = function (pattern) {
 };
 
 exports.default = glob;
+
 //# sourceMappingURL=glob.js.map

@@ -55,4 +55,5 @@ exports.default = (file, dest) => {
     });
   }));
 };
+
 //# sourceMappingURL=readstream.js.map

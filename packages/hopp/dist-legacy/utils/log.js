@@ -57,21 +57,21 @@ var useColors = process.stdout.isTTY;
 /**
  * Create error mark.
  */
-var ERROR = useColors ? '\x1B[31m\u2716\x1B[39m' : '✖';
+var ERROR = useColors ? '\u001b[31m✖\u001b[39m' : '✖';
 
 /**
  * Wraps a string with color escapes.
  */
 function wrapColor(str) {
   var color = str === 'hopp' ? HOPP_COLOR : nextColor();
-  return useColors ? '\x1B[3' + color + 'm' + str + '\x1B[39m' : str;
+  return useColors ? `\u001b[3${color}m${str}\u001b[39m` : str;
 }
 
 /**
  * Dimify string.
  */
 function dim(str) {
-  return '\x1B[90m' + str + '\x1B[39m';
+  return `\u001b[90m${str}\u001b[39m`;
 }
 
 /**
@@ -84,7 +84,7 @@ var debugOutput = [];
  */
 function fmt(namespace, log) {
   return function (msg) {
-    var str = _util2.default.format.apply(console, [' ' + (log === 'error' ? ERROR : ' ') + ' ' + namespace + ' ' + (log === 'debug' ? dim(msg) : msg)].concat([].slice.call(arguments, 1)));
+    var str = _util2.default.format.apply(console, [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`].concat([].slice.call(arguments, 1)));
 
     // add to record
     debugOutput.push((0, _stripAnsi2.default)(str));
@@ -138,7 +138,7 @@ module.exports.saveLog = function () {
           case 2:
 
             console.error('\nSaved debug info to: %s.', directory);
-            console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\x1B[4m', '\x1B[24m');
+            console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
 
           case 4:
           case 'end':
@@ -152,4 +152,5 @@ module.exports.saveLog = function () {
     return _ref.apply(this, arguments);
   };
 }();
+
 //# sourceMappingURL=log.js.map

@@ -38,4 +38,5 @@ exports.default = async function find(directory) {
 
   return files.length === 1 ? directory : find(_path2.default.dirname(directory));
 };
+
 //# sourceMappingURL=find.js.map

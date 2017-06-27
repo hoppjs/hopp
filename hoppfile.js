@@ -39,36 +39,33 @@ plugins.forEach(name => {
 /**
  * Handle hopp building.
  */
-function buildHopp(presets, dest) {
+function buildHopp(opts, dest) {
   return hopp('./packages/hopp/src/**/**.js')
     .rename((file, dir, src) => {
       return dir + src.substr(src.indexOf('hopp/src') + 'hopp/src'.length)
     })
-    .babel({
+    .babel(Object.assign({
       babelrc: false,
-      sourceMaps: true,
-      presets
-    })
+      sourceMaps: true
+    }, opts))
     .dest('./packages/hopp/' + dest)
 }
 
 exports['hopp:latest'] =
-  buildHopp([
-    ['env', {
-      targets: {
-        node: '7'
-      }
-    }]
-  ], 'dist')
+  buildHopp({
+    plugins: ['transform-es2015-modules-commonjs']
+  }, 'dist')
 
 exports['hopp:legacy'] =
-  buildHopp([
-    ['env', {
-      targets: {
-        node: '4'
-      }
-    }]
-  ], 'dist-legacy')
+  buildHopp({
+    presets: [
+      ['env', {
+        targets: {
+          node: '4'
+        }
+      }]
+    ]
+  }, 'dist-legacy')
 
 exports['hopp'] =
   hopp.steps([
