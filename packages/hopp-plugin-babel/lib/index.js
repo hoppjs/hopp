@@ -51,7 +51,7 @@ export default async (ctx, data) => {
   /**
    * Replace code.
    */
-  data.body = `${output.code}\n\n//# sourceMappingURL=${data.dest.substr(0, data.dest.lastIndexOf('.'))}.map`
+  data.body = `${output.code}\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`
 
   /**
    * Return final object.
