@@ -1,6 +1,6 @@
 {
   "name": "hopp",
-  "version": "1.0.0-alpha.14",
+  "version": "1.0.0-alpha.15",
   "description": "Rapid & lightweight build system.",
   "main": "index.js",
   "directories": {
