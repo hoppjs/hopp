@@ -54,8 +54,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _createLogger = (0, _utils.createLogger)('hopp'),
@@ -224,7 +222,7 @@ var Hopp = function () {
   }, {
     key: 'startBundling',
     value: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name, directory, modified, dest) {
+      var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(name, directory, modified, dest) {
         var useDoubleCache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
 
         var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, _file, stream;
@@ -247,7 +245,7 @@ var Hopp = function () {
                  */
 
                 _context.next = 5;
-                return (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, true);
+                return (0, _bluebird.resolve)((0, _glob2.default)(name, this.d.src, directory, useDoubleCache, true));
 
               case 5:
                 files = _context.sent;
@@ -321,7 +319,7 @@ var Hopp = function () {
 
               case 31:
                 _context.next = 33;
-                return (0, _fs3.openFile)(dest, 'r');
+                return (0, _bluebird.resolve)((0, _fs3.openFile)(dest, 'r'));
 
               case 33:
                 _context.t1 = _context.sent;
@@ -329,7 +327,7 @@ var Hopp = function () {
               case 34:
                 originalFd = _context.t1;
                 _context.next = 37;
-                return (0, _fs3.tmpFile)();
+                return (0, _bluebird.resolve)((0, _fs3.tmpFile)());
 
               case 37:
                 _ref2 = _context.sent;
@@ -418,7 +416,7 @@ var Hopp = function () {
 
               case 63:
                 _context.next = 65;
-                return bundle.end(tmpBundlePath);
+                return (0, _bluebird.resolve)(bundle.end(tmpBundlePath));
 
               case 65:
 
@@ -427,16 +425,16 @@ var Hopp = function () {
                  */
                 if (originalFd) originalFd.close();
                 _context.next = 68;
-                return (0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory);
+                return (0, _bluebird.resolve)((0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory));
 
               case 68:
                 _context.next = 70;
-                return new _bluebird2.default(function (resolve, reject) {
+                return (0, _bluebird.resolve)(new _bluebird2.default(function (resolve, reject) {
                   var stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
 
                   stream.on('close', resolve);
                   stream.on('error', reject);
-                });
+                }));
 
               case 70:
 
@@ -455,7 +453,7 @@ var Hopp = function () {
         }, _callee, this, [[11, 15, 19, 27], [20,, 22, 26], [47, 51, 55, 63], [56,, 58, 62]]);
       }));
 
-      function startBundling(_x3, _x4, _x5, _x6) {
+      function startBundling(_x2, _x3, _x4, _x5, _x6) {
         return _ref.apply(this, arguments);
       }
 
@@ -481,7 +479,7 @@ var Hopp = function () {
             plugin = _ref5[0];
 
         var pluginStream = _through2.default.obj(function () {
-          var _ref6 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(data, _, done) {
+          var _ref6 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(data, _, done) {
             var handler, retval;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
               while (1) {
@@ -492,7 +490,7 @@ var Hopp = function () {
 
                     // for async functions/promises
 
-                    if (!(handler instanceof _bluebird2.default)) {
+                    if (!('then' in handler)) {
                       _context2.next = 17;
                       break;
                     }
@@ -500,7 +498,7 @@ var Hopp = function () {
                     _context2.prev = 3;
                     _context2.t0 = this;
                     _context2.next = 7;
-                    return handler;
+                    return (0, _bluebird.resolve)(handler);
 
                   case 7:
                     _context2.t1 = _context2.sent;
@@ -533,7 +531,7 @@ var Hopp = function () {
 
                   case 19:
                     _context2.next = 21;
-                    return handler.next();
+                    return (0, _bluebird.resolve)(handler.next());
 
                   case 21:
                     retval = _context2.sent;
@@ -574,7 +572,7 @@ var Hopp = function () {
             }, _callee2, this, [[0, 30], [3, 12]]);
           }));
 
-          return function (_x7, _x8, _x9) {
+          return function (_x8, _x9, _x10) {
             return _ref6.apply(this, arguments);
           };
         }());
@@ -651,7 +649,7 @@ var Hopp = function () {
   }, {
     key: 'start',
     value: function () {
-      var _ref7 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(name, directory) {
+      var _ref7 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee3(name, directory) {
         var _this2 = this;
 
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
@@ -703,7 +701,7 @@ var Hopp = function () {
                  */
                 debug('task recache = %s', recache);
                 _context3.next = 6;
-                return (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache);
+                return (0, _bluebird.resolve)((0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache));
 
               case 6:
                 files = _context3.sent;
@@ -733,7 +731,7 @@ var Hopp = function () {
                 }
 
                 _context3.next = 14;
-                return (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
+                return (0, _bluebird.resolve)((0, _fs3.mkdirp)(dest.replace(directory, ''), directory));
 
               case 14:
 
@@ -822,7 +820,7 @@ var Hopp = function () {
 
                 log('Starting task');
                 _context3.next = 21;
-                return (0, _bluebird.all)(files.val());
+                return (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
 
               case 21:
                 log('Task ended (took %s ms)', Date.now() - _start);
@@ -840,7 +838,7 @@ var Hopp = function () {
         }, _callee3, this);
       }));
 
-      function start(_x12, _x13) {
+      function start(_x11, _x12, _x13, _x14) {
         return _ref7.apply(this, arguments);
       }
 

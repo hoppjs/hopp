@@ -25,11 +25,11 @@ var _utils = require('../utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @file src/fs.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              */
+/**
+ * @file src/fs.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
 var _require = require('../utils/log')('hopp:fs'),
     debug = _require.debug;
@@ -84,14 +84,14 @@ var disableFSCache = exports.disableFSCache = function disableFSCache() {
  * or doing a promisifyAll).
  */
 var exists = exports.exists = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(dir) {
+  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(dir) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return stat(dir);
+            return (0, _bluebird.resolve)(stat(dir));
 
           case 3:
             return _context.abrupt('return', true);
@@ -151,7 +151,7 @@ var tmpFileSync = exports.tmpFileSync = function tmpFileSync() {
  * mkdir -p
  */
 var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
-  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory, cwd) {
+  var _ref2 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(directory, cwd) {
     var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, dir;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -183,7 +183,7 @@ var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
 
             _context2.prev = 9;
             _context2.next = 12;
-            return mkdir(cwd + _path2.default.sep + dir);
+            return (0, _bluebird.resolve)(mkdir(cwd + _path2.default.sep + dir));
 
           case 12:
             _context2.next = 18;

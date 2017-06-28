@@ -72,7 +72,7 @@ class Bundle extends _events.EventEmitter {
   /**
    * Flush, in order.
    */
-  *flush() {
+  flush() {
     var _this = this;
 
     return (0, _bluebird.coroutine)(function* () {

@@ -25,7 +25,7 @@ const steps = tasks => ({
    *
    * @return {Promise} a promise that will be resolved when all tasks are done
    */
-  *start(name, directory) {
+  start(name, directory) {
     return (0, _bluebird.coroutine)(function* () {
       for (let task of tasks) {
         yield (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));

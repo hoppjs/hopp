@@ -6,12 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _bluebird = require('bluebird');
 
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 /**
  * @file src/plugins/steps.js
  * @license MIT
@@ -35,7 +29,7 @@ var steps = function steps(tasks) {
     start(name, directory) {
       var _this = this;
 
-      return _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+      return (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
         var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, task;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -56,7 +50,7 @@ var steps = function steps(tasks) {
 
                 task = _step.value;
                 _context.next = 9;
-                return taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]);
+                return (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
 
               case 9:
                 _iteratorNormalCompletion = true;

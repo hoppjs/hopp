@@ -18,8 +18,6 @@ var _events = require('events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -93,7 +91,7 @@ var Bundle = function (_EventEmitter) {
   }, {
     key: 'flush',
     value: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+      var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
         var _this3 = this;
 
         var file, relative;
@@ -115,9 +113,9 @@ var Bundle = function (_EventEmitter) {
 
                 // write to file
                 _context.next = 7;
-                return new _bluebird2.default(function (resolve) {
+                return (0, _bluebird.resolve)(new _bluebird2.default(function (resolve) {
                   _this3.target.write(Buffer.concat(_this3.buffers[file]), resolve);
-                });
+                }));
 
               case 7:
 
@@ -143,7 +141,7 @@ var Bundle = function (_EventEmitter) {
     value: function end() {
       var _this4 = this;
 
-      return (0, _bluebird.all)(this.goal).then(_asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+      return (0, _bluebird.all)(this.goal).then((0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -154,7 +152,7 @@ var Bundle = function (_EventEmitter) {
                 }
 
                 _context2.next = 3;
-                return _this4.flush();
+                return (0, _bluebird.resolve)(_this4.flush());
 
               case 3:
                 _context2.next = 0;

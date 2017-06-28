@@ -2,8 +2,6 @@
 
 var _bluebird = require('bluebird');
 
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
@@ -24,13 +22,6 @@ var _fs = require('../fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @file src/utils/log.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              */
-/* eslint no-console: 'off' */
-
 /**
  * Selected colors - borrowed from `debug`.
  */
@@ -39,6 +30,13 @@ var colors = [2, 3, 4, 5, 1];
 /**
  * This color is reserved for `hopp` logs.
  */
+/**
+ * @file src/utils/log.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
+/* eslint no-console: 'off' */
+
 var HOPP_COLOR = 6;
 
 /**
@@ -131,13 +129,13 @@ module.exports = function (namespace) {
  * Write debug log to file on failure.
  */
 module.exports.saveLog = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(directory) {
+  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(directory) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return (0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL));
+            return (0, _bluebird.resolve)((0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL)));
 
           case 2:
 

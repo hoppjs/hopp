@@ -188,7 +188,7 @@ class Hopp {
   /**
    * Handles bundling.
    */
-  *startBundling(name, directory, modified, dest, useDoubleCache = true) {
+  startBundling(name, directory, modified, dest, useDoubleCache = true) {
     var _this = this;
 
     return (0, _bluebird.coroutine)(function* () {
@@ -300,7 +300,7 @@ class Hopp {
             const handler = plugins[plugin](that.pluginCtx[plugin], data);
 
             // for async functions/promises
-            if (handler instanceof _bluebird2.default) {
+            if ('then' in handler) {
               try {
                 this.push((yield (0, _bluebird.resolve)(handler)));
                 done();
@@ -396,7 +396,7 @@ class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  *start(name, directory, recache = false, useDoubleCache = true) {
+  start(name, directory, recache = false, useDoubleCache = true) {
     var _this2 = this;
 
     return (0, _bluebird.coroutine)(function* () {

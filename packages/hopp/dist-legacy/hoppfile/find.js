@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _bluebird = require('bluebird');
 
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -16,11 +14,11 @@ var _fs = require('../fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @file src/utils/load.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              */
+/**
+ * @file src/utils/load.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc.
+ */
 
 var _require = require('../utils/log')('hopp'),
     debug = _require.debug;
@@ -34,14 +32,14 @@ var _require = require('../utils/log')('hopp'),
 
 
 exports.default = function () {
-  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(directory) {
+  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(directory) {
     var files;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return (0, _fs.readdir)(directory);
+            return (0, _bluebird.resolve)((0, _fs.readdir)(directory));
 
           case 2:
             _context.t0 = function (f) {

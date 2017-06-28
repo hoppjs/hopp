@@ -263,7 +263,7 @@ export default class Hopp {
           )
 
           // for async functions/promises
-          if (handler instanceof Promise) {
+          if ('then' in handler) {
             try {
               this.push(await handler)
               done()
