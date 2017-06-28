@@ -27,8 +27,12 @@ export default async (ctx, data) => {
   /**
    * Add file metadata to babel options.
    */
+  const filerelative = path.relative(path.dirname(data.dest), data.file)
   const options = Object.assign({}, ctx.args[0] || {}, {
-    filename: path.basename(data.file)
+    filename: path.basename(data.file),
+    filenameRelative: filerelative,
+    sourceFileName: filerelative,
+    sourceMapTarget: filerelative
   })
 
   /**

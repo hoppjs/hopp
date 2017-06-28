@@ -29,7 +29,7 @@ var config = exports.config = {
 };
 exports.default = function () {
   var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ctx, data) {
-    var options, output;
+    var filerelative, options, output;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -46,8 +46,12 @@ exports.default = function () {
             /**
              * Add file metadata to babel options.
              */
+            filerelative = path.relative(path.dirname(data.dest), data.file);
             options = Object.assign({}, ctx.args[0] || {}, {
-              filename: path.basename(data.file)
+              filename: path.basename(data.file),
+              filenameRelative: filerelative,
+              sourceFileName: filerelative,
+              sourceMapTarget: filerelative
             });
 
             /**
@@ -61,18 +65,18 @@ exports.default = function () {
              */
 
             if (!options.sourceMaps) {
-              _context.next = 7;
+              _context.next = 8;
               break;
             }
 
-            _context.next = 7;
+            _context.next = 8;
             return new Promise(function (resolve, reject) {
               fs.writeFile(data.dest + '.map', JSON.stringify(output.map), function (err) {
                 if (err) reject(err);else resolve();
               });
             });
 
-          case 7:
+          case 8:
 
             /**
              * Replace code.
@@ -84,7 +88,7 @@ exports.default = function () {
              */
             return _context.abrupt('return', data);
 
-          case 9:
+          case 10:
           case 'end':
             return _context.stop();
         }
