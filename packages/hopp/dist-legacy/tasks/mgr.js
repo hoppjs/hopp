@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
@@ -50,7 +54,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -203,7 +207,7 @@ var Hopp = function () {
         }));
       });
 
-      return new Promise(function (resolve) {
+      return new _bluebird2.default(function (resolve) {
         process.on('SIGINT', function () {
           watchers.forEach(function (watcher) {
             return watcher.close();
@@ -427,7 +431,7 @@ var Hopp = function () {
 
               case 68:
                 _context.next = 70;
-                return new Promise(function (resolve, reject) {
+                return new _bluebird2.default(function (resolve, reject) {
                   var stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
 
                   stream.on('close', resolve);
@@ -488,7 +492,7 @@ var Hopp = function () {
 
                     // for async functions/promises
 
-                    if (!(handler instanceof Promise)) {
+                    if (!(handler instanceof _bluebird2.default)) {
                       _context2.next = 17;
                       break;
                     }
@@ -782,7 +786,7 @@ var Hopp = function () {
                         fd: tmp
                       });
 
-                      file.promise = new Promise(function (resolve, reject) {
+                      file.promise = new _bluebird2.default(function (resolve, reject) {
                         output.on('close', function () {
                           var newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
 
@@ -799,7 +803,7 @@ var Hopp = function () {
                   }
 
                   // promisify the current pipeline
-                  return new Promise(function (resolve, reject) {
+                  return new _bluebird2.default(function (resolve, reject) {
                     // connect all streams together to form pipeline
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
                       if (err) reject(err);
@@ -818,7 +822,7 @@ var Hopp = function () {
 
                 log('Starting task');
                 _context3.next = 21;
-                return Promise.all(files.val());
+                return (0, _bluebird.all)(files.val());
 
               case 21:
                 log('Task ended (took %s ms)', Date.now() - _start);

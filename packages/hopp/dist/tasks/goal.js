@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.create = exports.defineTasks = undefined;
 
+var _bluebird = require('bluebird');
+
 var _watch = require('./watch');
 
 var _watch2 = _interopRequireDefault(_watch);
@@ -82,15 +84,21 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
   /**
    * Otherwise wrap all.
    */
-  return Promise.all(tasks.map(async name => {
-    let task = taskDefns[name];
+  return (0, _bluebird.all)(tasks.map((() => {
+    var _ref = (0, _bluebird.method)(function (name) {
+      let task = taskDefns[name];
 
-    if (task instanceof Array) {
-      task = fromArray(task);
-    }
+      if (task instanceof Array) {
+        task = fromArray(task);
+      }
 
-    return task[mode](name, projectDir, !!bustedTasks[name]);
-  }));
+      return task[mode](name, projectDir, !!bustedTasks[name]);
+    });
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  })()));
 };
 
 //# sourceMappingURL=goal.js.map

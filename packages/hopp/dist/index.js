@@ -1,5 +1,7 @@
 'use strict';
 
+var _bluebird = require('bluebird');
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -142,7 +144,7 @@ if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require]).forEach(mod => require(mod));
 }
 
-;(async () => {
+;(0, _bluebird.coroutine)(function* () {
   /**
    * Pass verbosity through to the env.
    */
@@ -171,7 +173,7 @@ if (argv.require) {
 
     // map to current directory
     return _path2.default.resolve(process.cwd(), directory);
-  })(argv.directory || (await hoppfile.find(process.cwd())));
+  })(argv.directory || (yield (0, _bluebird.resolve)(hoppfile.find(process.cwd()))));
 
   /**
    * Set hoppfile location relative to the project.
@@ -187,12 +189,12 @@ if (argv.require) {
   /**
    * Load cache.
    */
-  await cache.load(projectDir);
+  yield (0, _bluebird.resolve)(cache.load(projectDir));
 
   /**
    * Create hopp instance creator.
    */
-  const hopp = await (0, _hopp2.default)(projectDir);
+  const hopp = yield (0, _bluebird.resolve)((0, _hopp2.default)(projectDir));
 
   /**
    * Cache the hopp handler to make `require()` work
@@ -212,7 +214,7 @@ if (argv.require) {
     /**
      * Load tasks from file.
      */
-  };const [fromCache, busted, taskDefns] = await hoppfile.load(file);
+  };const [fromCache, busted, taskDefns] = yield (0, _bluebird.resolve)(hoppfile.load(file));
 
   /**
    * Parse from cache.
@@ -241,12 +243,12 @@ if (argv.require) {
    * Wait for task completion.
    */
   Goal.defineTasks(taskDefns, busted);
-  await Goal.create(tasks, projectDir);
+  yield (0, _bluebird.resolve)(Goal.create(tasks, projectDir));
 
   /**
    * Store cache for later.
    */
-  await cache.save(projectDir);
+  yield (0, _bluebird.resolve)(cache.save(projectDir));
 })().then(() => {
   process.exit(0);
 }, err => {

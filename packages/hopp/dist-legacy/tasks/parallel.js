@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
@@ -32,7 +36,7 @@ var bustedTasks = void 0;
  * Run all tasks in parallel.
  */
 function runParallel(jobs, tasks, name, directory) {
-  return new Promise(function (resolve, reject) {
+  return new _bluebird2.default(function (resolve, reject) {
     if (_cluster2.default.isMaster) {
       if (tasks.length < jobs) {
         debug('starting %s jobs, 1 task per job', tasks.length);
@@ -96,7 +100,7 @@ function runParallel(jobs, tasks, name, directory) {
 function runAsync(tasks, name, directory) {
   // just async for now
   debug('running %s tasks in async', tasks.length);
-  return Promise.all(tasks.map(function (task) {
+  return (0, _bluebird.all)(tasks.map(function (task) {
     return runTask(task, name, directory);
   }));
 }

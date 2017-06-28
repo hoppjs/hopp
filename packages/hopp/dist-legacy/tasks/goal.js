@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.create = exports.defineTasks = undefined;
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _watch = require('./watch');
 
 var _watch2 = _interopRequireDefault(_watch);
@@ -23,11 +27,11 @@ var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/tasks/mgr.js
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return (0, _bluebird.resolve)(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @file src/tasks/mgr.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @copyright 2017 10244872 Canada Inc.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              */
 
 var _createLogger = (0, _log2.default)('hopp'),
     error = _createLogger.error;
@@ -85,7 +89,7 @@ var create = exports.create = function create(tasks, projectDir) {
   /**
    * Otherwise wrap all.
    */
-  return Promise.all(tasks.map(function () {
+  return (0, _bluebird.all)(tasks.map(function () {
     var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name) {
       var task;
       return regeneratorRuntime.wrap(function _callee$(_context) {

@@ -1,5 +1,7 @@
 'use strict';
 
+var _bluebird = require('bluebird');
+
 var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
@@ -126,11 +128,17 @@ module.exports = namespace => {
 /**
  * Write debug log to file on failure.
  */
-module.exports.saveLog = async directory => {
-  await (0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL));
+module.exports.saveLog = (() => {
+  var _ref = (0, _bluebird.coroutine)(function* (directory) {
+    yield (0, _bluebird.resolve)((0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL)));
 
-  console.error('\nSaved debug info to: %s.', directory);
-  console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
-};
+    console.error('\nSaved debug info to: %s.', directory);
+    console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
+  });
+
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+})();
 
 //# sourceMappingURL=log.js.map

@@ -53,12 +53,14 @@ function buildHopp(opts, dest) {
 
 exports['hopp:latest'] =
   buildHopp({
+    presets: ['bluebird'],
     plugins: ['transform-es2015-modules-commonjs']
   }, 'dist')
 
 exports['hopp:legacy'] =
   buildHopp({
     presets: [
+      'bluebird',
       ['env', {
         targets: {
           node: '4'
