@@ -1,5 +1,4 @@
 {
-  "preferGlobal": true,
   "name": "hopp",
   "version": "1.0.0-alpha.12",
   "description": "Rapid & lightweight build system.",
