@@ -1,6 +1,6 @@
 {
   "name": "hopp-plugin-accord",
-  "version": "1.0.0-alpha.10",
+  "version": "1.0.0-alpha.13",
   "main": "dist/index.js",
   "scripts": {
     "build": "hopp -r babel-register -r regenerator-runtime/runtime",

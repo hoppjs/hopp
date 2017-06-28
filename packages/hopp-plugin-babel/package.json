@@ -1,6 +1,6 @@
 {
   "name": "hopp-plugin-babel",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.13",
   "description": "Use babel with hopp.",
   "main": "dist/index.js",
   "scripts": {
