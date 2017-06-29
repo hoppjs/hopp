@@ -30,7 +30,10 @@ exports.default = (() => {
     /**
      * Filter for appropriate dependencies.
      */
-    return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => dep.startsWith('hopp-plugin-'));
+    return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => {
+      const start = dep.substr(0, 12);
+      return start === 'hopp-plugin-' || start === 'hopp-preset-';
+    });
   });
 
   return function (_x) {

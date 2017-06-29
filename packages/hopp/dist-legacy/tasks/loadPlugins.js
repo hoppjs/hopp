@@ -31,7 +31,8 @@ exports.default = function () {
      * Filter for appropriate dependencies.
      */
     return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(function (dep) {
-      return dep.startsWith('hopp-plugin-');
+      var start = dep.substr(0, 12);
+      return start === 'hopp-plugin-' || start === 'hopp-preset-';
     });
   });
 

@@ -4,6 +4,7 @@
  * @copyright 2017 10244872 Canada Inc..
  */
 
+import path from 'path'
 import Hopp from './tasks/mgr'
 import createSteps from './tasks/steps'
 import createWatch from './tasks/watch'
@@ -13,18 +14,33 @@ import createParallel from './tasks/parallel'
 const { debug } = require('./utils/log')('hopp')
 
 /**
+ * Normalizes a plugin/preset name to be added to
+ * the prototype.
+ */
+function normalize( name ) {
+  let normalized = ''
+
+  for (let i = 12; i < name.length; i += 1) {
+    normalized += name[i] === '-' ? name[i++].toUpperCase() : name[i]
+  }
+  
+  return normalized
+}
+
+/**
  * Create hopp object based on plugins.
  */
 export default async directory => {
   ;(await loadPlugins(directory)).forEach(name => {
-    let plugName = ''
+    const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset'
+    const plugName = normalize(name)
 
-    // convert plugin name to camelcase
-    for (let i = 12; i < name.length; i += 1) {
-      plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i]
+    debug('adding %s %s as %s', type, name, plugName)
+
+    // check for conflicts
+    if (Hopp.prototype.hasOwnProperty(plugName)) {
+      throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`)
     }
-
-    debug('adding plugin %s as %s', name, plugName)
 
     // add the plugin to the hopp prototype so it can be
     // used for the rest of the build process
@@ -34,10 +50,25 @@ export default async directory => {
       // for use later. this is useful when we are stepping through
       // an entire hoppfile but might only be running a single task
 
-      this.d.stack.push([
-        name,
-        [].slice.call(arguments)
-      ])
+      if (type === 'plugin') {
+        this.d.stack.push([
+          name,
+          [].slice.call(arguments)
+        ])
+      } else {
+        const preset = require(path.resolve(directory, 'node_modules', name))
+        const substack = preset.apply(null, arguments)
+
+        substack.forEach(row => {
+          const [name] = row
+
+          if (name[0] === '/') {
+            this.d.stack.push(row)
+          } else {
+            this[name].apply(this, row[1])
+          }
+        })
+      }
 
       return this
     }

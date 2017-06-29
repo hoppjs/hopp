@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _bluebird = require('bluebird');
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
@@ -28,28 +32,44 @@ var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { debug } = require('./utils/log')('hopp');
-
-/**
- * Create hopp object based on plugins.
- */
 /**
  * @file src/hopp.js
  * @license MIT
  * @copyright 2017 10244872 Canada Inc..
  */
 
+const { debug } = require('./utils/log')('hopp');
+
+/**
+ * Normalizes a plugin/preset name to be added to
+ * the prototype.
+ */
+function normalize(name) {
+  let normalized = '';
+
+  for (let i = 12; i < name.length; i += 1) {
+    normalized += name[i] === '-' ? name[i++].toUpperCase() : name[i];
+  }
+
+  return normalized;
+}
+
+/**
+ * Create hopp object based on plugins.
+ */
+
 exports.default = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (directory) {
     ;(yield (0, _bluebird.resolve)((0, _loadPlugins2.default)(directory))).forEach(name => {
-      let plugName = '';
+      const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
+      const plugName = normalize(name);
 
-      // convert plugin name to camelcase
-      for (let i = 12; i < name.length; i += 1) {
-        plugName += name[i] === '-' ? name[i++].toUpperCase() : name[i];
+      debug('adding %s %s as %s', type, name, plugName);
+
+      // check for conflicts
+      if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
+        throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
       }
-
-      debug('adding plugin %s as %s', name, plugName);
 
       // add the plugin to the hopp prototype so it can be
       // used for the rest of the build process
@@ -59,7 +79,22 @@ exports.default = (() => {
         // for use later. this is useful when we are stepping through
         // an entire hoppfile but might only be running a single task
 
-        this.d.stack.push([name, [].slice.call(arguments)]);
+        if (type === 'plugin') {
+          this.d.stack.push([name, [].slice.call(arguments)]);
+        } else {
+          const preset = require(_path2.default.resolve(directory, 'node_modules', name));
+          const substack = preset.apply(null, arguments);
+
+          substack.forEach(row => {
+            const [name] = row;
+
+            if (name[0] === '/') {
+              this.d.stack.push(row);
+            } else {
+              this[name].apply(this, row[1]);
+            }
+          });
+        }
 
         return this;
       };
