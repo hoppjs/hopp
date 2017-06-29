@@ -81,14 +81,21 @@ exports.default = function () {
             /**
              * Replace code.
              */
-            data.body = `${output.code}\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`;
+            data.body = output.code;
+
+            /**
+             * Add sourcemap link.
+             */
+            if (options.sourceMaps) {
+              data.body += `\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`;
+            }
 
             /**
              * Return final object.
              */
             return _context.abrupt('return', data);
 
-          case 10:
+          case 11:
           case 'end':
             return _context.stop();
         }

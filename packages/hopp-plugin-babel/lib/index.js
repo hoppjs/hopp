@@ -55,7 +55,14 @@ export default async (ctx, data) => {
   /**
    * Replace code.
    */
-  data.body = `${output.code}\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`
+  data.body = output.code
+
+  /**
+   * Add sourcemap link.
+   */
+  if (options.sourceMaps) {
+    data.body += `\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`
+  }
 
   /**
    * Return final object.
