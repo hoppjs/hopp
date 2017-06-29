@@ -24,6 +24,15 @@ const steps = tasks => ({
   },
 
   /**
+   * Watch all subtasks.
+   */
+  watch (name, directory) {
+    return Promise.all(tasks.map(task => {
+      return taskTree[task].watch(name + ':' + task, directory)
+    }))
+  },
+
+  /**
    * Converts tasks to JSON.
    * Just converts them into an tasksay of
    * JSON objects.
