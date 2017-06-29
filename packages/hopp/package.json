@@ -23,8 +23,27 @@
     "url": "git+https://github.com/hoppjs/hopp.git"
   },
   "keywords": [
+    "asset",
+    "async",
+    "automation",
     "build",
-    "hopp"
+    "build system",
+    "build tool",
+    "cache",
+    "caching",
+    "es2015",
+    "fast",
+    "fastest",
+    "hopp",
+    "make",
+    "modern",
+    "pipeline",
+    "promise",
+    "stream",
+    "system",
+    "task",
+    "task runner",
+    "tool"
   ],
   "author": "10244872 Canada Inc.",
   "license": "MIT",
