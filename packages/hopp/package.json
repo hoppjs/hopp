@@ -3,6 +3,9 @@
   "version": "1.0.0-alpha.15",
   "description": "Rapid & lightweight build system.",
   "main": "index.js",
+  "engines": {
+    "node": ">= 4"
+  },
   "directories": {
     "example": "example"
   },
