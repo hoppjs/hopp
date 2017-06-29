@@ -96,8 +96,8 @@ export default class Hopp {
     }
 
     // remove extension
-    let ext = filename.substr(0, filename.lastIndexOf('.'))
-    filename = filename.substr(1 + filename.lastIndexOf('.'))
+    let ext = filename.substr(1 + filename.lastIndexOf('.'))
+    filename = filename.substr(0, filename.lastIndexOf('.'))
 
     // add prefix
     if (this.d.rename.prefix) {
@@ -115,7 +115,7 @@ export default class Hopp {
     }
 
     // output final filename into same dest directory
-    return dirname + '/' + filename + ext
+    return dirname + '/' + filename + '.' + ext
   }
 
   /**
@@ -315,7 +315,13 @@ export default class Hopp {
     if (!mod) {
       // convert plugin path from relative back to absolute
       try {
-        mod = require(path.join(directory, 'node_modules', plugin))
+        let pathToPlugin = plugin
+
+        if (plugin[0] !== '/') {
+          pathToPlugin = path.join(directory, 'node_modules', plugin)
+        }
+
+        mod = require(pathToPlugin)
       } catch (err) {
         debug('failed to load plugin: %s', err && err.stack ? err.stack : err)
         throw new Error('Failed to load plugin: ' + plugin)
