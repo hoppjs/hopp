@@ -1,0 +1,23 @@
+{
+  "name": "hopp-preset-less",
+  "version": "1.0.0-alpha.15",
+  "description": "Write LESS with hopp.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "hopp -r babel-register -r regenerator-runtime/runtime",
+    "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-preset-less; mkdir example/node_modules/hopp-preset-less; npm run test-copy",
+    "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-preset-less/; done",
+    "test": "hopp -r babel-register -r regenerator-runtime/runtime -v -d example"
+  },
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-preset-less",
+  "keywords": [
+    "less",
+    "css",
+    "less.css",
+    "hopp",
+    "hopp-preset"
+  ],
+  "author": "Karim Alibhai",
+  "license": "MIT"
+}

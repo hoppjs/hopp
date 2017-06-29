@@ -9,10 +9,9 @@
     "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-babel/; done",
     "test": "hopp -r babel-register -v -d example"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hoppjs/hopp-plugin-babel.git"
-  },
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-babel",
+  "author": "10244872 Canada Inc.",
   "keywords": [
     "hopp-plugin",
     "hopp",
@@ -20,12 +19,10 @@
     "esnext",
     "es2015"
   ],
-  "author": "10244872 Canada Inc.",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hoppjs/hopp-plugin-babel/issues"
   },
-  "homepage": "https://github.com/hoppjs/hopp-plugin-babel#readme",
   "dependencies": {
     "babel-core": "^6.25.0",
     "regenerator-runtime": "^0.10.5"

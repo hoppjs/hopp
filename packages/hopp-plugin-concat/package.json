@@ -14,6 +14,9 @@
     "aggregate",
     "bundle"
   ],
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-concat",
+  "author": "10244872 Canada Inc.",
   "license": "MIT",
   "devDependencies": {
     "hopp-plugin-babel": "*"

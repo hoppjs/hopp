@@ -16,6 +16,9 @@
     "less",
     "jade"
   ],
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-accord",
+  "author": "10244872 Canada Inc.",
   "license": "MIT",
   "devDependencies": {
     "hopp-plugin-babel": "*"

@@ -18,10 +18,8 @@
     "build-latest": "babel src -d dist --source-maps --no-babelrc --plugins=babel-plugin-transform-es2015-modules-commonjs",
     "build-legacy": "babel src -d dist-legacy --source-maps"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hoppjs/hopp.git"
-  },
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp",
+  "author": "10244872 Canada Inc.",
   "keywords": [
     "asset",
     "async",
@@ -45,12 +43,11 @@
     "task runner",
     "tool"
   ],
-  "author": "10244872 Canada Inc.",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/hoppjs/hopp/issues"
   },
-  "homepage": "https://github.com/hoppjs/hopp#readme",
+  "homepage": "https://hoppjs.com/",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
