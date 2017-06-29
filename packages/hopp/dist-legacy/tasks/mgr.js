@@ -706,8 +706,17 @@ var Hopp = function () {
               case 6:
                 files = _context3.sent;
 
+                if (!(process.env.SKIP_BUILD === 'true')) {
+                  _context3.next = 10;
+                  break;
+                }
+
+                log('Updated cache');
+                return _context3.abrupt('return');
+
+              case 10:
                 if (!(files.length > 0)) {
-                  _context3.next = 24;
+                  _context3.next = 27;
                   break;
                 }
 
@@ -718,22 +727,22 @@ var Hopp = function () {
                  */
 
                 if (!this.needsBundling) {
-                  _context3.next = 11;
+                  _context3.next = 14;
                   break;
                 }
 
                 return _context3.abrupt('return', this.startBundling(name, directory, files, dest, useDoubleCache));
 
-              case 11:
+              case 14:
                 if (!(!this.readonly || !this.d.dest)) {
-                  _context3.next = 14;
+                  _context3.next = 17;
                   break;
                 }
 
-                _context3.next = 14;
+                _context3.next = 17;
                 return (0, _bluebird.resolve)((0, _fs3.mkdirp)(dest.replace(directory, ''), directory));
 
-              case 14:
+              case 17:
 
                 /**
                  * Create streams.
@@ -819,18 +828,18 @@ var Hopp = function () {
                 _start = Date.now();
 
                 log('Starting task');
-                _context3.next = 21;
+                _context3.next = 24;
                 return (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
 
-              case 21:
+              case 24:
                 log('Task ended (took %s ms)', Date.now() - _start);
-                _context3.next = 25;
+                _context3.next = 28;
                 break;
 
-              case 24:
+              case 27:
                 log('Skipping task');
 
-              case 25:
+              case 28:
               case 'end':
                 return _context3.stop();
             }

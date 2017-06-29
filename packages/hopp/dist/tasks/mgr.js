@@ -436,6 +436,14 @@ class Hopp {
       debug('task recache = %s', recache);
       let files = yield (0, _bluebird.resolve)((0, _glob2.default)(name, _this2.d.src, directory, useDoubleCache, recache));
 
+      /**
+       * Quit now if we want to build skipping.
+       */
+      if (process.env.SKIP_BUILD === 'true') {
+        log('Updated cache');
+        return;
+      }
+
       if (files.length > 0) {
         const dest = _this2.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(_this2.d.dest)) : '';
 

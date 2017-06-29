@@ -391,6 +391,14 @@ export default class Hopp {
     debug('task recache = %s', recache)
     let files = await glob(name, this.d.src, directory, useDoubleCache, recache)
 
+    /**
+     * Quit now if we want to build skipping.
+     */
+    if (process.env.SKIP_BUILD === 'true') {
+      log('Updated cache')
+      return
+    }
+
     if (files.length > 0) {
       const dest = this.d.dest ? path.resolve(directory, getPath(this.d.dest)) : ''
 

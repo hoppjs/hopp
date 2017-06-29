@@ -17,6 +17,10 @@ export default tasks => ({
    * @return {Promise} joins all watch promises under .all()
    */
   start (name, directory) {
+    if (process.env.SKIP_BUILD === 'true') {
+      throw new Error('Can\'t skip builds on a watch task.')
+    }
+
     return Goal.create(tasks, directory, 'watch')
   },
 

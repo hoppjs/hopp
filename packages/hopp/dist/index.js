@@ -67,6 +67,7 @@ const args = {
   r: ['require', 'require a module before doing anything'],
   R: ['recache', 'force cache busting'],
   j: ['jobs', 'set number of jobs to use for parallel tasks'],
+  s: ['skip', 'skip any building (just updates the lockfile)'],
   v: ['verbose', 'enable debug messages'],
   V: ['version', 'get version info'],
   h: ['help', 'display this message']
@@ -76,7 +77,7 @@ const args = {
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['directory', 'require', 'jobs'],
 
-  boolean: ['recache', 'verbose', 'version', 'help'],
+  boolean: ['recache', 'verbose', 'version', 'help', 'skip'],
 
   alias: (() => {
     const o = {};
@@ -98,6 +99,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 // expose argv to env
 process.env.RECACHE = argv.recache;
 process.env.WEB_CONCURRENCY = argv.jobs;
+process.env.SKIP_BUILD = argv.skip;
 
 /**
  * Print help.
