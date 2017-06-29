@@ -5,6 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.config = undefined;
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _accord = require('accord');
 
 var _accord2 = _interopRequireDefault(_accord);
@@ -30,7 +38,7 @@ var config = exports.config = {
 
 exports.default = function () {
   var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ctx, data) {
-    var options;
+    var options, compiled;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -45,7 +53,7 @@ exports.default = function () {
           case 2:
 
             // get options
-            options = ctx.args[1] || {};
+            options = Object.assign({}, ctx.args[1] || {});
 
             // compile with accord
 
@@ -53,10 +61,34 @@ exports.default = function () {
             return _accord2.default.load(ctx.args[0]).render(data.body.toString('utf8'), options);
 
           case 5:
-            data.body = _context.sent.result;
+            compiled = _context.sent;
+
+            if (!options.sourcemap) {
+              _context.next = 9;
+              break;
+            }
+
+            _context.next = 9;
+            return new Promise(function (resolve, reject) {
+              _fs2.default.writeFile(data.dest + '.map', JSON.stringify(compiled.sourcemap), function (err) {
+                if (err) reject(err);else resolve();
+              });
+            });
+
+          case 9:
+
+            // set code
+            data.body = compiled.result;
+
+            // add sourcemap link
+            if (options.sourcemap) {
+              data.body += `\n\n//# sourceMappingURL=${_path2.default.basename(data.dest)}.map`;
+            }
+
+            // continue
             return _context.abrupt('return', data);
 
-          case 7:
+          case 12:
           case 'end':
             return _context.stop();
         }

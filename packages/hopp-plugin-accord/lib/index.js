@@ -3,6 +3,8 @@
  * @license MIT
  */
 
+import fs from 'fs'
+import path from 'path'
 import accord from 'accord'
 
 /**
@@ -23,10 +25,28 @@ export default async (ctx, data) => {
   }
 
   // get options
-  const options = ctx.args[1] || {}
+  const options = Object.assign({}, ctx.args[1] || {})
 
   // compile with accord
-  data.body = (await accord.load(ctx.args[0]).render(data.body.toString('utf8'), options)).result
+  const compiled = await accord.load(ctx.args[0]).render(data.body.toString('utf8'), options)
+
+  // generate source map
+  if (options.sourcemap) {
+    await new Promise((resolve, reject) => {
+      fs.writeFile(data.dest + '.map', JSON.stringify(compiled.sourcemap), err => {
+        if (err) reject(err)
+        else resolve()
+      })
+    })
+  }
+
+  // set code
+  data.body = compiled.result
+
+  // add sourcemap link
+  if (options.sourcemap) {
+    data.body += `\n\n//# sourceMappingURL=${path.basename(data.dest)}.map`
+  }
 
   // continue
   return data
