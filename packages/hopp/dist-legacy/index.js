@@ -275,7 +275,7 @@ if (argv.require) {
             addDependencies = function addDependencies(task) {
               if (taskDefns[task] instanceof Array) {
                 fullList = fullList.concat(taskDefns[task][1]);
-                taskDefns[task].forEach(function (sub) {
+                taskDefns[task][1].forEach(function (sub) {
                   return addDependencies(sub);
                 });
               }

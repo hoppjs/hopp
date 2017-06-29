@@ -228,7 +228,7 @@ if (argv.require) {
     const addDependencies = task => {
       if (taskDefns[task] instanceof Array) {
         fullList = fullList.concat(taskDefns[task][1]);
-        taskDefns[task].forEach(sub => addDependencies(sub));
+        taskDefns[task][1].forEach(sub => addDependencies(sub));
       }
     };
 
