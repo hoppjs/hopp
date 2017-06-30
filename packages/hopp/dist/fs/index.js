@@ -160,7 +160,7 @@ const mkdirpSync = exports.mkdirpSync = (directory, cwd) => {
     if (dir) {
       try {
         debug('mkdirp(%s)', cwd + _path2.default.sep + dir);
-        // fs.mkdirSync(cwd + path.sep + dir)
+        _fs2.default.mkdirSync(cwd + _path2.default.sep + dir);
       } catch (err) {
         if (String(err).indexOf('EEXIST') === -1) {
           throw err;
