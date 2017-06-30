@@ -61,16 +61,6 @@ var create = exports.create = function create(tasks, projectDir) {
   var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'start';
 
   /**
-   * Set timeout for hung tasks.
-   */
-  if (mode === 'start') {
-    setTimeout(function () {
-      error('Timeout exceeded! A task is hung.');
-      process.exit(-1);
-    }, 10 * 60 * 1000);
-  }
-
-  /**
    * If single task, don't bother wrapping with .all().
    */
   if (tasks.length === 1) {

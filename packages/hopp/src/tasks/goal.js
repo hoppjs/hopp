@@ -36,16 +36,6 @@ export const defineTasks = (defns, busted) => {
 
 export const create = (tasks, projectDir, mode = 'start') => {
   /**
-   * Set timeout for hung tasks.
-   */
-  if (mode === 'start') {
-    setTimeout(() => {
-      error('Timeout exceeded! A task is hung.')
-      process.exit(-1)
-    }, 10 * 60 * 1000)
-  }
-
-  /**
    * If single task, don't bother wrapping with .all().
    */
   if (tasks.length === 1) {

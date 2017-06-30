@@ -361,7 +361,15 @@ export default class Hopp {
    * @return {Promise} resolves when task is complete
    */
   async start (name, directory, recache = false, useDoubleCache = true) {
-    const { log, debug } = createLogger(`hopp:${name}`)
+    const { log, debug, error } = createLogger(`hopp:${name}`)
+
+    /**
+     * Add timeout for safety.
+     */
+    const safeTimeout = setTimeout(() => {
+      error('Timeout exceeded! Task was hung.')
+      process.exit(-1)
+    }, 10 * 60 * 1000)
 
     /**
      * Figure out if bundling is needed & load plugins.
@@ -412,7 +420,9 @@ export default class Hopp {
        * Switch to bundling mode if need be.
        */
       if (this.needsBundling) {
-        return this.startBundling(name, directory, files, dest, useDoubleCache)
+        await this.startBundling(name, directory, files, dest, useDoubleCache)
+        clearTimeout(safeTimeout)
+        return
       }
 
       /**
@@ -509,6 +519,9 @@ export default class Hopp {
       log('Starting task')
       await Promise.all(files.val())
       log('Task ended (took %s ms)', Date.now() - start)
+
+      // clear the timeout
+      clearTimeout(safeTimeout)
     } else {
       log('Skipping task')
     }

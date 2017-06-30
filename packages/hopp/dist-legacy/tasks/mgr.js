@@ -661,13 +661,22 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger4, log, debug, files, dest, _start;
+        var _createLogger4, log, debug, error, safeTimeout, files, dest, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger4 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger4.log, debug = _createLogger4.debug;
+                _createLogger4 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger4.log, debug = _createLogger4.debug, error = _createLogger4.error;
+
+                /**
+                 * Add timeout for safety.
+                 */
+
+                safeTimeout = setTimeout(function () {
+                  error('Timeout exceeded! Task was hung.');
+                  process.exit(-1);
+                }, 10 * 60 * 1000);
 
                 /**
                  * Figure out if bundling is needed & load plugins.
@@ -706,23 +715,23 @@ var Hopp = function () {
                  * Get the modified files.
                  */
                 debug('task recache = %s', recache);
-                _context3.next = 6;
+                _context3.next = 7;
                 return (0, _bluebird.resolve)((0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache));
 
-              case 6:
+              case 7:
                 files = _context3.sent;
 
                 if (!(process.env.SKIP_BUILD === 'true')) {
-                  _context3.next = 10;
+                  _context3.next = 11;
                   break;
                 }
 
                 log('Updated cache');
                 return _context3.abrupt('return');
 
-              case 10:
+              case 11:
                 if (!(files.length > 0)) {
-                  _context3.next = 27;
+                  _context3.next = 32;
                   break;
                 }
 
@@ -733,22 +742,27 @@ var Hopp = function () {
                  */
 
                 if (!this.needsBundling) {
-                  _context3.next = 14;
+                  _context3.next = 18;
                   break;
                 }
 
-                return _context3.abrupt('return', this.startBundling(name, directory, files, dest, useDoubleCache));
+                _context3.next = 16;
+                return (0, _bluebird.resolve)(this.startBundling(name, directory, files, dest, useDoubleCache));
 
-              case 14:
+              case 16:
+                clearTimeout(safeTimeout);
+                return _context3.abrupt('return');
+
+              case 18:
                 if (!(!this.readonly || !this.d.dest)) {
-                  _context3.next = 17;
+                  _context3.next = 21;
                   break;
                 }
 
-                _context3.next = 17;
+                _context3.next = 21;
                 return (0, _bluebird.resolve)((0, _fs3.mkdirp)(dest.replace(directory, ''), directory));
 
-              case 17:
+              case 21:
 
                 /**
                  * Create streams.
@@ -835,18 +849,21 @@ var Hopp = function () {
                 _start = Date.now();
 
                 log('Starting task');
-                _context3.next = 24;
+                _context3.next = 28;
                 return (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
 
-              case 24:
+              case 28:
                 log('Task ended (took %s ms)', Date.now() - _start);
-                _context3.next = 28;
+
+                // clear the timeout
+                clearTimeout(safeTimeout);
+                _context3.next = 33;
                 break;
 
-              case 27:
+              case 32:
                 log('Skipping task');
 
-              case 28:
+              case 33:
               case 'end':
                 return _context3.stop();
             }

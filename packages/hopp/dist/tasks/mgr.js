@@ -406,7 +406,15 @@ class Hopp {
     var _this2 = this;
 
     return (0, _bluebird.coroutine)(function* () {
-      const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
+      const { log, debug, error } = (0, _utils.createLogger)(`hopp:${name}`);
+
+      /**
+       * Add timeout for safety.
+       */
+      const safeTimeout = setTimeout(() => {
+        error('Timeout exceeded! Task was hung.');
+        process.exit(-1);
+      }, 10 * 60 * 1000);
 
       /**
        * Figure out if bundling is needed & load plugins.
@@ -457,7 +465,9 @@ class Hopp {
          * Switch to bundling mode if need be.
          */
         if (_this2.needsBundling) {
-          return _this2.startBundling(name, directory, files, dest, useDoubleCache);
+          yield (0, _bluebird.resolve)(_this2.startBundling(name, directory, files, dest, useDoubleCache));
+          clearTimeout(safeTimeout);
+          return;
         }
 
         /**
@@ -550,6 +560,9 @@ class Hopp {
         log('Starting task');
         yield (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
         log('Task ended (took %s ms)', Date.now() - start);
+
+        // clear the timeout
+        clearTimeout(safeTimeout);
       } else {
         log('Skipping task');
       }
