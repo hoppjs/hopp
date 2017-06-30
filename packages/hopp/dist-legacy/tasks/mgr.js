@@ -46,9 +46,9 @@ var _getPath2 = _interopRequireDefault(_getPath);
 
 var _utils = require('../utils');
 
-var _fs3 = require('../fs');
-
 var _streams = require('../streams');
+
+var _fs3 = require('../fs');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -809,6 +809,7 @@ var Hopp = function () {
                       });
                     } else {
                       debug('Set output: %s', file.outfile);
+                      (0, _fs3.mkdirpSync)(_path2.default.dirname(file.outfile).replace(directory, ''), directory);
                       output = _fs2.default.createWriteStream(file.outfile);
                     }
 

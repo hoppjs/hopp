@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
+exports.mkdirpSync = exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
 
 var _bluebird = require('bluebird');
 
@@ -147,5 +147,29 @@ const mkdirp = exports.mkdirp = (0, _utils.fn)((() => {
     return _ref2.apply(this, arguments);
   };
 })());
+
+/**
+ * mkdir -p (sync)
+ */
+const mkdirpSync = exports.mkdirpSync = (directory, cwd) => {
+  // explode into separate
+  directory = directory.split(_path2.default.sep);
+
+  // walk
+  for (let dir of directory) {
+    if (dir) {
+      try {
+        debug('mkdirp(%s)', cwd + _path2.default.sep + dir);
+        // fs.mkdirSync(cwd + path.sep + dir)
+      } catch (err) {
+        if (String(err).indexOf('EEXIST') === -1) {
+          throw err;
+        }
+      }
+    }
+
+    cwd += _path2.default.sep + dir;
+  }
+};
 
 //# sourceMappingURL=index.js.map

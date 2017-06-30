@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
+exports.mkdirpSync = exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
 
 var _bluebird = require('bluebird');
 
@@ -255,5 +255,50 @@ var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
     return _ref2.apply(this, arguments);
   };
 }());
+
+/**
+ * mkdir -p (sync)
+ */
+var mkdirpSync = exports.mkdirpSync = function mkdirpSync(directory, cwd) {
+  // explode into separate
+  directory = directory.split(_path2.default.sep);
+
+  // walk
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = directory[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var dir = _step2.value;
+
+      if (dir) {
+        try {
+          debug('mkdirp(%s)', cwd + _path2.default.sep + dir);
+          // fs.mkdirSync(cwd + path.sep + dir)
+        } catch (err) {
+          if (String(err).indexOf('EEXIST') === -1) {
+            throw err;
+          }
+        }
+      }
+
+      cwd += _path2.default.sep + dir;
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+};
 
 //# sourceMappingURL=index.js.map

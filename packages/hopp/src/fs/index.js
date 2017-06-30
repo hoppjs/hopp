@@ -115,3 +115,27 @@ export const mkdirp = wrap(async (directory, cwd) => {
     cwd += path.sep + dir
   }
 })
+
+/**
+ * mkdir -p (sync)
+ */
+export const mkdirpSync = (directory, cwd) => {
+  // explode into separate
+  directory = directory.split(path.sep)
+
+  // walk
+  for (let dir of directory) {
+    if (dir) {
+      try {
+        debug('mkdirp(%s)', cwd + path.sep + dir)
+        // fs.mkdirSync(cwd + path.sep + dir)
+      } catch (err) {
+        if (String(err).indexOf('EEXIST') === -1) {
+          throw err
+        }
+      }
+    }
+
+    cwd += path.sep + dir
+  }
+}

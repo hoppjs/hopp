@@ -12,8 +12,8 @@ import through2 from 'through2'
 import * as cache from '../cache'
 import getPath from '../fs/get-path'
 import { _, createLogger } from '../utils'
-import { disableFSCache, mkdirp, openFile, tmpFile, tmpFileSync } from '../fs'
 import { buffer, Bundle, createReadStream, map as mapStream } from '../streams'
+import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync } from '../fs'
 
 const { debug } = createLogger('hopp')
 const watchlog = createLogger('hopp:watch').log
@@ -482,6 +482,7 @@ export default class Hopp {
             })
           } else {
             debug('Set output: %s', file.outfile)
+            mkdirpSync(path.dirname(file.outfile).replace(directory, ''), directory)
             output = fs.createWriteStream(file.outfile)
           }
 
