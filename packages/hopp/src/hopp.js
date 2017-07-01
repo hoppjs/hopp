@@ -17,13 +17,13 @@ const { debug } = require('./utils/log')('hopp')
  * Normalizes a plugin/preset name to be added to
  * the prototype.
  */
-function normalize( name ) {
+function normalize (name) {
   let normalized = ''
 
   for (let i = 12; i < name.length; i += 1) {
     normalized += name[i] === '-' ? name[i++].toUpperCase() : name[i]
   }
-  
+
   return normalized
 }
 

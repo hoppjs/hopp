@@ -9,8 +9,6 @@ import createSteps from './steps'
 import createLogger from '../utils/log'
 import createParallel from './parallel'
 
-const { error } = createLogger('hopp')
-
 let taskDefns
 let bustedTasks
 
