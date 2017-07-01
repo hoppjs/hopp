@@ -201,6 +201,15 @@ if (argv.require) {
   const [fromCache, busted, taskDefns] = await hoppfile.load(file)
 
   /**
+   * Validate tasks.
+   */
+  for (let t of tasks) {
+    if (!taskDefns.hasOwnProperty(t)) {
+      throw new Error(`There\'s no task by the name of "${t}".`)
+    }
+  }
+
+  /**
    * Parse from cache.
    */
   if (fromCache) {

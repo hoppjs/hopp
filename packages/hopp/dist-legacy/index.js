@@ -153,7 +153,7 @@ if (argv.require) {
 }
 
 ;(0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
-  var file, hopp, _resolve, _ref2, _ref3, fromCache, busted, taskDefns, fullList, addDependencies;
+  var file, hopp, _resolve, _ref2, _ref3, fromCache, busted, taskDefns, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, t, fullList, addDependencies;
 
   return regeneratorRuntime.wrap(function _callee$(_context) {
     while (1) {
@@ -265,6 +265,71 @@ if (argv.require) {
 
 
           /**
+           * Validate tasks.
+           */
+          _iteratorNormalCompletion = true;
+          _didIteratorError = false;
+          _iteratorError = undefined;
+          _context.prev = 31;
+          _iterator = tasks[Symbol.iterator]();
+
+        case 33:
+          if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+            _context.next = 40;
+            break;
+          }
+
+          t = _step.value;
+
+          if (taskDefns.hasOwnProperty(t)) {
+            _context.next = 37;
+            break;
+          }
+
+          throw new Error(`There\'s no task by the name of "${t}".`);
+
+        case 37:
+          _iteratorNormalCompletion = true;
+          _context.next = 33;
+          break;
+
+        case 40:
+          _context.next = 46;
+          break;
+
+        case 42:
+          _context.prev = 42;
+          _context.t3 = _context['catch'](31);
+          _didIteratorError = true;
+          _iteratorError = _context.t3;
+
+        case 46:
+          _context.prev = 46;
+          _context.prev = 47;
+
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+
+        case 49:
+          _context.prev = 49;
+
+          if (!_didIteratorError) {
+            _context.next = 52;
+            break;
+          }
+
+          throw _iteratorError;
+
+        case 52:
+          return _context.finish(49);
+
+        case 53:
+          return _context.finish(46);
+
+        case 54:
+
+          /**
            * Parse from cache.
            */
           if (fromCache) {
@@ -298,19 +363,19 @@ if (argv.require) {
            * Wait for task completion.
            */
           Goal.defineTasks(taskDefns, busted);
-          _context.next = 32;
+          _context.next = 58;
           return (0, _bluebird.resolve)(Goal.create(tasks, projectDir));
 
-        case 32:
-          _context.next = 34;
+        case 58:
+          _context.next = 60;
           return (0, _bluebird.resolve)(cache.save(projectDir));
 
-        case 34:
+        case 60:
         case 'end':
           return _context.stop();
       }
     }
-  }, _callee, undefined);
+  }, _callee, undefined, [[31, 42, 46, 54], [47,, 49, 53]]);
 }))().then(function () {
   process.exit(0);
 }, function (err) {

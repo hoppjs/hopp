@@ -31,9 +31,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @copyright 2017 10244872 Canada Inc.
  */
 
-var _createLogger = (0, _log2.default)('hopp'),
-    error = _createLogger.error;
-
 var taskDefns = void 0;
 var bustedTasks = void 0;
 
