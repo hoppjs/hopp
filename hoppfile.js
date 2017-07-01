@@ -14,6 +14,7 @@ const plugins = [
   'hopp-plugin-accord',
   'hopp-plugin-babel',
   'hopp-plugin-concat',
+  'hopp-plugin-notify',
 ]
 
 /**

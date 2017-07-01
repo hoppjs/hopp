@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "hopp-plugin-notify",
+  "version": "1.0.0-alpha.13",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "hopp -r babel-register -r regenerator-runtime/runtime",
+    "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-notify; mkdir example/node_modules/hopp-plugin-notify; npm run test-copy",
+    "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-notify/; done",
+    "test": "hopp -r babel-register -r regenerator-runtime/runtime -v -d example",
+    "lint": "standard lib/*.js lib/**/*.js",
+    "lintfix": "standard --fix lib/*.js lib/**/*.js"
+  },
+  "keywords": [
+    "hopp",
+    "hopp-plugin",
+    "notify",
+    "notification",
+    "push notification"
+  ],
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-notify",
+  "author": "10244872 Canada Inc.",
+  "devDependencies": {
+    "hopp": "*",
+    "hopp-plugin-babel": "*",
+    "standard": "^10.0.2"
+  },
+  "dependencies": {
+    "node-notifier": "^5.1.2",
+    "regenerator-runtime": "^0.10.5"
+  }
+}
