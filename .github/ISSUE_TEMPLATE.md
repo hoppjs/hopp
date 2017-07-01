@@ -10,6 +10,12 @@
 
 ## Your Environment (for bugs)
 
+<!-- IF YOU ARE REPORTING A BUG, PLEASE UPLOAD YOUR 'hopp-debug.log'. -->
+<!-- Your issue will not be given priority until you upload this file. -->
+<!-- It saves us a lot of time with figuring out your setup. -->
+
+ - [ ] I have uploaded a `hopp-debug.log` file to accompany my report.
+
  * Commit hash: ``
  * Operating system: ``
  * Node.js version: ``
