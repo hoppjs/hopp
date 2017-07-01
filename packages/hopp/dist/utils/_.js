@@ -13,6 +13,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = array => {
   const maps = [];
   const handler = {
+    length: array.length,
+
     map(fn) {
       maps.push(fn);
       return handler;

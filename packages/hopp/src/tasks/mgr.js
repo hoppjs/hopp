@@ -390,7 +390,7 @@ export default class Hopp {
     const safeTimeout = setTimeout(() => {
       error('Timeout exceeded! Task was hung.')
       process.exit(-1)
-    }, 10 * 60 * 1000)
+    }, 6e4)
 
     /**
      * Figure out if bundling is needed & load plugins.
@@ -537,7 +537,7 @@ export default class Hopp {
 
       // start & wait for all pipelines to end
       const start = Date.now()
-      log('Starting task')
+      log('Starting task for %s files', files.length)
       await Promise.all(files.val())
       log('Task ended (took %s ms)', Date.now() - start)
 

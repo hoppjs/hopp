@@ -721,7 +721,7 @@ var Hopp = function () {
                 safeTimeout = setTimeout(function () {
                   error('Timeout exceeded! Task was hung.');
                   process.exit(-1);
-                }, 10 * 60 * 1000);
+                }, 6e4);
 
                 /**
                  * Figure out if bundling is needed & load plugins.
@@ -893,7 +893,7 @@ var Hopp = function () {
                 // start & wait for all pipelines to end
                 _start = Date.now();
 
-                log('Starting task');
+                log('Starting task for %s files', files.length);
                 _context3.next = 28;
                 return (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
 
