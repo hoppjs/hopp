@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 /**
  * @file src/utils/fn.js
@@ -18,7 +18,7 @@ var _bluebird = require('bluebird');
 exports.default = function (fn) {
   var cache = {};
 
-  return process.env.RECACHE === 'true' ? fn : (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
+  return process.env.RECACHE === 'true' ? fn : _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
     var args,
         last,
         val,
@@ -43,7 +43,7 @@ exports.default = function (fn) {
             }
 
             _context.next = 7;
-            return (0, _bluebird.resolve)(fn.apply(this, args.concat([last])));
+            return fn.apply(this, args.concat([last]));
 
           case 7:
             return _context.abrupt('return', val[last] = _context.sent);
@@ -59,5 +59,4 @@ exports.default = function (fn) {
     }, _callee, this);
   }));
 };
-
 //# sourceMappingURL=fn.js.map

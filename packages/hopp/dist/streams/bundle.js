@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -60,7 +56,7 @@ class Bundle extends _events.EventEmitter {
       this.buffers[file].push(d.body);
     });
 
-    this.goal.push(new _bluebird2.default((resolve, reject) => {
+    this.goal.push(new Promise((resolve, reject) => {
       stream.on('error', reject);
       stream.on('end', () => {
         this.status[file] = true;
@@ -72,47 +68,40 @@ class Bundle extends _events.EventEmitter {
   /**
    * Flush, in order.
    */
-  flush() {
-    var _this = this;
+  async flush() {
+    const file = this.files[this.flushIndex];
+    const relative = file.replace(this.directory, '.');
 
-    return (0, _bluebird.coroutine)(function* () {
-      const file = _this.files[_this.flushIndex];
-      const relative = file.replace(_this.directory, '.');
+    if (this.status[file] && !this.map[relative]) {
+      // record sourcemap
+      this.map[relative] = [this.offset, this.offset + this.sizes[file]];
+      this.offset += this.sizes[file];
 
-      if (_this.status[file] && !_this.map[relative]) {
-        // record sourcemap
-        _this.map[relative] = [_this.offset, _this.offset + _this.sizes[file]];
-        _this.offset += _this.sizes[file];
+      // write to file
+      await new Promise(resolve => {
+        this.target.write(Buffer.concat(this.buffers[file]), resolve);
+      });
 
-        // write to file
-        yield (0, _bluebird.resolve)(new _bluebird2.default(resolve => {
-          _this.target.write(Buffer.concat(_this.buffers[file]), resolve);
-        }));
-
-        // move to next
-        _this.flushIndex++;
-      }
-    })();
+      // move to next
+      this.flushIndex++;
+    }
   }
 
   end() {
-    var _this2 = this;
-
-    return (0, _bluebird.all)(this.goal).then((0, _bluebird.coroutine)(function* () {
+    return Promise.all(this.goal).then(async () => {
       /**
        * Ensure all data has been written.
        */
-      while (_this2.flushIndex < _this2.files.length) {
-        yield (0, _bluebird.resolve)(_this2.flush());
+      while (this.flushIndex < this.files.length) {
+        await this.flush();
       }
 
       /**
        * Close the bundle.
        */
-      _this2.target.close();
-    }));
+      this.target.close();
+    });
   }
 }
 exports.default = Bundle;
-
 //# sourceMappingURL=bundle.js.map

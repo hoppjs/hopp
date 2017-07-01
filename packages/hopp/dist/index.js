@@ -1,7 +1,5 @@
 'use strict';
 
-var _bluebird = require('bluebird');
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -146,7 +144,7 @@ if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require]).forEach(mod => require(mod));
 }
 
-;(0, _bluebird.coroutine)(function* () {
+;(async () => {
   /**
    * Pass verbosity through to the env.
    */
@@ -175,7 +173,7 @@ if (argv.require) {
 
     // map to current directory
     return _path2.default.resolve(process.cwd(), directory);
-  })(argv.directory || (yield (0, _bluebird.resolve)(hoppfile.find(process.cwd()))));
+  })(argv.directory || (await hoppfile.find(process.cwd())));
 
   /**
    * Set hoppfile location relative to the project.
@@ -191,12 +189,12 @@ if (argv.require) {
   /**
    * Load cache.
    */
-  yield (0, _bluebird.resolve)(cache.load(projectDir));
+  await cache.load(projectDir);
 
   /**
    * Create hopp instance creator.
    */
-  const hopp = yield (0, _bluebird.resolve)((0, _hopp2.default)(projectDir));
+  const hopp = await (0, _hopp2.default)(projectDir);
 
   /**
    * Cache the hopp handler to make `require()` work
@@ -216,16 +214,7 @@ if (argv.require) {
     /**
      * Load tasks from file.
      */
-  };const [fromCache, busted, taskDefns] = yield (0, _bluebird.resolve)(hoppfile.load(file));
-
-  /**
-   * Validate tasks.
-   */
-  for (let t of tasks) {
-    if (!taskDefns.hasOwnProperty(t)) {
-      throw new Error(`There\'s no task by the name of "${t}".`);
-    }
-  }
+  };const [fromCache, busted, taskDefns] = await hoppfile.load(file);
 
   /**
    * Parse from cache.
@@ -254,12 +243,12 @@ if (argv.require) {
    * Wait for task completion.
    */
   Goal.defineTasks(taskDefns, busted);
-  yield (0, _bluebird.resolve)(Goal.create(tasks, projectDir));
+  await Goal.create(tasks, projectDir);
 
   /**
    * Store cache for later.
    */
-  yield (0, _bluebird.resolve)(cache.save(projectDir));
+  await cache.save(projectDir);
 })().then(() => {
   process.exit(0);
 }, err => {
@@ -270,5 +259,4 @@ if (argv.require) {
 
   _log2.default.saveLog(projectDir).then(() => end(err)).catch(err => end(err));
 });
-
 //# sourceMappingURL=index.js.map

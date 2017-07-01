@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
@@ -36,7 +32,7 @@ var bustedTasks = void 0;
  * Run all tasks in parallel.
  */
 function runParallel(jobs, tasks, name, directory) {
-  return new _bluebird2.default(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (_cluster2.default.isMaster) {
       if (tasks.length < jobs) {
         debug('starting %s jobs, 1 task per job', tasks.length);
@@ -68,7 +64,7 @@ function runParallel(jobs, tasks, name, directory) {
 
         // if any worker fails, reject the promise
         if (code !== 0) {
-          return reject(new Error(`Job ${id} failed.`));
+          return reject(new Error('Job ' + id + ' failed.'));
         }
 
         // once all workers successfully return, resolve promise
@@ -100,7 +96,7 @@ function runParallel(jobs, tasks, name, directory) {
 function runAsync(tasks, name, directory) {
   // just async for now
   debug('running %s tasks in async', tasks.length);
-  return (0, _bluebird.all)(tasks.map(function (task) {
+  return Promise.all(tasks.map(function (task) {
     return runTask(task, name, directory);
   }));
 }
@@ -109,7 +105,7 @@ function runAsync(tasks, name, directory) {
  * Run individual task.
  */
 function runTask(task, name, directory) {
-  return taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]);
+  return taskTree[task].start(name + ':' + task, directory, !!bustedTasks[task]);
 }
 
 /**
@@ -123,7 +119,7 @@ var parallel = function parallel(tasks) {
      *
      * @return {Promise} joins all task promises under .all()
      */
-    start(name, directory) {
+    start: function start(name, directory) {
       var jobs = parseInt(process.env.WEB_CONCURRENCY);
 
       // if jobs not specified, just stick to async
@@ -139,14 +135,16 @@ var parallel = function parallel(tasks) {
       return runParallel(jobs, tasks, name, directory);
     },
 
+
     /**
      * Watch all subtasks.
      */
-    watch(name, directory) {
-      return (0, _bluebird.all)(tasks.map(function (task) {
+    watch: function watch(name, directory) {
+      return Promise.all(tasks.map(function (task) {
         return taskTree[task].watch(name + ':' + task, directory);
       }));
     },
+
 
     /**
      * Converts tasks to JSON.
@@ -155,7 +153,7 @@ var parallel = function parallel(tasks) {
      *
      * @return {tasksay}
      */
-    toJSON() {
+    toJSON: function toJSON() {
       return ['parallel', tasks];
     }
   };
@@ -167,5 +165,4 @@ parallel.defineTasks = function (defns, busted) {
 };
 
 exports.default = parallel;
-
 //# sourceMappingURL=parallel.js.map

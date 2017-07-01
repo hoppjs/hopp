@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.mkdirpSync = exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
 
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -25,11 +21,11 @@ var _utils = require('../utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/fs.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/fs.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
 
 var _require = require('../utils/log')('hopp:fs'),
     debug = _require.debug;
@@ -50,7 +46,7 @@ function promisify(fn, name) {
 
     var args = [].slice.call(arguments);
     debug('%s(%j)', name, args);
-    return new _bluebird2.default(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       fn.apply(_this, args.concat([function (err) {
         if (err) reject(err);else resolve.apply(null, [].slice.call(arguments, 1));
       }]));
@@ -84,14 +80,14 @@ var disableFSCache = exports.disableFSCache = function disableFSCache() {
  * or doing a promisifyAll).
  */
 var exists = exports.exists = function () {
-  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(dir) {
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(dir) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return (0, _bluebird.resolve)(stat(dir));
+            return stat(dir);
 
           case 3:
             return _context.abrupt('return', true);
@@ -133,7 +129,7 @@ var writeFile = exports.writeFile = promisify(_fs2.default.writeFile, 'writeFile
  * Create temporary file.
  */
 var tmpFile = exports.tmpFile = function tmpFile() {
-  return new _bluebird2.default(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     _tmp2.default.file(function (err, fdpath, fd) {
       if (err) reject(err);else resolve([fd, fdpath]);
     });
@@ -151,7 +147,7 @@ var tmpFileSync = exports.tmpFileSync = function tmpFileSync() {
  * mkdir -p
  */
 var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
-  var _ref2 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(directory, cwd) {
+  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(directory, cwd) {
     var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, dir;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -183,7 +179,7 @@ var mkdirp = exports.mkdirp = (0, _utils.fn)(function () {
 
             _context2.prev = 9;
             _context2.next = 12;
-            return (0, _bluebird.resolve)(mkdir(cwd + _path2.default.sep + dir));
+            return mkdir(cwd + _path2.default.sep + dir);
 
           case 12:
             _context2.next = 18;
@@ -300,5 +296,4 @@ var mkdirpSync = exports.mkdirpSync = function mkdirpSync(directory, cwd) {
     }
   }
 };
-
 //# sourceMappingURL=index.js.map

@@ -21,13 +21,14 @@ exports.default = function (tasks) {
      *
      * @return {Promise} joins all watch promises under .all()
      */
-    start(name, directory) {
+    start: function start(name, directory) {
       if (process.env.SKIP_BUILD === 'true') {
         throw new Error('Can\'t skip builds on a watch task.');
       }
 
       return Goal.create(tasks, directory, 'watch');
     },
+
 
     /**
      * Converts tasks to JSON.
@@ -36,7 +37,7 @@ exports.default = function (tasks) {
      *
      * @return {Array}
      */
-    toJSON() {
+    toJSON: function toJSON() {
       return ['watch', tasks];
     }
   };
@@ -45,5 +46,4 @@ exports.default = function (tasks) {
     * @license MIT
     * @copyright 2017 10244872 Canada Inc.
     */
-
 //# sourceMappingURL=watch.js.map

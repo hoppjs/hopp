@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 /**
  * @file src/plugins/steps.js
@@ -26,10 +26,8 @@ var steps = function steps(tasks) {
      *
      * @return {Promise} a promise that will be resolved when all tasks are done
      */
-    start(name, directory) {
-      var _this = this;
-
-      return (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
+    start: function () {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(name, directory) {
         var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, task;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -50,7 +48,7 @@ var steps = function steps(tasks) {
 
                 task = _step.value;
                 _context.next = 9;
-                return (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
+                return taskTree[task].start(name + ':' + task, directory, !!bustedTasks[task]);
 
               case 9:
                 _iteratorNormalCompletion = true;
@@ -96,18 +94,26 @@ var steps = function steps(tasks) {
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[3, 14, 18, 26], [19,, 21, 25]]);
-      }))();
-    },
+        }, _callee, this, [[3, 14, 18, 26], [19,, 21, 25]]);
+      }));
+
+      function start(_x, _x2) {
+        return _ref.apply(this, arguments);
+      }
+
+      return start;
+    }(),
+
 
     /**
      * Watch all subtasks.
      */
-    watch(name, directory) {
-      return (0, _bluebird.all)(tasks.map(function (task) {
+    watch: function watch(name, directory) {
+      return Promise.all(tasks.map(function (task) {
         return taskTree[task].watch(name + ':' + task, directory);
       }));
     },
+
 
     /**
      * Converts tasks to JSON.
@@ -116,7 +122,7 @@ var steps = function steps(tasks) {
      *
      * @return {tasksay}
      */
-    toJSON() {
+    toJSON: function toJSON() {
       return ['steps', tasks];
     }
   };
@@ -128,5 +134,4 @@ steps.defineTasks = function (defns, busted) {
 };
 
 exports.default = steps;
-
 //# sourceMappingURL=steps.js.map

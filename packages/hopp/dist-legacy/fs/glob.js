@@ -4,17 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
 var glob = function () {
-  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(task, pattern, cwd) {
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(task, pattern, cwd) {
     var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     /**
      * Recursive walk.
      */
     var walk = function () {
-      var _ref2 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(relative, pttn, directory) {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(relative, pttn, directory) {
         var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
         var curr, localResults, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, filepath, relativepath, fstat;
@@ -43,7 +41,7 @@ var glob = function () {
                 _iteratorError = undefined;
                 _context.prev = 9;
                 _context.next = 12;
-                return (0, _bluebird.resolve)((0, _.readdir)(directory));
+                return (0, _.readdir)(directory);
 
               case 12:
                 _context.t0 = Symbol.iterator;
@@ -78,7 +76,7 @@ var glob = function () {
                 }
 
                 _context.next = 24;
-                return (0, _bluebird.resolve)((0, _.stat)(filepath));
+                return (0, _.stat)(filepath);
 
               case 24:
                 _context.t1 = _context.sent;
@@ -90,7 +88,7 @@ var glob = function () {
 
               case 28:
                 _context.next = 30;
-                return (0, _bluebird.resolve)((0, _.stat)(filepath));
+                return (0, _.stat)(filepath);
 
               case 30:
                 fstat = _context.sent;
@@ -129,7 +127,7 @@ var glob = function () {
               case 39:
                 _context.t2 = localResults;
                 _context.next = 42;
-                return (0, _bluebird.resolve)(walk(relativepath, pttn, filepath, recursive || curr === '**'));
+                return walk(relativepath, pttn, filepath, recursive || curr === '**');
 
               case 42:
                 _context.t3 = _context.sent;
@@ -147,7 +145,7 @@ var glob = function () {
 
                 _context.t4 = localResults;
                 _context.next = 50;
-                return (0, _bluebird.resolve)(walk(relativepath, [curr].concat(pttn), filepath, recursive));
+                return walk(relativepath, [curr].concat(pttn), filepath, recursive);
 
               case 50:
                 _context.t5 = _context.sent;
@@ -203,7 +201,7 @@ var glob = function () {
         }, _callee, this, [[9, 57, 61, 69], [62,, 64, 68]]);
       }));
 
-      return function walk(_x8, _x9, _x10, _x11) {
+      return function walk(_x7, _x8, _x9) {
         return _ref2.apply(this, arguments);
       };
     }();
@@ -281,7 +279,7 @@ var glob = function () {
 
             _context2.t0 = results;
             _context2.next = 23;
-            return (0, _bluebird.resolve)(walk('.', pttn.split('/'), cwd));
+            return walk('.', pttn.split('/'), cwd);
 
           case 23:
             _context2.t1 = _context2.sent;
@@ -292,7 +290,7 @@ var glob = function () {
           case 27:
             _context2.t2 = results;
             _context2.next = 30;
-            return (0, _bluebird.resolve)(walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm)));
+            return walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm));
 
           case 30:
             _context2.t3 = _context2.sent;
@@ -348,7 +346,7 @@ var glob = function () {
     }, _callee2, this, [[11, 37, 41, 49], [42,, 44, 48]]);
   }));
 
-  return function glob(_x, _x2, _x3, _x4, _x5) {
+  return function glob(_x3, _x4, _x5) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -378,11 +376,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/glob.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @file src/glob.js
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @license MIT
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * @copyright 2017 10244872 Canada Inc.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
 
 var _require = require('../utils/log')('hopp:glob'),
     debug = _require.debug;
@@ -428,5 +426,4 @@ glob.nonMagic = function (pattern) {
 };
 
 exports.default = glob;
-
 //# sourceMappingURL=glob.js.map

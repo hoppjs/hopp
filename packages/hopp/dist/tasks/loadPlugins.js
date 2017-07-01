@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
 /**
  * @file src/plugins/load.js
  * @license MIT
@@ -17,28 +15,21 @@ var _bluebird = require('bluebird');
  * @param {String} path to directory with package.json
  * @return {Promise} resolves with array of paths to plugins
  */
-exports.default = (() => {
-  var _ref = (0, _bluebird.method)(function (directory) {
-    const pkg = (() => {
-      try {
-        return require(directory + '/package.json');
-      } catch (_) {
-        return {};
-      }
-    })();
+exports.default = async directory => {
+  const pkg = (() => {
+    try {
+      return require(directory + '/package.json');
+    } catch (_) {
+      return {};
+    }
+  })();
 
-    /**
-     * Filter for appropriate dependencies.
-     */
-    return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => {
-      const start = dep.substr(0, 12);
-      return start === 'hopp-plugin-' || start === 'hopp-preset-';
-    });
+  /**
+   * Filter for appropriate dependencies.
+   */
+  return [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(dep => {
+    const start = dep.substr(0, 12);
+    return start === 'hopp-plugin-' || start === 'hopp-preset-';
   });
-
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
-
+};
 //# sourceMappingURL=loadPlugins.js.map

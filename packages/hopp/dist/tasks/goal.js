@@ -66,6 +66,14 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
       goal = fromArray(goal);
     }
 
+    if (!goal) {
+      throw new Error(`${name}: no such task.`);
+    }
+
+    if (!(mode in goal)) {
+      throw new Error(`Cannot run task ${name} in ${mode} mode!`);
+    }
+
     return goal[mode](name, projectDir, !!bustedTasks[name]);
   }
 
@@ -78,6 +86,14 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
 
       if (task instanceof Array) {
         task = fromArray(task);
+      }
+
+      if (!task) {
+        throw new Error(`${name}: no such task.`);
+      }
+
+      if (!(mode in task)) {
+        throw new Error(`Cannot run task ${name} in ${mode} mode!`);
       }
 
       return task[mode](name, projectDir, !!bustedTasks[name]);

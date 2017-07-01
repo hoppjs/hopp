@@ -33,5 +33,4 @@ exports.default = array => {
 
   return handler;
 };
-
 //# sourceMappingURL=_.js.map

@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -32,36 +30,29 @@ exports.default = (file, dest) => {
   let size;
   let emitted = 0;
 
-  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _map2.default)((() => {
-    var _ref = (0, _bluebird.coroutine)(function* (body, next) {
-      if (size === undefined) {
-        size = (yield (0, _bluebird.resolve)((0, _fs3.stat)(file))).size;
-      }
+  return (0, _pump2.default)(_fs2.default.createReadStream(file), (0, _map2.default)(async (body, next) => {
+    if (size === undefined) {
+      size = (await (0, _fs3.stat)(file)).size;
+    }
 
-      // collect size
-      emitted += body.length;
+    // collect size
+    emitted += body.length;
 
-      // check for unexpected values
-      if (emitted > size) {
-        return next(new Error('File size received exceeded expected file size.'));
-      }
+    // check for unexpected values
+    if (emitted > size) {
+      return next(new Error('File size received exceeded expected file size.'));
+    }
 
-      next(null, {
-        // metadata
-        file,
-        dest,
-        size,
-        done: emitted === size,
+    next(null, {
+      // metadata
+      file,
+      dest,
+      size,
+      done: emitted === size,
 
-        // contents
-        body
-      });
+      // contents
+      body
     });
-
-    return function (_x, _x2) {
-      return _ref.apply(this, arguments);
-    };
-  })()));
+  }));
 };
-
 //# sourceMappingURL=readstream.js.map

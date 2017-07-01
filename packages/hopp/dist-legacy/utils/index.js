@@ -29,5 +29,4 @@ exports._ = _3.default;
 exports.fn = _fn2.default;
 exports.deepEqual = _deepEqual2.default;
 exports.createLogger = createLogger;
-
 //# sourceMappingURL=index.js.map

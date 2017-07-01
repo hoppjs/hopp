@@ -13,5 +13,4 @@ const map = exports.map = require('./map').default;
 const buffer = exports.buffer = require('./buffer').default;
 const Bundle = exports.Bundle = require('./bundle').default;
 const createReadStream = exports.createReadStream = require('./readstream').default;
-
 //# sourceMappingURL=index.js.map

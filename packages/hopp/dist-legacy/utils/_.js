@@ -13,12 +13,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (array) {
   var maps = [];
   var handler = {
-    map(fn) {
+    map: function map(fn) {
       maps.push(fn);
       return handler;
     },
-
-    val() {
+    val: function val() {
       array = array.slice();
 
       for (var i = 0; i < array.length; i += 1) {
@@ -54,5 +53,4 @@ exports.default = function (array) {
 
   return handler;
 };
-
 //# sourceMappingURL=_.js.map

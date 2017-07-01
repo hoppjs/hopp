@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
 /**
  * @file src/utils/fn.js
  * @license MIT
@@ -18,7 +16,7 @@ var _bluebird = require('bluebird');
 exports.default = fn => {
   const cache = {};
 
-  return process.env.RECACHE === 'true' ? fn : (0, _bluebird.coroutine)(function* () {
+  return process.env.RECACHE === 'true' ? fn : async function () {
     const args = [].slice.call(arguments);
     const last = args.pop();
 
@@ -28,11 +26,10 @@ exports.default = fn => {
     }
 
     if (!val.hasOwnProperty(last)) {
-      return val[last] = yield (0, _bluebird.resolve)(fn.apply(this, args.concat([last])));
+      return val[last] = await fn.apply(this, args.concat([last]));
     }
 
     return val[last];
-  });
+  };
 };
-
 //# sourceMappingURL=fn.js.map
