@@ -6,7 +6,6 @@
 
 import createWatch from './watch'
 import createSteps from './steps'
-import createLogger from '../utils/log'
 import createParallel from './parallel'
 
 let taskDefns

@@ -15,23 +15,18 @@ var _steps = require('./steps');
 
 var _steps2 = _interopRequireDefault(_steps);
 
-var _log = require('../utils/log');
-
-var _log2 = _interopRequireDefault(_log);
-
 var _parallel = require('./parallel');
 
 var _parallel2 = _interopRequireDefault(_parallel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * @file src/tasks/mgr.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
+var taskDefns = void 0; /**
+                         * @file src/tasks/mgr.js
+                         * @license MIT
+                         * @copyright 2017 10244872 Canada Inc.
+                         */
 
-var taskDefns = void 0;
 var bustedTasks = void 0;
 
 function fromArray(arr) {
