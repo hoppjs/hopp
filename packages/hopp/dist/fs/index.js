@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.mkdirpSync = exports.mkdirp = exports.tmpFileSync = exports.tmpFile = exports.writeFile = exports.readFile = exports.readdir = exports.openFile = exports.mkdir = exports.stat = exports.exists = exports.disableFSCache = undefined;
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -43,7 +47,7 @@ function promisify(fn, name) {
   const fnCall = function () {
     const args = [].slice.call(arguments);
     debug('%s(%j)', name, args);
-    return new Promise((resolve, reject) => {
+    return new _bluebird2.default((resolve, reject) => {
       fn.apply(this, args.concat([function (err) {
         if (err) reject(err);else resolve.apply(null, [].slice.call(arguments, 1));
       }]));
@@ -76,18 +80,24 @@ const disableFSCache = exports.disableFSCache = () => {
  * Transform only needed methods (instead of using mz
  * or doing a promisifyAll).
  */
-const exists = exports.exists = async dir => {
-  try {
-    await stat(dir);
-    return true;
-  } catch (err) {
-    if (String(err).indexOf('ENOENT') === -1) {
-      throw err;
-    }
+const exists = exports.exists = (() => {
+  var _ref = (0, _bluebird.coroutine)(function* (dir) {
+    try {
+      yield (0, _bluebird.resolve)(stat(dir));
+      return true;
+    } catch (err) {
+      if (String(err).indexOf('ENOENT') === -1) {
+        throw err;
+      }
 
-    return false;
-  }
-};
+      return false;
+    }
+  });
+
+  return function exists(_x) {
+    return _ref.apply(this, arguments);
+  };
+})();
 const stat = exports.stat = promisify(_fs2.default.stat, 'stat');
 const mkdir = exports.mkdir = promisify(_fs2.default.mkdir, 'mkdir');
 const openFile = exports.openFile = promisify(_fs2.default.open, 'open');
@@ -98,7 +108,7 @@ const writeFile = exports.writeFile = promisify(_fs2.default.writeFile, 'writeFi
 /**
  * Create temporary file.
  */
-const tmpFile = exports.tmpFile = () => new Promise((resolve, reject) => {
+const tmpFile = exports.tmpFile = () => new _bluebird2.default((resolve, reject) => {
   _tmp2.default.file((err, fdpath, fd) => {
     if (err) reject(err);else resolve([fd, fdpath]);
   });
@@ -112,25 +122,31 @@ const tmpFileSync = exports.tmpFileSync = () => _tmp2.default.fileSync();
 /**
  * mkdir -p
  */
-const mkdirp = exports.mkdirp = (0, _utils.fn)(async (directory, cwd) => {
-  // explode into separate
-  directory = directory.split(_path2.default.sep);
+const mkdirp = exports.mkdirp = (0, _utils.fn)((() => {
+  var _ref2 = (0, _bluebird.coroutine)(function* (directory, cwd) {
+    // explode into separate
+    directory = directory.split(_path2.default.sep);
 
-  // walk
-  for (let dir of directory) {
-    if (dir) {
-      try {
-        await mkdir(cwd + _path2.default.sep + dir);
-      } catch (err) {
-        if (String(err).indexOf('EEXIST') === -1) {
-          throw err;
+    // walk
+    for (let dir of directory) {
+      if (dir) {
+        try {
+          yield (0, _bluebird.resolve)(mkdir(cwd + _path2.default.sep + dir));
+        } catch (err) {
+          if (String(err).indexOf('EEXIST') === -1) {
+            throw err;
+          }
         }
       }
-    }
 
-    cwd += _path2.default.sep + dir;
-  }
-});
+      cwd += _path2.default.sep + dir;
+    }
+  });
+
+  return function (_x2, _x3) {
+    return _ref2.apply(this, arguments);
+  };
+})());
 
 /**
  * mkdir -p (sync)
@@ -155,4 +171,5 @@ const mkdirpSync = exports.mkdirpSync = (directory, cwd) => {
     cwd += _path2.default.sep + dir;
   }
 };
+
 //# sourceMappingURL=index.js.map

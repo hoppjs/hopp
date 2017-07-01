@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _fs = require('fs');
@@ -13,8 +17,6 @@ var _fs2 = _interopRequireDefault(_fs);
 var _events = require('events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -35,7 +37,7 @@ var Bundle = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, (Bundle.__proto__ || Object.getPrototypeOf(Bundle)).call(this));
 
     _this.target = _fs2.default.createWriteStream(null, {
-      fd: fd,
+      fd,
       autoClose: false
     });
 
@@ -73,7 +75,7 @@ var Bundle = function (_EventEmitter) {
         _this2.buffers[file].push(d.body);
       });
 
-      this.goal.push(new Promise(function (resolve, reject) {
+      this.goal.push(new _bluebird2.default(function (resolve, reject) {
         stream.on('error', reject);
         stream.on('end', function () {
           _this2.status[file] = true;
@@ -89,7 +91,7 @@ var Bundle = function (_EventEmitter) {
   }, {
     key: 'flush',
     value: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+      var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
         var _this3 = this;
 
         var file, relative;
@@ -111,9 +113,9 @@ var Bundle = function (_EventEmitter) {
 
                 // write to file
                 _context.next = 7;
-                return new Promise(function (resolve) {
+                return (0, _bluebird.resolve)(new _bluebird2.default(function (resolve) {
                   _this3.target.write(Buffer.concat(_this3.buffers[file]), resolve);
-                });
+                }));
 
               case 7:
 
@@ -139,7 +141,7 @@ var Bundle = function (_EventEmitter) {
     value: function end() {
       var _this4 = this;
 
-      return Promise.all(this.goal).then(_asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+      return (0, _bluebird.all)(this.goal).then((0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -150,7 +152,7 @@ var Bundle = function (_EventEmitter) {
                 }
 
                 _context2.next = 3;
-                return _this4.flush();
+                return (0, _bluebird.resolve)(_this4.flush());
 
               case 3:
                 _context2.next = 0;
@@ -177,4 +179,5 @@ var Bundle = function (_EventEmitter) {
 }(_events.EventEmitter);
 
 exports.default = Bundle;
+
 //# sourceMappingURL=bundle.js.map

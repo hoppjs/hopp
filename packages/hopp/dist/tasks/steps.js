@@ -3,6 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _bluebird = require('bluebird');
+
 /**
  * @file src/plugins/steps.js
  * @license MIT
@@ -22,17 +25,19 @@ const steps = tasks => ({
    *
    * @return {Promise} a promise that will be resolved when all tasks are done
    */
-  async start(name, directory) {
-    for (let task of tasks) {
-      await taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]);
-    }
+  start(name, directory) {
+    return (0, _bluebird.coroutine)(function* () {
+      for (let task of tasks) {
+        yield (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
+      }
+    })();
   },
 
   /**
    * Watch all subtasks.
    */
   watch(name, directory) {
-    return Promise.all(tasks.map(task => {
+    return (0, _bluebird.all)(tasks.map(task => {
       return taskTree[task].watch(name + ':' + task, directory);
     }));
   },
@@ -55,4 +60,5 @@ steps.defineTasks = (defns, busted) => {
 };
 
 exports.default = steps;
+
 //# sourceMappingURL=steps.js.map

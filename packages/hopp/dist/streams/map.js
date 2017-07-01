@@ -26,4 +26,5 @@ exports.default = mapper => _through2.default.obj(function (data, _, done) {
      * @license MIT
      * @copyright 2017 10244872 Canada Inc.
      */
+
 //# sourceMappingURL=map.js.map

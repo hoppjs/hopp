@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -173,7 +177,7 @@ class Hopp {
       }, () => this.start(name, directory, recache, false)));
     });
 
-    return new Promise(resolve => {
+    return new _bluebird2.default(resolve => {
       process.on('SIGINT', () => {
         watchers.forEach(watcher => watcher.close());
         resolve();
@@ -184,96 +188,100 @@ class Hopp {
   /**
    * Handles bundling.
    */
-  async startBundling(name, directory, modified, dest, useDoubleCache = true) {
-    const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
-    debug('Switched to bundling mode');
+  startBundling(name, directory, modified, dest, useDoubleCache = true) {
+    var _this = this;
 
-    /**
-     * Fetch sourcemap from cache.
-     */
-    const sourcemap = cache.sourcemap(name);
+    return (0, _bluebird.coroutine)(function* () {
+      const { log, debug } = (0, _utils.createLogger)(`hopp:${name}`);
+      debug('Switched to bundling mode');
 
-    /**
-     * Get full list of current files.
-     */
-    const files = await (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, true);
+      /**
+       * Fetch sourcemap from cache.
+       */
+      const sourcemap = cache.sourcemap(name);
 
-    /**
-     * Create list of unmodified.
-     */
-    let freshBuild = true;
-    const unmodified = {};
+      /**
+       * Get full list of current files.
+       */
+      const files = yield (0, _bluebird.resolve)((0, _glob2.default)(name, _this.d.src, directory, useDoubleCache, true));
 
-    for (let file of files) {
-      if (modified.indexOf(file) === -1) {
-        unmodified[file] = true;
-        freshBuild = false;
-      }
-    }
+      /**
+       * Create list of unmodified.
+       */
+      let freshBuild = true;
+      const unmodified = {};
 
-    /**
-     * Get old bundle & create new one.
-     */
-    const originalFd = freshBuild ? null : await (0, _fs3.openFile)(dest, 'r');
-    const [tmpBundle, tmpBundlePath] = await (0, _fs3.tmpFile)();
-
-    /**
-     * Create new bundle to forward to.
-     */
-    const bundle = new _streams.Bundle(directory, tmpBundle);
-
-    /**
-     * Since bundling starts streaming right away, we can count this
-     * as the start of the build.
-     */
-    const start = Date.now();
-    log('Starting task');
-
-    /**
-     * Add all files.
-     */
-    for (let file of files) {
-      let stream;
-
-      if (unmodified[file]) {
-        debug('forward: %s', file);
-        stream = _fs2.default.createReadStream(null, {
-          fd: originalFd,
-          autoClose: false,
-          start: sourcemap[file.replace(directory, '.')].start,
-          end: sourcemap[file.replace(directory, '.')].end
-        });
-      } else {
-        debug('transform: %s', file);
-        stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(this.buildStack(name)));
+      for (let file of files) {
+        if (modified.indexOf(file) === -1) {
+          unmodified[file] = true;
+          freshBuild = false;
+        }
       }
 
-      bundle.add(file, stream);
-    }
+      /**
+       * Get old bundle & create new one.
+       */
+      const originalFd = freshBuild ? null : yield (0, _bluebird.resolve)((0, _fs3.openFile)(dest, 'r'));
+      const [tmpBundle, tmpBundlePath] = yield (0, _bluebird.resolve)((0, _fs3.tmpFile)());
 
-    /**
-     * Wait for bundling to end.
-     */
-    await bundle.end(tmpBundlePath);
+      /**
+       * Create new bundle to forward to.
+       */
+      const bundle = new _streams.Bundle(directory, tmpBundle);
 
-    /**
-     * Move the bundle to the new location.
-     */
-    if (originalFd) originalFd.close();
-    await (0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory);
-    await new Promise((resolve, reject) => {
-      const stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
+      /**
+       * Since bundling starts streaming right away, we can count this
+       * as the start of the build.
+       */
+      const start = Date.now();
+      log('Starting task');
 
-      stream.on('close', resolve);
-      stream.on('error', reject);
-    });
+      /**
+       * Add all files.
+       */
+      for (let file of files) {
+        let stream;
 
-    /**
-     * Update sourcemap.
-     */
-    cache.sourcemap(name, bundle.map);
+        if (unmodified[file]) {
+          debug('forward: %s', file);
+          stream = _fs2.default.createReadStream(null, {
+            fd: originalFd,
+            autoClose: false,
+            start: sourcemap[file.replace(directory, '.')].start,
+            end: sourcemap[file.replace(directory, '.')].end
+          });
+        } else {
+          debug('transform: %s', file);
+          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(_this.buildStack(name)));
+        }
 
-    log('Task ended (took %s ms)', Date.now() - start);
+        bundle.add(file, stream);
+      }
+
+      /**
+       * Wait for bundling to end.
+       */
+      yield (0, _bluebird.resolve)(bundle.end(tmpBundlePath));
+
+      /**
+       * Move the bundle to the new location.
+       */
+      if (originalFd) originalFd.close();
+      yield (0, _bluebird.resolve)((0, _fs3.mkdirp)(_path2.default.dirname(dest).replace(directory, ''), directory));
+      yield (0, _bluebird.resolve)(new _bluebird2.default((resolve, reject) => {
+        const stream = _fs2.default.createReadStream(tmpBundlePath).pipe(_fs2.default.createWriteStream(dest));
+
+        stream.on('close', resolve);
+        stream.on('error', reject);
+      }));
+
+      /**
+       * Update sourcemap.
+       */
+      cache.sourcemap(name, bundle.map);
+
+      log('Task ended (took %s ms)', Date.now() - start);
+    })();
   }
 
   /**
@@ -286,36 +294,42 @@ class Hopp {
     let mode = 'stream';
 
     return this.d.stack.map(([plugin]) => {
-      const pluginStream = _through2.default.obj(async function (data, _, done) {
-        try {
-          const handler = plugins[plugin](that.pluginCtx[plugin], data);
+      const pluginStream = _through2.default.obj((() => {
+        var _ref = (0, _bluebird.coroutine)(function* (data, _, done) {
+          try {
+            const handler = plugins[plugin](that.pluginCtx[plugin], data);
 
-          // for async functions/promises
-          if ('then' in handler) {
-            try {
-              this.push((await handler));
+            // for async functions/promises
+            if ('then' in handler) {
+              try {
+                this.push((yield (0, _bluebird.resolve)(handler)));
+                done();
+              } catch (err) {
+                done(err);
+              }
+            } else if ('next' in handler) {
+              let retval;
+
+              // for async generators
+              do {
+                retval = yield (0, _bluebird.resolve)(handler.next());
+                this.push(retval.value);
+              } while (!retval.done);
+
               done();
-            } catch (err) {
-              done(err);
+            } else {
+              // otherwise, fail
+              done(new Error('Unknown return value received from ' + plugin));
             }
-          } else if ('next' in handler) {
-            let retval;
-
-            // for async generators
-            do {
-              retval = await handler.next();
-              this.push(retval.value);
-            } while (!retval.done);
-
-            done();
-          } else {
-            // otherwise, fail
-            done(new Error('Unknown return value received from ' + plugin));
+          } catch (err) {
+            done(err);
           }
-        } catch (err) {
-          done(err);
-        }
-      });
+        });
+
+        return function (_x, _x2, _x3) {
+          return _ref.apply(this, arguments);
+        };
+      })());
 
       /**
        * Enable buffer mode if required.
@@ -388,167 +402,171 @@ class Hopp {
    * Starts the pipeline.
    * @return {Promise} resolves when task is complete
    */
-  async start(name, directory, recache = false, useDoubleCache = true) {
-    const { log, debug, error } = (0, _utils.createLogger)(`hopp:${name}`);
+  start(name, directory, recache = false, useDoubleCache = true) {
+    var _this2 = this;
 
-    /**
-     * Add timeout for safety.
-     */
-    const safeTimeout = setTimeout(() => {
-      error('Timeout exceeded! Task was hung.');
-      process.exit(-1);
-    }, 10 * 60 * 1000);
-
-    /**
-     * Figure out if bundling is needed & load plugins.
-     */
-    if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || isUndefined(this.readonly) || this.d.stack.length > 0 && !this.loadedPlugins) {
-      this.loadedPlugins = true;
-
-      this.d.stack.forEach(([plugin, args]) => {
-        if (!this.pluginCtx.hasOwnProperty(plugin)) {
-          this.loadPlugin(name, plugin, args, directory);
-        }
-
-        this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle);
-        this.needsRecaching = !!(this.needsRecaching || pluginConfig[plugin].recache);
-        this.readonly = !!(this.readonly || pluginConfig[plugin].readonly);
-
-        if (this.needsBundling && this.readonly) {
-          throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
-        }
-      });
-    }
-
-    /**
-     * Override recaching.
-     */
-    if (this.needsRecaching) {
-      recache = true;
-    }
-
-    /**
-     * Get the modified files.
-     */
-    debug('task recache = %s', recache);
-    let files = await (0, _glob2.default)(name, this.d.src, directory, useDoubleCache, recache);
-
-    /**
-     * Quit now if we want to build skipping.
-     */
-    if (process.env.SKIP_BUILD === 'true') {
-      log('Updated cache');
-      return;
-    }
-
-    if (files.length > 0) {
-      const dest = this.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(this.d.dest)) : '';
+    return (0, _bluebird.coroutine)(function* () {
+      const { log, debug, error } = (0, _utils.createLogger)(`hopp:${name}`);
 
       /**
-       * Switch to bundling mode if need be.
+       * Add timeout for safety.
        */
-      if (this.needsBundling) {
-        await this.startBundling(name, directory, files, dest, useDoubleCache);
-        clearTimeout(safeTimeout);
+      const safeTimeout = setTimeout(() => {
+        error('Timeout exceeded! Task was hung.');
+        process.exit(-1);
+      }, 10 * 60 * 1000);
+
+      /**
+       * Figure out if bundling is needed & load plugins.
+       */
+      if (isUndefined(_this2.needsBundling) || isUndefined(_this2.needsRecaching) || isUndefined(_this2.readonly) || _this2.d.stack.length > 0 && !_this2.loadedPlugins) {
+        _this2.loadedPlugins = true;
+
+        _this2.d.stack.forEach(([plugin, args]) => {
+          if (!_this2.pluginCtx.hasOwnProperty(plugin)) {
+            _this2.loadPlugin(name, plugin, args, directory);
+          }
+
+          _this2.needsBundling = !!(_this2.needsBundling || pluginConfig[plugin].bundle);
+          _this2.needsRecaching = !!(_this2.needsRecaching || pluginConfig[plugin].recache);
+          _this2.readonly = !!(_this2.readonly || pluginConfig[plugin].readonly);
+
+          if (_this2.needsBundling && _this2.readonly) {
+            throw new Error('Task chain enabled bundling and readonly mode at the same time. Not sure what to do.');
+          }
+        });
+      }
+
+      /**
+       * Override recaching.
+       */
+      if (_this2.needsRecaching) {
+        recache = true;
+      }
+
+      /**
+       * Get the modified files.
+       */
+      debug('task recache = %s', recache);
+      let files = yield (0, _bluebird.resolve)((0, _glob2.default)(name, _this2.d.src, directory, useDoubleCache, recache));
+
+      /**
+       * Quit now if we want to build skipping.
+       */
+      if (process.env.SKIP_BUILD === 'true') {
+        log('Updated cache');
         return;
       }
 
-      /**
-       * Ensure dist directory exists.
-       */
-      if (!this.readonly || !this.d.dest) {
-        await (0, _fs3.mkdirp)(dest.replace(directory, ''), directory);
-      }
+      if (files.length > 0) {
+        const dest = _this2.d.dest ? _path2.default.resolve(directory, (0, _getPath2.default)(_this2.d.dest)) : '';
 
-      /**
-       * Create streams.
-       */
-      files = (0, _utils._)(files).map(file => {
-        const outfile = this.doRename(_path2.default.basename(file), dest, file);
-
-        return {
-          file,
-          outfile,
-          stream: [(0, _streams.createReadStream)(file, outfile)]
-        };
-      });
-
-      /**
-       * Connect plugin streams with pipelines.
-       */
-      if (this.d.stack.length > 0) {
-        files.map(file => {
-          file.stream = file.stream.concat(this.buildStack(name));
-          return file;
-        });
-      }
-
-      /**
-       * Connect with destination.
-       */
-      files.map(file => {
-        if (!this.readonly) {
-          // strip out the actual body and write it
-          file.stream.push((0, _streams.map)((data, next) => {
-            if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
-              return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
-            }
-
-            next(null, data.body);
-          }));
-
-          // add the writestream at the end
-          let output;
-
-          if (!this.d.dest) {
-            const { fd: tmp, name: tmppath } = (0, _fs3.tmpFileSync)();
-            output = _fs2.default.createWriteStream(null, {
-              fd: tmp
-            });
-
-            file.promise = new Promise((resolve, reject) => {
-              output.on('close', () => {
-                const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
-
-                newStream.on('error', reject);
-                newStream.on('close', resolve);
-              });
-            });
-          } else {
-            debug('Set output: %s', file.outfile);
-            (0, _fs3.mkdirpSync)(_path2.default.dirname(file.outfile).replace(directory, ''), directory);
-            output = _fs2.default.createWriteStream(file.outfile);
-          }
-
-          file.stream.push(output);
+        /**
+         * Switch to bundling mode if need be.
+         */
+        if (_this2.needsBundling) {
+          yield (0, _bluebird.resolve)(_this2.startBundling(name, directory, files, dest, useDoubleCache));
+          clearTimeout(safeTimeout);
+          return;
         }
 
-        // promisify the current pipeline
-        return new Promise((resolve, reject) => {
-          // connect all streams together to form pipeline
-          file.stream = (0, _pump2.default)(file.stream, err => {
-            if (err) reject(err);
-          });
+        /**
+         * Ensure dist directory exists.
+         */
+        if (!_this2.readonly || !_this2.d.dest) {
+          yield (0, _bluebird.resolve)((0, _fs3.mkdirp)(dest.replace(directory, ''), directory));
+        }
 
-          if (file.promise) {
-            file.promise.then(resolve, reject);
-          } else {
-            file.stream.on('close', resolve);
-          }
+        /**
+         * Create streams.
+         */
+        files = (0, _utils._)(files).map(file => {
+          const outfile = _this2.doRename(_path2.default.basename(file), dest, file);
+
+          return {
+            file,
+            outfile,
+            stream: [(0, _streams.createReadStream)(file, outfile)]
+          };
         });
-      });
 
-      // start & wait for all pipelines to end
-      const start = Date.now();
-      log('Starting task');
-      await Promise.all(files.val());
-      log('Task ended (took %s ms)', Date.now() - start);
+        /**
+         * Connect plugin streams with pipelines.
+         */
+        if (_this2.d.stack.length > 0) {
+          files.map(file => {
+            file.stream = file.stream.concat(_this2.buildStack(name));
+            return file;
+          });
+        }
 
-      // clear the timeout
-      clearTimeout(safeTimeout);
-    } else {
-      log('Skipping task');
-    }
+        /**
+         * Connect with destination.
+         */
+        files.map(file => {
+          if (!_this2.readonly) {
+            // strip out the actual body and write it
+            file.stream.push((0, _streams.map)((data, next) => {
+              if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
+                return next(new Error('A plugin has destroyed the stream by returning a non-object.'));
+              }
+
+              next(null, data.body);
+            }));
+
+            // add the writestream at the end
+            let output;
+
+            if (!_this2.d.dest) {
+              const { fd: tmp, name: tmppath } = (0, _fs3.tmpFileSync)();
+              output = _fs2.default.createWriteStream(null, {
+                fd: tmp
+              });
+
+              file.promise = new _bluebird2.default((resolve, reject) => {
+                output.on('close', () => {
+                  const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
+
+                  newStream.on('error', reject);
+                  newStream.on('close', resolve);
+                });
+              });
+            } else {
+              debug('Set output: %s', file.outfile);
+              (0, _fs3.mkdirpSync)(_path2.default.dirname(file.outfile).replace(directory, ''), directory);
+              output = _fs2.default.createWriteStream(file.outfile);
+            }
+
+            file.stream.push(output);
+          }
+
+          // promisify the current pipeline
+          return new _bluebird2.default((resolve, reject) => {
+            // connect all streams together to form pipeline
+            file.stream = (0, _pump2.default)(file.stream, err => {
+              if (err) reject(err);
+            });
+
+            if (file.promise) {
+              file.promise.then(resolve, reject);
+            } else {
+              file.stream.on('close', resolve);
+            }
+          });
+        });
+
+        // start & wait for all pipelines to end
+        const start = Date.now();
+        log('Starting task');
+        yield (0, _bluebird.resolve)((0, _bluebird.all)(files.val()));
+        log('Task ended (took %s ms)', Date.now() - start);
+
+        // clear the timeout
+        clearTimeout(safeTimeout);
+      } else {
+        log('Skipping task');
+      }
+    })();
   }
 
   /**
@@ -579,4 +597,5 @@ class Hopp {
   }
 }
 exports.default = Hopp;
+
 //# sourceMappingURL=mgr.js.map

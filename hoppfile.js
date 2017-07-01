@@ -40,10 +40,8 @@ plugins.forEach(name => {
  * Handle hopp building.
  */
 function buildHopp(opts, dest) {
-  opts.plugins = opts.plugins || []
-  
-  opts.plugins.push('transform-async-to-bluebird')
-  opts.plugins.push('transform-promise-to-bluebird')
+  opts.presets = opts.presets || []
+  opts.presets.push('bluebird')
 
   return hopp('./packages/hopp/src/**/**.js')
     .rename((file, dir, src) => {
