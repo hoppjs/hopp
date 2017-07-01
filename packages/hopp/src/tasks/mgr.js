@@ -53,7 +53,8 @@ export default class Hopp {
     // persistent info
     this.d = {
       src,
-      stack: []
+      stack: [],
+      rename: []
     }
   }
 
@@ -69,30 +70,50 @@ export default class Hopp {
 
   /**
    * Allow renaming of destination files.
-   * @param {Function} fn a renaming function
+   * @param {Object|Function} mapper renaming options or renaming function
    * @returns {Hopp} current object for chaining
    */
-  rename (fn) {
-    if (typeof fn !== 'function' && typeof fn !== 'object') {
+  rename (mapper) {
+    if (typeof mapper !== 'function' && typeof mapper !== 'object') {
       throw new Error('Rename must be given a function or object.')
     }
 
-    this.d.rename = fn
+    this.d.rename.push(mapper)
     return this
   }
 
   /**
    * Actually do the renaming.
    * @param {String} filename the original name
+   * @param {String} dirname the destination directory
+   * @param {String} source the absolute source filename
    * @returns {String} renamed filename
    */
   doRename (filename, dirname, source) {
+    let dest = dirname + '/' + filename
+
+    for (const mapper of this.d.rename) {
+      dest = this.applyRename(mapper, path.basename(dest), path.dirname(dest), source)
+    }
+
+    return dest
+  }
+
+  /**
+   * Apply a single rename.
+   * @param {Object|Function} mapper renaming object or function
+   * @param {String} filename the original name
+   * @param {String} dirname the destination directory
+   * @param {String} source the absolute source filename
+   * @returns {String} renamed filename
+   */
+  applyRename (mapper, filename, dirname, source) {
     // if no rename is defined, just use current filename
-    if (!this.d.rename) return dirname + '/' + filename
+    if (!mapper) return dirname + '/' + filename
 
     // functions are easy, but they break caching
-    if (typeof this.d.rename === 'function') {
-      return this.d.rename(filename, dirname, source)
+    if (typeof mapper === 'function') {
+      return mapper(filename, dirname, source)
     }
 
     // remove extension
@@ -100,18 +121,18 @@ export default class Hopp {
     filename = filename.substr(0, filename.lastIndexOf('.'))
 
     // add prefix
-    if (this.d.rename.prefix) {
-      filename = this.d.rename.prefix + filename
+    if (mapper.prefix) {
+      filename = mapper.prefix + filename
     }
 
     // add suffix, before extension
-    if (this.d.rename.suffix) {
-      filename += this.d.rename.suffix
+    if (mapper.suffix) {
+      filename += mapper.suffix
     }
 
     // change extension
-    if (this.d.rename.ext) {
-      ext = this.d.rename.ext
+    if (mapper.ext) {
+      ext = mapper.ext
     }
 
     // output final filename into same dest directory

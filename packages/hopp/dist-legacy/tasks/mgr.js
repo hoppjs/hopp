@@ -99,7 +99,8 @@ var Hopp = function () {
     // persistent info
     this.d = {
       src,
-      stack: []
+      stack: [],
+      rename: []
     };
   }
 
@@ -119,36 +120,80 @@ var Hopp = function () {
 
     /**
      * Allow renaming of destination files.
-     * @param {Function} fn a renaming function
+     * @param {Object|Function} mapper renaming options or renaming function
      * @returns {Hopp} current object for chaining
      */
 
   }, {
     key: 'rename',
-    value: function rename(fn) {
-      if (typeof fn !== 'function' && typeof fn !== 'object') {
+    value: function rename(mapper) {
+      if (typeof mapper !== 'function' && typeof mapper !== 'object') {
         throw new Error('Rename must be given a function or object.');
       }
 
-      this.d.rename = fn;
+      this.d.rename.push(mapper);
       return this;
     }
 
     /**
      * Actually do the renaming.
      * @param {String} filename the original name
+     * @param {String} dirname the destination directory
+     * @param {String} source the absolute source filename
      * @returns {String} renamed filename
      */
 
   }, {
     key: 'doRename',
     value: function doRename(filename, dirname, source) {
+      var dest = dirname + '/' + filename;
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.d.rename[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var mapper = _step.value;
+
+          dest = this.applyRename(mapper, _path2.default.basename(dest), _path2.default.dirname(dest), source);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return dest;
+    }
+
+    /**
+     * Apply a single rename.
+     * @param {Object|Function} mapper renaming object or function
+     * @param {String} filename the original name
+     * @param {String} dirname the destination directory
+     * @param {String} source the absolute source filename
+     * @returns {String} renamed filename
+     */
+
+  }, {
+    key: 'applyRename',
+    value: function applyRename(mapper, filename, dirname, source) {
       // if no rename is defined, just use current filename
-      if (!this.d.rename) return dirname + '/' + filename;
+      if (!mapper) return dirname + '/' + filename;
 
       // functions are easy, but they break caching
-      if (typeof this.d.rename === 'function') {
-        return this.d.rename(filename, dirname, source);
+      if (typeof mapper === 'function') {
+        return mapper(filename, dirname, source);
       }
 
       // remove extension
@@ -156,18 +201,18 @@ var Hopp = function () {
       filename = filename.substr(0, filename.lastIndexOf('.'));
 
       // add prefix
-      if (this.d.rename.prefix) {
-        filename = this.d.rename.prefix + filename;
+      if (mapper.prefix) {
+        filename = mapper.prefix + filename;
       }
 
       // add suffix, before extension
-      if (this.d.rename.suffix) {
-        filename += this.d.rename.suffix;
+      if (mapper.suffix) {
+        filename += mapper.suffix;
       }
 
       // change extension
-      if (this.d.rename.ext) {
-        ext = this.d.rename.ext;
+      if (mapper.ext) {
+        ext = mapper.ext;
       }
 
       // output final filename into same dest directory
@@ -225,7 +270,7 @@ var Hopp = function () {
       var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(name, directory, modified, dest) {
         var useDoubleCache = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
 
-        var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, _file, stream;
+        var _createLogger2, log, debug, sourcemap, files, freshBuild, unmodified, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, file, originalFd, _ref2, _ref3, tmpBundle, tmpBundlePath, bundle, start, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, _file, stream;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -256,14 +301,14 @@ var Hopp = function () {
                  */
                 freshBuild = true;
                 unmodified = {};
-                _iteratorNormalCompletion = true;
-                _didIteratorError = false;
-                _iteratorError = undefined;
+                _iteratorNormalCompletion2 = true;
+                _didIteratorError2 = false;
+                _iteratorError2 = undefined;
                 _context.prev = 11;
 
 
-                for (_iterator = files[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                  file = _step.value;
+                for (_iterator2 = files[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                  file = _step2.value;
 
                   if (modified.indexOf(file) === -1) {
                     unmodified[file] = true;
@@ -280,26 +325,26 @@ var Hopp = function () {
               case 15:
                 _context.prev = 15;
                 _context.t0 = _context['catch'](11);
-                _didIteratorError = true;
-                _iteratorError = _context.t0;
+                _didIteratorError2 = true;
+                _iteratorError2 = _context.t0;
 
               case 19:
                 _context.prev = 19;
                 _context.prev = 20;
 
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                  _iterator.return();
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                  _iterator2.return();
                 }
 
               case 22:
                 _context.prev = 22;
 
-                if (!_didIteratorError) {
+                if (!_didIteratorError2) {
                   _context.next = 25;
                   break;
                 }
 
-                throw _iteratorError;
+                throw _iteratorError2;
 
               case 25:
                 return _context.finish(22);
@@ -353,12 +398,12 @@ var Hopp = function () {
                 /**
                  * Add all files.
                  */
-                _iteratorNormalCompletion2 = true;
-                _didIteratorError2 = false;
-                _iteratorError2 = undefined;
+                _iteratorNormalCompletion3 = true;
+                _didIteratorError3 = false;
+                _iteratorError3 = undefined;
                 _context.prev = 47;
-                for (_iterator2 = files[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                  _file = _step2.value;
+                for (_iterator3 = files[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                  _file = _step3.value;
                   stream = void 0;
 
 
@@ -387,26 +432,26 @@ var Hopp = function () {
               case 51:
                 _context.prev = 51;
                 _context.t2 = _context['catch'](47);
-                _didIteratorError2 = true;
-                _iteratorError2 = _context.t2;
+                _didIteratorError3 = true;
+                _iteratorError3 = _context.t2;
 
               case 55:
                 _context.prev = 55;
                 _context.prev = 56;
 
-                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                  _iterator2.return();
+                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                  _iterator3.return();
                 }
 
               case 58:
                 _context.prev = 58;
 
-                if (!_didIteratorError2) {
+                if (!_didIteratorError3) {
                   _context.next = 61;
                   break;
                 }
 
-                throw _iteratorError2;
+                throw _iteratorError3;
 
               case 61:
                 return _context.finish(58);
