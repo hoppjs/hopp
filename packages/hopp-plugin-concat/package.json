@@ -1,6 +1,6 @@
 {
   "name": "hopp-plugin-concat",
-  "version": "1.0.0-alpha.16",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-concat; mkdir example/node_modules/hopp-plugin-concat; npm run test-copy",
