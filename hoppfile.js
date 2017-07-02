@@ -10,7 +10,6 @@ const hopp = require('hopp')
  * Set of plugins.
  */
 const plugins = [
-  'hopp-sample-plugin',
   'hopp-plugin-accord',
   'hopp-plugin-babel',
   'hopp-plugin-concat',
