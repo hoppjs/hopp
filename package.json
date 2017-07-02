@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "prebuild": "npm run lintfix",
     "build": "./node_modules/.bin/hopp",
