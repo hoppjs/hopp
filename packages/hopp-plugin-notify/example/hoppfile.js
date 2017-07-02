@@ -1,10 +1,11 @@
-import hopp from 'hopp'
+const hopp = require('hopp')
 
-export const test =
+exports.test =
   hopp('src/*.js')
     .notify()
     .dest('dist')
 
-export default hopp.watch([
-  'test'
-])
+exports.default =
+  hopp.watch([
+    'test'
+  ])

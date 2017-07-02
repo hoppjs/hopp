@@ -1,6 +1,6 @@
-import hopp from 'hopp'
+const hopp = require('hopp')
 
-export default
+exports.default =
   hopp('src/*.js')
     .plugin()
     .dest('dist')

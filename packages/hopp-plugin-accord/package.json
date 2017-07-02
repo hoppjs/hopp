@@ -3,12 +3,9 @@
   "version": "1.0.0-alpha.16",
   "main": "dist/index.js",
   "scripts": {
-    "build": "hopp -r babel-register -r regenerator-runtime/runtime",
     "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-accord; mkdir example/node_modules/hopp-plugin-accord; npm run test-copy",
     "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-accord/; done",
-    "test": "hopp -r babel-register -r regenerator-runtime/runtime -v -d example",
-    "lint": "standard lib/*.js lib/**/*.js",
-    "lintfix": "standard --fix lib/*.js lib/**/*.js"
+    "test": "hopp -R -v -d example"
   },
   "keywords": [
     "hopp-plugin",
@@ -22,11 +19,6 @@
   "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-accord",
   "author": "10244872 Canada Inc.",
   "license": "MIT",
-  "devDependencies": {
-    "hopp": "*",
-    "hopp-plugin-babel": "*",
-    "standard": "^10.0.2"
-  },
   "dependencies": {
     "accord": "^0.27.3",
     "regenerator-runtime": "^0.10.5"

@@ -7,7 +7,7 @@
     "build": "babel lib -d dist",
     "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-babel; mkdir example/node_modules/hopp-plugin-babel; npm run test-copy",
     "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-babel/; done",
-    "test": "hopp -r babel-register -v -d example"
+    "test": "hopp -R -v -d example"
   },
   "homepage": "https://hoppjs.com/",
   "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-babel",
