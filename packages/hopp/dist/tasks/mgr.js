@@ -563,15 +563,18 @@ class Hopp {
 
           // promisify the current pipeline
           return new _bluebird2.default((resolve, reject) => {
+            let resolved = false;
+
             // connect all streams together to form pipeline
             file.stream = (0, _pump2.default)(file.stream, err => {
-              if (err) reject(err);
+              if (err) reject(err);else if (!resolved && !file.promise) resolve();
             });
 
             if (file.promise) {
-              file.promise.then(resolve, reject);
-            } else {
-              file.stream.on('close', resolve);
+              file.promise.then(() => {
+                resolved = true;
+                resolve();
+              }, reject);
             }
           });
         });
