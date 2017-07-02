@@ -1,6 +1,6 @@
 {
   "name": "hopp-preset-less",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Write LESS with hopp.",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "standard": "^10.0.2"
   },
   "dependencies": {
-    "hopp-plugin-accord": "^1.0.0",
+    "hopp-plugin-accord": "^1.0.1",
     "less": "^2.7.2"
   }
 }

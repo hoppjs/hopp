@@ -1,6 +1,6 @@
 {
   "name": "hopp-plugin-accord",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "scripts": {
     "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-accord; mkdir example/node_modules/hopp-plugin-accord; npm run test-copy",
