@@ -11,8 +11,6 @@
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
-> hopp is now under a public alpha. Please help us improve it by reporting issues!
-
 [![NPM](https://nodei.co/npm/hopp.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/hopp/)
 
 ## Usage
@@ -42,6 +40,8 @@ make plugins, checkout our official [docs](https://docs.hoppjs.com/).
 
 Sample `hoppfile.js`:
 
+*You will need to install the proper plugins & presets to use this file.*
+
 ```javascript
 import hopp from 'hopp'
 
@@ -66,6 +66,15 @@ export default hopp.all([
   'css'
 ])
 ```
+
+## Contributing
+
+We love contributors! After all, this is an open source project.
+
+To get started, checkout our [contribution guide](.github/CONTRIBUTING.md).
+
+**When reporting issues, please try to follow the provided template and
+upload a proper `hopp-debug.log` file to accompany your bug report.**
 
 ## License
 
