@@ -5,7 +5,7 @@
   "scripts": {
     "pretest": "rm -f example/hopp.lock; rm -rf example/node_modules/hopp-plugin-notify; mkdir example/node_modules/hopp-plugin-notify; npm run test-copy",
     "test-copy": "for i in $(ls -1 | sed -E '/node_modules|example|index.src.js|LICENSE|README.md/d'); do cp -vR $i example/node_modules/hopp-plugin-notify/; done",
-    "test": "hopp -R -v -d example"
+    "test": "../hopp/index.js -R -v -d example"
   },
   "keywords": [
     "hopp",
