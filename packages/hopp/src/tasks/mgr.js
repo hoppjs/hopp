@@ -56,6 +56,17 @@ export default class Hopp {
       stack: [],
       rename: []
     }
+
+    // bind all plugin extras
+    for (const plugin in this) {
+      if (typeof this[plugin] === 'function') {
+        for (const method in this[plugin]) {
+          if (this[plugin].hasOwnProperty(method)) {
+            this[plugin][method] = this[plugin][method].bind(this)
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -275,10 +286,14 @@ export default class Hopp {
 
     let mode = 'stream'
 
-    return this.d.stack.map(([plugin]) => {
+    return this.d.stack.map(([plugin, _, method]) => {
       const pluginStream = through2.obj(async function (data, _, done) {
         try {
-          const handler = plugins[plugin](
+          /**
+           * Try and get proper method - assume
+           * default by default.
+           */
+          const handler = plugins[plugin][method || 'default'](
             that.pluginCtx[plugin],
             data
           )
@@ -350,12 +365,6 @@ export default class Hopp {
 
       // expose module config
       pluginConfig[plugin] = mod.config || {}
-
-      // if defined as an ES2015 module, assume that the
-      // export is at 'default'
-      if (mod.__esModule === true) {
-        mod = mod.default
-      }
 
       // add plugins to loaded plugins
       plugins[plugin] = mod

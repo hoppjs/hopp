@@ -101,7 +101,17 @@ var Hopp = function () {
       src,
       stack: [],
       rename: []
-    };
+
+      // bind all plugin extras
+    };for (var plugin in this) {
+      if (typeof this[plugin] === 'function') {
+        for (var method in this[plugin]) {
+          if (this[plugin].hasOwnProperty(method)) {
+            this[plugin][method] = this[plugin][method].bind(this);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -520,8 +530,10 @@ var Hopp = function () {
       var mode = 'stream';
 
       return this.d.stack.map(function (_ref4) {
-        var _ref5 = _slicedToArray(_ref4, 1),
-            plugin = _ref5[0];
+        var _ref5 = _slicedToArray(_ref4, 3),
+            plugin = _ref5[0],
+            _ = _ref5[1],
+            method = _ref5[2];
 
         var pluginStream = _through2.default.obj(function () {
           var _ref6 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(data, _, done) {
@@ -531,7 +543,12 @@ var Hopp = function () {
                 switch (_context2.prev = _context2.next) {
                   case 0:
                     _context2.prev = 0;
-                    handler = plugins[plugin](that.pluginCtx[plugin], data);
+
+                    /**
+                     * Try and get proper method - assume
+                     * default by default.
+                     */
+                    handler = plugins[plugin][method || 'default'](that.pluginCtx[plugin], data);
 
                     // for async functions/promises
 
@@ -665,12 +682,6 @@ var Hopp = function () {
 
         // expose module config
         pluginConfig[plugin] = mod.config || {};
-
-        // if defined as an ES2015 module, assume that the
-        // export is at 'default'
-        if (mod.__esModule === true) {
-          mod = mod.default;
-        }
 
         // add plugins to loaded plugins
         plugins[plugin] = mod;

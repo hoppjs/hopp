@@ -27,7 +27,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  */
 exports.default = function () {
   var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(directory) {
-    var pkgFile, pkg, pkgStat, _ref2, _ref3, savedStat, list;
+    var pkgFile, pkg, pkgStat, _ref2, _ref3, savedStat, list, _arr, _i, key, dep, start;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -40,7 +40,7 @@ exports.default = function () {
 
           case 4:
             pkgStat = +_context.sent.mtime;
-            _ref2 = cache.val('pl') || [], _ref3 = _slicedToArray(_ref2, 2), savedStat = _ref3[0], list = _ref3[1];
+            _ref2 = cache.val('pl') || [0, {}], _ref3 = _slicedToArray(_ref2, 2), savedStat = _ref3[0], list = _ref3[1];
 
             /**
              * Return cached result if unmodified.
@@ -58,10 +58,24 @@ exports.default = function () {
             /**
              * Filter for appropriate dependencies.
              */
-            list = [].concat(Object.keys(pkg.dependencies || {}), Object.keys(pkg.devDependencies || {}), Object.keys(pkg.peerDependencies || {})).filter(function (dep) {
-              var start = dep.substr(0, 12);
-              return start === 'hopp-plugin-' || start === 'hopp-preset-';
-            });
+            list = {};
+            _arr = ['dependencies', 'devDependencies', 'peerDependencies'];
+            for (_i = 0; _i < _arr.length; _i++) {
+              key = _arr[_i];
+
+              if (pkg.hasOwnProperty(key)) {
+                for (dep in pkg[key]) {
+                  if (pkg[key].hasOwnProperty(dep)) {
+                    start = dep.substr(0, 12);
+
+
+                    if (start === 'hopp-plugin-' || start === 'hopp-preset-') {
+                      list[dep] = Object.keys(require(`${directory}/node_modules/${dep}`));
+                    }
+                  }
+                }
+              }
+            }
 
             /**
              * Store in cache.
@@ -73,7 +87,7 @@ exports.default = function () {
              */
             return _context.abrupt('return', list);
 
-          case 11:
+          case 13:
           case 'end':
             return _context.stop();
         }

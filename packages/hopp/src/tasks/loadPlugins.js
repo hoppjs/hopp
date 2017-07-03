@@ -17,7 +17,7 @@ export default async directory => {
   const pkg = require(pkgFile)
   const pkgStat = +(await stat(pkgFile)).mtime
 
-  let [savedStat, list] = cache.val('pl') || []
+  let [savedStat, list] = cache.val('pl') || [0, {}]
 
   /**
    * Return cached result if unmodified.
@@ -29,14 +29,22 @@ export default async directory => {
   /**
    * Filter for appropriate dependencies.
    */
-  list = [].concat(
-    Object.keys(pkg.dependencies || {}),
-    Object.keys(pkg.devDependencies || {}),
-    Object.keys(pkg.peerDependencies || {})
-  ).filter(dep => {
-    const start = dep.substr(0, 12)
-    return start === 'hopp-plugin-' || start === 'hopp-preset-'
-  })
+  list = {}
+  for (const key of ['dependencies', 'devDependencies', 'peerDependencies']) {
+    if (pkg.hasOwnProperty(key)) {
+      for (const dep in pkg[key]) {
+        if (pkg[key].hasOwnProperty(dep)) {
+          const start = dep.substr(0, 12)
+
+          if (start === 'hopp-plugin-' || start === 'hopp-preset-') {
+            list[dep] = Object.keys(
+              require(`${directory}/node_modules/${dep}`)
+            )
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Store in cache.
