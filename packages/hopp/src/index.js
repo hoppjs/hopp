@@ -237,11 +237,16 @@ if (argv.require) {
   process.exit(0)
 }, err => {
   function end (lastErr) {
-    error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
+    if (lastErr) {
+      error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
+    }
+    
     process.exit(-1)
   }
 
+  error(err && err.stack ? err.stack : err)
+
   createLogger.saveLog(projectDir)
-    .then(() => end(err))
+    .then(() => end())
     .catch(err => end(err))
 })
