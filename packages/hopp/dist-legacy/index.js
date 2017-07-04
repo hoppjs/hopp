@@ -315,12 +315,17 @@ if (argv.require) {
   process.exit(0);
 }, function (err) {
   function end(lastErr) {
-    error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
+    if (lastErr) {
+      error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
+    }
+
     process.exit(-1);
   }
 
+  error(err && err.stack ? err.stack : err);
+
   _log2.default.saveLog(projectDir).then(function () {
-    return end(err);
+    return end();
   }).catch(function (err) {
     return end(err);
   });

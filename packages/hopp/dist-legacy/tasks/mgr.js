@@ -101,7 +101,17 @@ var Hopp = function () {
       src,
       stack: [],
       rename: []
-    };
+
+      // bind all plugin extras
+    };for (var plugin in this) {
+      if (typeof this[plugin] === 'function') {
+        for (var method in this[plugin]) {
+          if (this[plugin].hasOwnProperty(method)) {
+            this[plugin][method] = this[plugin][method].bind(this);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -512,16 +522,15 @@ var Hopp = function () {
   }, {
     key: 'buildStack',
     value: function buildStack(name) {
-      var _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`),
-          error = _createLogger3.error;
-
       var that = this;
 
       var mode = 'stream';
 
       return this.d.stack.map(function (_ref4) {
-        var _ref5 = _slicedToArray(_ref4, 1),
-            plugin = _ref5[0];
+        var _ref5 = _slicedToArray(_ref4, 3),
+            plugin = _ref5[0],
+            _ = _ref5[1],
+            method = _ref5[2];
 
         var pluginStream = _through2.default.obj(function () {
           var _ref6 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(data, _, done) {
@@ -531,7 +540,12 @@ var Hopp = function () {
                 switch (_context2.prev = _context2.next) {
                   case 0:
                     _context2.prev = 0;
-                    handler = plugins[plugin](that.pluginCtx[plugin], data);
+
+                    /**
+                     * Try and get proper method - assume
+                     * default by default.
+                     */
+                    handler = plugins[plugin][method || 'default'](that.pluginCtx[plugin], data);
 
                     // for async functions/promises
 
@@ -627,9 +641,7 @@ var Hopp = function () {
          */
         if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
           mode = 'buffer';
-          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, function (err) {
-            if (err) error(err && err.stack ? err.stack : err);
-          });
+          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
         }
 
         /**
@@ -666,12 +678,6 @@ var Hopp = function () {
         // expose module config
         pluginConfig[plugin] = mod.config || {};
 
-        // if defined as an ES2015 module, assume that the
-        // export is at 'default'
-        if (mod.__esModule === true) {
-          mod = mod.default;
-        }
-
         // add plugins to loaded plugins
         plugins[plugin] = mod;
       }
@@ -706,13 +712,13 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger4, log, debug, error, safeTimeout, files, dest, _start;
+        var _createLogger3, log, debug, error, safeTimeout, files, dest, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger4 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger4.log, debug = _createLogger4.debug, error = _createLogger4.error;
+                _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger3.log, debug = _createLogger3.debug, error = _createLogger3.error;
 
                 /**
                  * Add timeout for safety.
@@ -877,15 +883,18 @@ var Hopp = function () {
 
                   // promisify the current pipeline
                   return new _bluebird2.default(function (resolve, reject) {
+                    var resolved = false;
+
                     // connect all streams together to form pipeline
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
-                      if (err) reject(err);
+                      if (err) reject(err);else if (!resolved && !file.promise) resolve();
                     });
 
                     if (file.promise) {
-                      file.promise.then(resolve, reject);
-                    } else {
-                      file.stream.on('close', resolve);
+                      file.promise.then(function () {
+                        resolved = true;
+                        resolve();
+                      }, reject);
                     }
                   });
                 });

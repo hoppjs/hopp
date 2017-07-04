@@ -92,7 +92,17 @@ class Hopp {
       src,
       stack: [],
       rename: []
-    };
+
+      // bind all plugin extras
+    };for (const plugin in this) {
+      if (typeof this[plugin] === 'function') {
+        for (const method in this[plugin]) {
+          if (this[plugin].hasOwnProperty(method)) {
+            this[plugin][method] = this[plugin][method].bind(this);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -309,16 +319,19 @@ class Hopp {
    * Converts all plugins in the stack into streams.
    */
   buildStack(name) {
-    const { error } = (0, _utils.createLogger)(`hopp:${name}`);
     const that = this;
 
     let mode = 'stream';
 
-    return this.d.stack.map(([plugin]) => {
+    return this.d.stack.map(([plugin, _, method]) => {
       const pluginStream = _through2.default.obj((() => {
         var _ref = (0, _bluebird.coroutine)(function* (data, _, done) {
           try {
-            const handler = plugins[plugin](that.pluginCtx[plugin], data);
+            /**
+             * Try and get proper method - assume
+             * default by default.
+             */
+            const handler = plugins[plugin][method || 'default'](that.pluginCtx[plugin], data);
 
             // for async functions/promises
             if ('then' in handler) {
@@ -357,9 +370,7 @@ class Hopp {
        */
       if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
         mode = 'buffer';
-        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, err => {
-          if (err) error(err && err.stack ? err.stack : err);
-        });
+        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
       }
 
       /**
@@ -392,12 +403,6 @@ class Hopp {
 
       // expose module config
       pluginConfig[plugin] = mod.config || {};
-
-      // if defined as an ES2015 module, assume that the
-      // export is at 'default'
-      if (mod.__esModule === true) {
-        mod = mod.default;
-      }
 
       // add plugins to loaded plugins
       plugins[plugin] = mod;
@@ -563,15 +568,18 @@ class Hopp {
 
           // promisify the current pipeline
           return new _bluebird2.default((resolve, reject) => {
+            let resolved = false;
+
             // connect all streams together to form pipeline
             file.stream = (0, _pump2.default)(file.stream, err => {
-              if (err) reject(err);
+              if (err) reject(err);else if (!resolved && !file.promise) resolve();
             });
 
             if (file.promise) {
-              file.promise.then(resolve, reject);
-            } else {
-              file.stream.on('close', resolve);
+              file.promise.then(() => {
+                resolved = true;
+                resolve();
+              }, reject);
             }
           });
         });

@@ -255,11 +255,16 @@ if (argv.require) {
   process.exit(0);
 }, err => {
   function end(lastErr) {
-    error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
+    if (lastErr) {
+      error(lastErr && lastErr.stack ? lastErr.stack : lastErr);
+    }
+
     process.exit(-1);
   }
 
-  _log2.default.saveLog(projectDir).then(() => end(err)).catch(err => end(err));
+  error(err && err.stack ? err.stack : err);
+
+  _log2.default.saveLog(projectDir).then(() => end()).catch(err => end(err));
 });
 
 //# sourceMappingURL=index.js.map

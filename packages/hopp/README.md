@@ -11,12 +11,6 @@
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
-<p align="center">
-  <a href="https://npmjs.org/hopp">
-    <img src="https://nodei.co/npm/hopp.png?downloads=true&downloadRank=true&stars=true" alt="NPM">
-  </a>
-</p>
-
 ## Usage
 
 For all information regarding how to setup hopp, how to use plugins, & how to
