@@ -522,9 +522,6 @@ var Hopp = function () {
   }, {
     key: 'buildStack',
     value: function buildStack(name) {
-      var _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`),
-          error = _createLogger3.error;
-
       var that = this;
 
       var mode = 'stream';
@@ -715,13 +712,13 @@ var Hopp = function () {
         var recache = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         var useDoubleCache = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-        var _createLogger4, log, debug, error, safeTimeout, files, dest, _start;
+        var _createLogger3, log, debug, error, safeTimeout, files, dest, _start;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger4 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger4.log, debug = _createLogger4.debug, error = _createLogger4.error;
+                _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger3.log, debug = _createLogger3.debug, error = _createLogger3.error;
 
                 /**
                  * Add timeout for safety.
