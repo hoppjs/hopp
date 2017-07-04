@@ -240,7 +240,7 @@ if (argv.require) {
     if (lastErr) {
       error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
     }
-    
+
     process.exit(-1)
   }
 

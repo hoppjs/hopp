@@ -281,7 +281,6 @@ export default class Hopp {
    * Converts all plugins in the stack into streams.
    */
   buildStack (name) {
-    const { error } = createLogger(`hopp:${name}`)
     const that = this
 
     let mode = 'stream'
