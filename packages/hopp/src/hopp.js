@@ -6,6 +6,7 @@
 
 import path from 'path'
 import Hopp from './tasks/mgr'
+import * as cache from './cache'
 import createSteps from './tasks/steps'
 import createWatch from './tasks/watch'
 import loadPlugins from './tasks/loadPlugins'
@@ -115,7 +116,17 @@ export default directory => {
    * API for loading local plugins.
    */
   init.load = function (pathToPlugin) {
-    const pluginName = path.basename(pathToPlugin)
+    debug('loading local plugin: %s', pathToPlugin)
+
+    // try and grab name from package.json
+    // otherwise use the directory's name
+    const pluginName = (() => {
+      try {
+        return require(pathToPlugin + '/package.json').name
+      } catch (_) {
+        return path.basename(pathToPlugin)
+      }
+    })()
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin))

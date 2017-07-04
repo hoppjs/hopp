@@ -18,6 +18,10 @@ var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
 
+var _cache = require('./cache');
+
+var cache = _interopRequireWildcard(_cache);
+
 var _steps = require('./tasks/steps');
 
 var _steps2 = _interopRequireDefault(_steps);
@@ -33,6 +37,8 @@ var _loadPlugins2 = _interopRequireDefault(_loadPlugins);
 var _parallel = require('./tasks/parallel');
 
 var _parallel2 = _interopRequireDefault(_parallel);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -166,7 +172,17 @@ exports.default = function (directory) {
    * API for loading local plugins.
    */
   init.load = function (pathToPlugin) {
-    var pluginName = _path2.default.basename(pathToPlugin);
+    debug('loading local plugin: %s', pathToPlugin);
+
+    // try and grab name from package.json
+    // otherwise use the directory's name
+    var pluginName = function () {
+      try {
+        return require(pathToPlugin + '/package.json').name;
+      } catch (_) {
+        return _path2.default.basename(pathToPlugin);
+      }
+    }();
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin));

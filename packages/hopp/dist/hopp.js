@@ -12,6 +12,10 @@ var _mgr = require('./tasks/mgr');
 
 var _mgr2 = _interopRequireDefault(_mgr);
 
+var _cache = require('./cache');
+
+var cache = _interopRequireWildcard(_cache);
+
 var _steps = require('./tasks/steps');
 
 var _steps2 = _interopRequireDefault(_steps);
@@ -28,13 +32,9 @@ var _parallel = require('./tasks/parallel');
 
 var _parallel2 = _interopRequireDefault(_parallel);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * @file src/hopp.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc..
- */
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const { debug } = require('./utils/log')('hopp');
 
@@ -42,6 +42,12 @@ const { debug } = require('./utils/log')('hopp');
  * Normalizes a plugin/preset name to be added to
  * the prototype.
  */
+/**
+ * @file src/hopp.js
+ * @license MIT
+ * @copyright 2017 10244872 Canada Inc..
+ */
+
 function normalize(name) {
   let normalized = '';
 
@@ -137,7 +143,17 @@ exports.default = directory => {
    * API for loading local plugins.
    */
   init.load = function (pathToPlugin) {
-    const pluginName = _path2.default.basename(pathToPlugin);
+    debug('loading local plugin: %s', pathToPlugin);
+
+    // try and grab name from package.json
+    // otherwise use the directory's name
+    const pluginName = (() => {
+      try {
+        return require(pathToPlugin + '/package.json').name;
+      } catch (_) {
+        return _path2.default.basename(pathToPlugin);
+      }
+    })();
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin));
