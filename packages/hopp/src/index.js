@@ -46,17 +46,17 @@ const args = {
 let largestArg = ''
 const argv = require('minimist')(process.argv.slice(2), {
   string: [
-    'directory',
-    'require',
-    'jobs'
+    'directory', 'd',
+    'require', 'r',
+    'jobs', 'j',
   ],
 
   boolean: [
-    'recache',
-    'verbose',
-    'version',
-    'help',
-    'skip'
+    'recache', 'R',
+    'verbose', 'v',
+    'version', 'V',
+    'help', 'h',
+    'skip', 's',
   ]
 })
 

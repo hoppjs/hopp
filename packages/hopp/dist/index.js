@@ -73,9 +73,9 @@ const args = {
   // parse via minimist
 };let largestArg = '';
 const argv = require('minimist')(process.argv.slice(2), {
-  string: ['directory', 'require', 'jobs'],
+  string: ['directory', 'd', 'require', 'r', 'jobs', 'j'],
 
-  boolean: ['recache', 'verbose', 'version', 'help', 'skip']
+  boolean: ['recache', 'R', 'verbose', 'v', 'version', 'V', 'help', 'h', 'skip', 's']
 });
 
 // expose argv to env
