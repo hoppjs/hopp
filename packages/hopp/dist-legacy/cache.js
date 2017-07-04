@@ -13,7 +13,7 @@ var _bluebird = require('bluebird');
 var updateCache = function () {
   var _ref3 = (0, _bluebird.method)(function (lock) {
     // handle newer lock files
-    if (_semver2.default.gt(lock.v, version)) {
+    if (require('semver').gt(lock.v, version)) {
       throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp');
     }
 
@@ -37,20 +37,12 @@ var updateCache = function () {
 
 var _fs = require('./fs');
 
-var _semver = require('semver');
-
-var _semver2 = _interopRequireDefault(_semver);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * @file src/cache/load.js
- * @license MIT
- * @copyright 2017 10244872 Canada Inc.
- */
-
 var _require = require('../package.json'),
-    version = _require.version;
+    version = _require.version; /**
+                                 * @file src/cache/load.js
+                                 * @license MIT
+                                 * @copyright 2017 10244872 Canada Inc.
+                                 */
 
 var _require2 = require('./utils/log')('hopp'),
     debug = _require2.debug,

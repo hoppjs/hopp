@@ -9,7 +9,6 @@ import {
   readFile,
   writeFile
 } from './fs'
-import semver from 'semver'
 
 const { version } = require('../package.json')
 const { debug, log } = require('./utils/log')('hopp')
@@ -128,7 +127,7 @@ export const save = async directory => {
  */
 async function updateCache (lock) {
   // handle newer lock files
-  if (semver.gt(lock.v, version)) {
+  if (require('semver').gt(lock.v, version)) {
     throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp')
   }
 
