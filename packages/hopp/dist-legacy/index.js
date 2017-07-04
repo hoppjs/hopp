@@ -1,7 +1,5 @@
 'use strict';
 
-var _bluebird = require('bluebird');
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * @file index.js
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * @license MIT
@@ -81,29 +79,13 @@ var args = {
 var argv = require('minimist')(process.argv.slice(2), {
   string: ['directory', 'require', 'jobs'],
 
-  boolean: ['recache', 'verbose', 'version', 'help', 'skip'],
-
-  alias: function () {
-    var o = {};
-
-    for (var a in args) {
-      if (args.hasOwnProperty(a)) {
-        o[a] = args[a][0];
-
-        if (args[a][0].length > largestArg.length) {
-          largestArg = args[a][0];
-        }
-      }
-    }
-
-    return o;
-  }()
+  boolean: ['recache', 'verbose', 'version', 'help', 'skip']
 });
 
 // expose argv to env
-process.env.RECACHE = argv.recache;
-process.env.WEB_CONCURRENCY = argv.jobs;
-process.env.SKIP_BUILD = argv.skip;
+process.env.RECACHE = argv.recache || argv.R;
+process.env.WEB_CONCURRENCY = argv.jobs || argv.j;
+process.env.SKIP_BUILD = argv.skip || argv.s;
 
 /**
  * Print help.
@@ -121,7 +103,7 @@ function help() {
   process.exit(1);
 }
 
-if (argv.version) {
+if (argv.version || argv.V) {
   console.log(require('../package.json').version);
   process.exit(0);
 }
@@ -134,7 +116,7 @@ if (argv.version) {
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
-if (argv.help) {
+if (argv.help || argv.h) {
   help();
 }
 
@@ -146,172 +128,122 @@ var tasks = argv._.length === 0 ? ['default'] : argv._;
 /**
  * Require whatever needs to be loaded.
  */
+argv.require = argv.require || argv.r;
 if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require]).forEach(function (mod) {
     return require(mod);
   });
 }
 
-;(0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
-  var file, hopp, _resolve, _ref2, _ref3, fromCache, busted, taskDefns, fullList, addDependencies;
+/**
+ * Pass verbosity through to the env.
+ */
+process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose || !!argv.v;
+debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG);
 
-  return regeneratorRuntime.wrap(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          /**
-           * Pass verbosity through to the env.
-           */
-          process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose;
-          debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG);
+/**
+ * If project directory not specified, do lookup for the
+ * hoppfile.js
+ */
+projectDir = function (directory) {
+  // absolute paths don't need correcting
+  if (directory[0] === '/') {
+    return directory;
+  }
 
-          /**
-           * Harmony flag for transpiling hoppfiles.
-           */
-          process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony;
+  // sort-of relatives should be made into relative
+  if (directory[0] !== '.') {
+    directory = './' + directory;
+  }
 
-          /**
-           * If project directory not specified, do lookup for the
-           * hoppfile.js
-           */
+  // map to current directory
+  return _path2.default.resolve(process.cwd(), directory);
+}(argv.directory || hoppfile.find(process.cwd()));
 
-          _context.t0 = function (directory) {
-            // absolute paths don't need correcting
-            if (directory[0] === '/') {
-              return directory;
-            }
+/**
+ * Set hoppfile location relative to the project.
+ *
+ * This will cause errors later if the directory was supplied
+ * manually but contains no hoppfile. We don't want to do a magic
+ * lookup for the user because they overrode the magic with the
+ * manual flag.
+ */
+var file = projectDir + '/hoppfile.js';
+debug('Using hoppfile.js @ %s', file);
 
-            // sort-of relatives should be made into relative
-            if (directory[0] !== '.') {
-              directory = './' + directory;
-            }
+/**
+ * Load cache.
+ */
+cache.load(projectDir);
 
-            // map to current directory
-            return _path2.default.resolve(process.cwd(), directory);
-          };
+/**
+ * Create hopp instance creator.
+ */
+var hopp = (0, _hopp2.default)(projectDir);
 
-          _context.t1 = argv.directory;
+/**
+ * Cache the hopp handler to make `require()` work
+ * in the hoppfile.
+ */
+var _resolve = _module2.default._resolveFilename;
+_module2.default._resolveFilename = function (what, parent) {
+  return what === 'hopp' ? what : _resolve(what, parent);
+};
 
-          if (_context.t1) {
-            _context.next = 9;
-            break;
-          }
+require.cache.hopp = {
+  id: 'hopp',
+  filename: 'hopp',
+  loaded: true,
+  exports: hopp
 
-          _context.next = 8;
-          return (0, _bluebird.resolve)(hoppfile.find(process.cwd()));
+  /**
+   * Load tasks from file.
+   */
+};
+var _hoppfile$load = hoppfile.load(file),
+    _hoppfile$load2 = _slicedToArray(_hoppfile$load, 3),
+    fromCache = _hoppfile$load2[0],
+    busted = _hoppfile$load2[1],
+    taskDefns = _hoppfile$load2[2];
 
-        case 8:
-          _context.t1 = _context.sent;
-
-        case 9:
-          _context.t2 = _context.t1;
-          projectDir = (0, _context.t0)(_context.t2);
-
-
-          /**
-           * Set hoppfile location relative to the project.
-           *
-           * This will cause errors later if the directory was supplied
-           * manually but contains no hoppfile. We don't want to do a magic
-           * lookup for the user because they overrode the magic with the
-           * manual flag.
-           */
-          file = projectDir + '/hoppfile.js';
-
-          debug('Using hoppfile.js @ %s', file);
-
-          /**
-           * Load cache.
-           */
-          _context.next = 15;
-          return (0, _bluebird.resolve)(cache.load(projectDir));
-
-        case 15:
-          _context.next = 17;
-          return (0, _bluebird.resolve)((0, _hopp2.default)(projectDir));
-
-        case 17:
-          hopp = _context.sent;
+/**
+ * Parse from cache.
+ */
 
 
-          /**
-           * Cache the hopp handler to make `require()` work
-           * in the hoppfile.
-           */
-          _resolve = _module2.default._resolveFilename;
+if (fromCache) {
+  // create copy of tasks, we don't want to modify
+  // the actual goal list
+  var fullList = [].slice.call(tasks);
 
-          _module2.default._resolveFilename = function (what, parent) {
-            return what === 'hopp' ? what : _resolve(what, parent);
-          };
-
-          require.cache.hopp = {
-            id: 'hopp',
-            filename: 'hopp',
-            loaded: true,
-            exports: hopp
-
-            /**
-             * Load tasks from file.
-             */
-          };_context.next = 23;
-          return (0, _bluebird.resolve)(hoppfile.load(file));
-
-        case 23:
-          _ref2 = _context.sent;
-          _ref3 = _slicedToArray(_ref2, 3);
-          fromCache = _ref3[0];
-          busted = _ref3[1];
-          taskDefns = _ref3[2];
-
-
-          /**
-           * Parse from cache.
-           */
-          if (fromCache) {
-            // create copy of tasks, we don't want to modify
-            // the actual goal list
-            fullList = [].slice.call(tasks);
-
-            // walk the full tree
-
-            addDependencies = function addDependencies(task) {
-              if (taskDefns[task] instanceof Array) {
-                fullList = fullList.concat(taskDefns[task][1]);
-                taskDefns[task][1].forEach(function (sub) {
-                  return addDependencies(sub);
-                });
-              }
-            };
-
-            // start walking from top
-
-
-            fullList.forEach(function (task) {
-              return addDependencies(task);
-            });
-
-            // parse all tasks and their dependencies
-            (0, _tree2.default)(taskDefns, fullList);
-          }
-
-          /**
-           * Wait for task completion.
-           */
-          Goal.defineTasks(taskDefns, busted);
-          _context.next = 32;
-          return (0, _bluebird.resolve)(Goal.create(tasks, projectDir));
-
-        case 32:
-          _context.next = 34;
-          return (0, _bluebird.resolve)(cache.save(projectDir));
-
-        case 34:
-        case 'end':
-          return _context.stop();
-      }
+  // walk the full tree
+  var addDependencies = function addDependencies(task) {
+    if (taskDefns[task] instanceof Array) {
+      fullList = fullList.concat(taskDefns[task][1]);
+      taskDefns[task][1].forEach(function (sub) {
+        return addDependencies(sub);
+      });
     }
-  }, _callee, undefined);
-}))().then(function () {
+  };
+
+  // start walking from top
+  fullList.forEach(function (task) {
+    return addDependencies(task);
+  });
+
+  // parse all tasks and their dependencies
+  (0, _tree2.default)(taskDefns, fullList);
+}
+
+/**
+ * Wait for task completion.
+ */
+Goal.defineTasks(taskDefns, busted);
+Goal.create(tasks, projectDir).then(function () {
+  /**
+   * Store cache for later, then exit.
+   */
+  cache.save(projectDir);
   process.exit(0);
 }, function (err) {
   function end(lastErr) {

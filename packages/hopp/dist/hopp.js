@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _bluebird = require('bluebird');
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -90,51 +88,45 @@ function createMethod(type, name, plugName, method, directory) {
  * Create hopp object based on plugins.
  */
 
-exports.default = (() => {
-  var _ref = (0, _bluebird.coroutine)(function* (directory) {
-    const plugins = yield (0, _bluebird.resolve)((0, _loadPlugins2.default)(directory));
+exports.default = directory => {
+  const plugins = (0, _loadPlugins2.default)(directory);
 
-    for (const name in plugins) {
-      if (plugins.hasOwnProperty(name)) {
-        const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
-        const plugName = normalize(name);
+  for (const name in plugins) {
+    if (plugins.hasOwnProperty(name)) {
+      const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
+      const plugName = normalize(name);
 
-        debug('adding %s %s as %s', type, name, plugName);
+      debug('adding %s %s as %s', type, name, plugName);
 
-        // check for conflicts
-        if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
-          throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
-        }
+      // check for conflicts
+      if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
+        throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
+      }
 
-        // add the plugin to the hopp prototype so it can be
-        // used for the rest of the build process
-        // this function is the proxy of the 'default' function
-        _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
+      // add the plugin to the hopp prototype so it can be
+      // used for the rest of the build process
+      // this function is the proxy of the 'default' function
+      _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
 
-        // add any other methods
-        for (const method of plugins[name]) {
-          if (method !== '__esModule' && method !== 'config' && method !== 'default') {
-            _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
-          }
+      // add any other methods
+      for (const method of plugins[name]) {
+        if (method !== '__esModule' && method !== 'config' && method !== 'default') {
+          _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
         }
       }
     }
+  }
 
-    /**
-     * Expose hopp class for task creation.
-     */
-    const init = src => new _mgr2.default(src);
+  /**
+   * Expose hopp class for task creation.
+   */
+  const init = src => new _mgr2.default(src);
 
-    init.all = _parallel2.default;
-    init.steps = _steps2.default;
-    init.watch = _watch2.default;
+  init.all = _parallel2.default;
+  init.steps = _steps2.default;
+  init.watch = _watch2.default;
 
-    return init;
-  });
-
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
+  return init;
+};
 
 //# sourceMappingURL=hopp.js.map

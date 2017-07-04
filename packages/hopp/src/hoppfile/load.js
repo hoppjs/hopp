@@ -6,16 +6,16 @@
 
 import * as cache from '../cache'
 import { deepEqual } from '../utils'
-import { stat, readFile } from '../fs'
+import { statSync, readFileSync } from 'fs'
 
-export default async file => {
+export default file => {
   // if bad args die
   if (typeof file !== 'string') {
     throw new Error('Unknown arguments')
   }
 
   // get file stat
-  const lmod = +(await stat(file)).mtime
+  const lmod = +statSync(file).mtime
 
   // try to load from cache
   const state = {}
@@ -47,7 +47,7 @@ export default async file => {
   cache.val(
     '_',
 
-    /function|=>/.test(await readFile(require.resolve(file), 'utf8'))
+    /function|=>/.test(readFileSync(require.resolve(file), 'utf8'))
 
     // if any functions exist, we can't cache the file
       ? [

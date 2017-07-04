@@ -1,7 +1,5 @@
 'use strict';
 
-var _bluebird = require('bluebird');
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -77,29 +75,13 @@ const args = {
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['directory', 'require', 'jobs'],
 
-  boolean: ['recache', 'verbose', 'version', 'help', 'skip'],
-
-  alias: (() => {
-    const o = {};
-
-    for (let a in args) {
-      if (args.hasOwnProperty(a)) {
-        o[a] = args[a][0];
-
-        if (args[a][0].length > largestArg.length) {
-          largestArg = args[a][0];
-        }
-      }
-    }
-
-    return o;
-  })()
+  boolean: ['recache', 'verbose', 'version', 'help', 'skip']
 });
 
 // expose argv to env
-process.env.RECACHE = argv.recache;
-process.env.WEB_CONCURRENCY = argv.jobs;
-process.env.SKIP_BUILD = argv.skip;
+process.env.RECACHE = argv.recache || argv.R;
+process.env.WEB_CONCURRENCY = argv.jobs || argv.j;
+process.env.SKIP_BUILD = argv.skip || argv.s;
 
 /**
  * Print help.
@@ -117,7 +99,7 @@ function help() {
   process.exit(1);
 }
 
-if (argv.version) {
+if (argv.version || argv.V) {
   console.log(require('../package.json').version);
   process.exit(0);
 }
@@ -130,7 +112,7 @@ if (argv.version) {
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
-if (argv.help) {
+if (argv.help || argv.h) {
   help();
 }
 
@@ -142,116 +124,109 @@ const tasks = argv._.length === 0 ? ['default'] : argv._;
 /**
  * Require whatever needs to be loaded.
  */
+argv.require = argv.require || argv.r;
 if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require]).forEach(mod => require(mod));
 }
 
-;(0, _bluebird.coroutine)(function* () {
-  /**
-   * Pass verbosity through to the env.
-   */
-  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose;
-  debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG);
+/**
+ * Pass verbosity through to the env.
+ */
+process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose || !!argv.v;
+debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG);
 
-  /**
-   * Harmony flag for transpiling hoppfiles.
-   */
-  process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony;
-
-  /**
-   * If project directory not specified, do lookup for the
-   * hoppfile.js
-   */
-  projectDir = (directory => {
-    // absolute paths don't need correcting
-    if (directory[0] === '/') {
-      return directory;
-    }
-
-    // sort-of relatives should be made into relative
-    if (directory[0] !== '.') {
-      directory = './' + directory;
-    }
-
-    // map to current directory
-    return _path2.default.resolve(process.cwd(), directory);
-  })(argv.directory || (yield (0, _bluebird.resolve)(hoppfile.find(process.cwd()))));
-
-  /**
-   * Set hoppfile location relative to the project.
-   *
-   * This will cause errors later if the directory was supplied
-   * manually but contains no hoppfile. We don't want to do a magic
-   * lookup for the user because they overrode the magic with the
-   * manual flag.
-   */
-  const file = projectDir + '/hoppfile.js';
-  debug('Using hoppfile.js @ %s', file);
-
-  /**
-   * Load cache.
-   */
-  yield (0, _bluebird.resolve)(cache.load(projectDir));
-
-  /**
-   * Create hopp instance creator.
-   */
-  const hopp = yield (0, _bluebird.resolve)((0, _hopp2.default)(projectDir));
-
-  /**
-   * Cache the hopp handler to make `require()` work
-   * in the hoppfile.
-   */
-  const _resolve = _module2.default._resolveFilename;
-  _module2.default._resolveFilename = (what, parent) => {
-    return what === 'hopp' ? what : _resolve(what, parent);
-  };
-
-  require.cache.hopp = {
-    id: 'hopp',
-    filename: 'hopp',
-    loaded: true,
-    exports: hopp
-
-    /**
-     * Load tasks from file.
-     */
-  };const [fromCache, busted, taskDefns] = yield (0, _bluebird.resolve)(hoppfile.load(file));
-
-  /**
-   * Parse from cache.
-   */
-  if (fromCache) {
-    // create copy of tasks, we don't want to modify
-    // the actual goal list
-    let fullList = [].slice.call(tasks);
-
-    // walk the full tree
-    const addDependencies = task => {
-      if (taskDefns[task] instanceof Array) {
-        fullList = fullList.concat(taskDefns[task][1]);
-        taskDefns[task][1].forEach(sub => addDependencies(sub));
-      }
-    };
-
-    // start walking from top
-    fullList.forEach(task => addDependencies(task));
-
-    // parse all tasks and their dependencies
-    (0, _tree2.default)(taskDefns, fullList);
+/**
+ * If project directory not specified, do lookup for the
+ * hoppfile.js
+ */
+projectDir = (directory => {
+  // absolute paths don't need correcting
+  if (directory[0] === '/') {
+    return directory;
   }
 
-  /**
-   * Wait for task completion.
-   */
-  Goal.defineTasks(taskDefns, busted);
-  yield (0, _bluebird.resolve)(Goal.create(tasks, projectDir));
+  // sort-of relatives should be made into relative
+  if (directory[0] !== '.') {
+    directory = './' + directory;
+  }
+
+  // map to current directory
+  return _path2.default.resolve(process.cwd(), directory);
+})(argv.directory || hoppfile.find(process.cwd()));
+
+/**
+ * Set hoppfile location relative to the project.
+ *
+ * This will cause errors later if the directory was supplied
+ * manually but contains no hoppfile. We don't want to do a magic
+ * lookup for the user because they overrode the magic with the
+ * manual flag.
+ */
+const file = projectDir + '/hoppfile.js';
+debug('Using hoppfile.js @ %s', file);
+
+/**
+ * Load cache.
+ */
+cache.load(projectDir);
+
+/**
+ * Create hopp instance creator.
+ */
+const hopp = (0, _hopp2.default)(projectDir);
+
+/**
+ * Cache the hopp handler to make `require()` work
+ * in the hoppfile.
+ */
+const _resolve = _module2.default._resolveFilename;
+_module2.default._resolveFilename = (what, parent) => {
+  return what === 'hopp' ? what : _resolve(what, parent);
+};
+
+require.cache.hopp = {
+  id: 'hopp',
+  filename: 'hopp',
+  loaded: true,
+  exports: hopp
 
   /**
-   * Store cache for later.
+   * Load tasks from file.
    */
-  yield (0, _bluebird.resolve)(cache.save(projectDir));
-})().then(() => {
+};const [fromCache, busted, taskDefns] = hoppfile.load(file);
+
+/**
+ * Parse from cache.
+ */
+if (fromCache) {
+  // create copy of tasks, we don't want to modify
+  // the actual goal list
+  let fullList = [].slice.call(tasks);
+
+  // walk the full tree
+  const addDependencies = task => {
+    if (taskDefns[task] instanceof Array) {
+      fullList = fullList.concat(taskDefns[task][1]);
+      taskDefns[task][1].forEach(sub => addDependencies(sub));
+    }
+  };
+
+  // start walking from top
+  fullList.forEach(task => addDependencies(task));
+
+  // parse all tasks and their dependencies
+  (0, _tree2.default)(taskDefns, fullList);
+}
+
+/**
+ * Wait for task completion.
+ */
+Goal.defineTasks(taskDefns, busted);
+Goal.create(tasks, projectDir).then(() => {
+  /**
+   * Store cache for later, then exit.
+   */
+  cache.save(projectDir);
   process.exit(0);
 }, err => {
   function end(lastErr) {

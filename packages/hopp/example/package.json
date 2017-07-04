@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "hopp-plugin-concat": "git+https://github.com/hoppjs/hopp-concat.git"
+    "hopp-plugin-concat": "*"
   }
 }

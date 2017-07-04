@@ -1,7 +1,5 @@
 'use strict';
 
-var _bluebird = require('bluebird');
-
 var _os = require('os');
 
 var _os2 = _interopRequireDefault(_os);
@@ -18,7 +16,7 @@ var _stripAnsi = require('strip-ansi');
 
 var _stripAnsi2 = _interopRequireDefault(_stripAnsi);
 
-var _fs = require('../fs');
+var _fs = require('fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -89,7 +87,7 @@ function fmt(namespace, log) {
     const str = _util2.default.format.apply(console, [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`].concat([].slice.call(arguments, 1)));
 
     // add to record
-    debugOutput.push((0, _stripAnsi2.default)(str));
+    debugOutput.push(str);
 
     // log to console
     if (log !== 'debug' || process.env.HOPP_DEBUG === 'true') {
@@ -128,17 +126,11 @@ module.exports = namespace => {
 /**
  * Write debug log to file on failure.
  */
-module.exports.saveLog = (() => {
-  var _ref = (0, _bluebird.coroutine)(function* (directory) {
-    yield (0, _bluebird.resolve)((0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL)));
+module.exports.saveLog = directory => {
+  (0, _fs.writeFileSync)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.map(_stripAnsi2.default).join(_os2.default.EOL));
 
-    console.error('\nSaved debug info to: %s.', directory);
-    console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
-  });
-
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
+  console.error('\nSaved debug info to: %s.', directory);
+  console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m');
+};
 
 //# sourceMappingURL=log.js.map

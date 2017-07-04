@@ -57,7 +57,7 @@ export const create = (tasks, projectDir, mode = 'start') => {
   /**
    * Otherwise wrap all.
    */
-  return Promise.all(tasks.map(async name => {
+  return Promise.all(tasks.map(name => {
     let task = taskDefns[name]
 
     if (task instanceof Array) {

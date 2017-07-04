@@ -4,24 +4,24 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import { stat, exists } from '../fs'
 import * as cache from '../cache'
+import { statSync, existsSync } from 'fs'
 
 /**
  * Loads the list of plugins defined in the package.json.
  * @param {String} path to directory with package.json
  * @return {Promise} resolves with array of paths to plugins
  */
-export default async directory => {
+export default directory => {
   const pkgFile = directory + '/package.json'
 
   // ignore if there is no package.json file
-  if (!await exists(pkgFile)) {
+  if (!existsSync(pkgFile)) {
     return
   }
 
   const pkg = require(pkgFile)
-  const pkgStat = +(await stat(pkgFile)).mtime
+  const pkgStat = statSync(pkgFile).mtime
 
   let [savedStat, list] = cache.val('pl') || [0, {}]
 
