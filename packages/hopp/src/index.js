@@ -57,29 +57,13 @@ const argv = require('minimist')(process.argv.slice(2), {
     'version',
     'help',
     'skip'
-  ],
-
-  alias: (() => {
-    const o = {}
-
-    for (let a in args) {
-      if (args.hasOwnProperty(a)) {
-        o[a] = args[a][0]
-
-        if (args[a][0].length > largestArg.length) {
-          largestArg = args[a][0]
-        }
-      }
-    }
-
-    return o
-  })()
+  ]
 })
 
 // expose argv to env
-process.env.RECACHE = argv.recache
-process.env.WEB_CONCURRENCY = argv.jobs
-process.env.SKIP_BUILD = argv.skip
+process.env.RECACHE = argv.recache || argv.R
+process.env.WEB_CONCURRENCY = argv.jobs || argv.j
+process.env.SKIP_BUILD = argv.skip || argv.s
 
 /**
  * Print help.
@@ -97,7 +81,7 @@ function help () {
   process.exit(1)
 }
 
-if (argv.version) {
+if (argv.version || argv.V) {
   console.log(require('../package.json').version)
   process.exit(0)
 }
@@ -110,7 +94,7 @@ if (argv.version) {
  * Invalid arguments is a flag misuse - never a missing
  * task. That error should be more minimal and separate.
  */
-if (argv.help) {
+if (argv.help || argv.h) {
   help()
 }
 
@@ -122,6 +106,7 @@ const tasks = argv._.length === 0 ? ['default'] : argv._
 /**
  * Require whatever needs to be loaded.
  */
+argv.require = argv.require || argv.r
 if (argv.require) {
   ;(argv.require instanceof Array ? argv.require : [argv.require])
     .forEach(mod => require(mod))
@@ -130,13 +115,8 @@ if (argv.require) {
 /**
  * Pass verbosity through to the env.
  */
-process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose
+process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose || !!argv.v
 debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
-
-/**
- * Harmony flag for transpiling hoppfiles.
- */
-process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony
 
 /**
  * If project directory not specified, do lookup for the
