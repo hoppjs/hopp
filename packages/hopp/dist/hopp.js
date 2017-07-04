@@ -87,6 +87,33 @@ function createMethod(type, name, plugName, method, directory) {
 }
 
 /**
+ * Add single plugin to prototype.
+ */
+function addPlugin(name, plugins, directory) {
+  const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
+  const plugName = normalize(name);
+
+  debug('adding %s %s as %s', type, name, plugName);
+
+  // check for conflicts
+  if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
+    throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
+  }
+
+  // add the plugin to the hopp prototype so it can be
+  // used for the rest of the build process
+  // this function is the proxy of the 'default' function
+  _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
+
+  // add any other methods
+  for (const method of plugins[name]) {
+    if (method !== '__esModule' && method !== 'config' && method !== 'default') {
+      _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
+    }
+  }
+}
+
+/**
  * Create hopp object based on plugins.
  */
 
@@ -94,27 +121,7 @@ exports.default = directory => {
   const plugins = (0, _loadPlugins2.default)(directory);
 
   for (const name in plugins) {
-    const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
-    const plugName = normalize(name);
-
-    debug('adding %s %s as %s', type, name, plugName);
-
-    // check for conflicts
-    if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
-      throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
-    }
-
-    // add the plugin to the hopp prototype so it can be
-    // used for the rest of the build process
-    // this function is the proxy of the 'default' function
-    _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
-
-    // add any other methods
-    for (const method of plugins[name]) {
-      if (method !== '__esModule' && method !== 'config' && method !== 'default') {
-        _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
-      }
-    }
+    addPlugin(name, plugins, directory);
   }
 
   /**
@@ -125,6 +132,19 @@ exports.default = directory => {
   init.all = _parallel2.default;
   init.steps = _steps2.default;
   init.watch = _watch2.default;
+
+  /**
+   * API for loading local plugins.
+   */
+  init.load = function (pathToPlugin) {
+    const pluginName = _path2.default.basename(pathToPlugin);
+
+    // add to list
+    plugins[pluginName] = Object.keys(require(pathToPlugin));
+
+    // run normal add
+    addPlugin(pluginName, plugins, directory);
+  };
 
   return init;
 };
