@@ -77,9 +77,9 @@ var args = {
   // parse via minimist
 };var largestArg = '';
 var argv = require('minimist')(process.argv.slice(2), {
-  string: ['directory', 'require', 'jobs'],
+  string: ['directory', 'd', 'require', 'r', 'jobs', 'j'],
 
-  boolean: ['recache', 'verbose', 'version', 'help', 'skip']
+  boolean: ['recache', 'R', 'verbose', 'v', 'version', 'V', 'help', 'h', 'skip', 's']
 });
 
 // expose argv to env
@@ -95,9 +95,7 @@ function help() {
   console.log('');
 
   for (var a in args) {
-    if (args.hasOwnProperty(a)) {
-      console.log('  -%s, --%s%s%s', a, args[a][0], ' '.repeat(largestArg.length - args[a][0].length + 2), args[a][1]);
-    }
+    console.log('  -%s, --%s%s%s', a, args[a][0], ' '.repeat(largestArg.length - args[a][0].length + 2), args[a][1]);
   }
 
   process.exit(1);

@@ -8,21 +8,16 @@
  * Makes async functions deterministic.
  */
 export default fn => {
-  const cache = {}
+  const cache = Object.create(null)
 
   return process.env.RECACHE === 'true' ? fn : async function () {
-    const args = [].slice.call(arguments)
-    const last = args.pop()
-
+    const last = arguments[arguments.length - 1]
     let val = cache
-    for (let i = 0, a = args[0]; i < args.length; i += 1, a = args[i]) {
-      val = val[a] = val[a] || {}
+
+    for (let i = 0, a = arguments[0]; i < arguments.length - 1; i += 1, a = arguments[i]) {
+      val = val[a] = val[a] || Object.create(null)
     }
 
-    if (!val.hasOwnProperty(last)) {
-      return val[last] = await fn.apply(this, args.concat([last]))
-    }
-
-    return val[last]
+    return val[last] = (val[last] || await fn.apply(this, [...arguments]))
   }
 }

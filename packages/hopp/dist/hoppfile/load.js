@@ -24,10 +24,10 @@ exports.default = file => {
   const lmod = +(0, _fs.statSync)(file).mtime;
 
   // try to load from cache
-  const state = {};[state.lmod, state.tasks] = cache.val('_') || [];
+  const state = Object.create(null);[state.lmod, state.tasks] = cache.val('_') || [];
 
   if (state.lmod === lmod) {
-    return [true, {}, state.tasks];
+    return [true, Object.create(null), state.tasks];
   }
 
   // load via require
@@ -39,7 +39,7 @@ exports.default = file => {
 
   // only try checking for single tasks
   for (let task in tasks) {
-    if (tasks.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
+    if (state.tasks.hasOwnProperty(task)) {
       const json = tasks[task].toJSON();
 
       if (!(json instanceof Array) && !(0, _utils.deepEqual)(json, state.tasks[task])) {

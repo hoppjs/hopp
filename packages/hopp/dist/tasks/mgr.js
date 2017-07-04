@@ -58,8 +58,8 @@ const watchlog = (0, _utils.createLogger)('hopp:watch').log;
 /**
  * Plugins storage.
  */
-const plugins = {};
-const pluginConfig = {};
+const plugins = Object.create(null);
+const pluginConfig = Object.create(null);
 
 /**
  * Test for undefined or null.
@@ -85,7 +85,7 @@ class Hopp {
     }
 
     // store context local to each task
-    this.pluginCtx = {};
+    this.pluginCtx = Object.create(null);
 
     // persistent info
     this.d = {
@@ -240,7 +240,7 @@ class Hopp {
        * Create list of unmodified.
        */
       let freshBuild = true;
-      const unmodified = {};
+      const unmodified = Object.create(null);
 
       for (let file of files) {
         if (modified.indexOf(file) === -1) {
@@ -402,7 +402,7 @@ class Hopp {
       }
 
       // expose module config
-      pluginConfig[plugin] = mod.config || {};
+      pluginConfig[plugin] = mod.config || Object.create(null);
 
       // add plugins to loaded plugins
       plugins[plugin] = mod;
@@ -449,7 +449,7 @@ class Hopp {
         _this2.loadedPlugins = true;
 
         _this2.d.stack.forEach(([plugin, args]) => {
-          if (!_this2.pluginCtx.hasOwnProperty(plugin)) {
+          if (!_this2.pluginCtx[plugin]) {
             _this2.loadPlugin(name, plugin, args, directory);
           }
 

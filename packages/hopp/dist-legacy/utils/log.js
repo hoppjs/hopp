@@ -84,7 +84,14 @@ var debugOutput = [];
  */
 function fmt(namespace, log) {
   return function (msg) {
-    var str = _util2.default.format.apply(console, [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`].concat([].slice.call(arguments, 1)));
+    var args = [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`];
+
+    for (var i = 1; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+
+    // create log string
+    var str = _util2.default.format.apply(console, args);
 
     // add to record
     debugOutput.push(str);
@@ -99,7 +106,7 @@ function fmt(namespace, log) {
 /**
  * Cache loggers for repeat calls.
  */
-var cache = {};
+var cache = Object.create(null);
 
 /**
  * Create debug-like loggers attached to given

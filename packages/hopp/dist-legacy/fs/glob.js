@@ -25,17 +25,16 @@ var glob = function () {
               case 0:
                 debug('walk(relative = %s, pttn = %s, directory = %s, recursive = %s) in %s [recache:%s, curr:%s]', relative, pttn, directory, recursive, cwd, recache, pttn[0]);
 
+                pttn = pttn.slice();
+
                 if (!(pttn.length === 0)) {
-                  _context.next = 3;
+                  _context.next = 4;
                   break;
                 }
 
                 return _context.abrupt('return', []);
 
-              case 3:
-
-                pttn = pttn.slice();
-
+              case 4:
                 curr = pttn.shift();
                 localResults = [];
                 _iteratorNormalCompletion = true;
@@ -98,7 +97,7 @@ var glob = function () {
               case 31:
 
                 // pull from old cache, if it still exists
-                if (retrievedCache.hasOwnProperty(relativepath)) {
+                if (retrievedCache[relativepath]) {
                   statCache[relativepath] = retrievedCache[relativepath];
                 }
 
@@ -117,7 +116,7 @@ var glob = function () {
                   break;
                 }
 
-                if (recache || !statCache.hasOwnProperty(relativepath) || statCache[relativepath] !== +fstat.mtime) {
+                if (recache || !statCache[relativepath] || statCache[relativepath] !== +fstat.mtime) {
                   statCache[relativepath] = +fstat.mtime;
                   localResults.push(filepath);
 
@@ -228,18 +227,18 @@ var glob = function () {
 
             // ensure global cache is present
             if (gstatCache === undefined) {
-              gstatCache = cache.val('sc') || {};
+              gstatCache = cache.val('sc') || Object.create(null);
               cache.val('sc', gstatCache);
             }
 
             // create local cache
             if (gstatCache[task] === undefined) {
-              gstatCache[task] = {};
+              gstatCache[task] = Object.create(null);
             }
 
             // create new local cache and load the retreived cache
             retrievedCache = gstatCache[task];
-            statCache = {};
+            statCache = Object.create(null);
 
             // replace the retreived with new cache to get rid of stale
             // entries
@@ -388,7 +387,7 @@ var _require = require('../utils/log')('hopp:glob'),
     debug = _require.debug;
 
 var gstatCache = void 0;
-var tempCache = {};
+var tempCache = Object.create(null);
 
 glob.nonMagic = function (pattern) {
   var newpath = '';

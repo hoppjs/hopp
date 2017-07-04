@@ -16,11 +16,10 @@ var _bluebird = require('bluebird');
  * Makes async functions deterministic.
  */
 exports.default = function (fn) {
-  var cache = {};
+  var cache = Object.create(null);
 
   return process.env.RECACHE === 'true' ? fn : (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee() {
-    var args,
-        last,
+    var last,
         val,
         i,
         a,
@@ -29,27 +28,29 @@ exports.default = function (fn) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            args = [].slice.call(_args);
-            last = args.pop();
+            last = _args[_args.length - 1];
             val = cache;
 
-            for (i = 0, a = args[0]; i < args.length; i += 1, a = args[i]) {
-              val = val[a] = val[a] || {};
+
+            for (i = 0, a = _args[0]; i < _args.length - 1; i += 1, a = _args[i]) {
+              val = val[a] = val[a] || Object.create(null);
             }
 
-            if (val.hasOwnProperty(last)) {
+            _context.t0 = val[last];
+
+            if (_context.t0) {
               _context.next = 8;
               break;
             }
 
             _context.next = 7;
-            return (0, _bluebird.resolve)(fn.apply(this, args.concat([last])));
+            return (0, _bluebird.resolve)(fn.apply(this, [].concat(Array.prototype.slice.call(_args))));
 
           case 7:
-            return _context.abrupt('return', val[last] = _context.sent);
+            _context.t0 = _context.sent;
 
           case 8:
-            return _context.abrupt('return', val[last]);
+            return _context.abrupt('return', val[last] = _context.t0);
 
           case 9:
           case 'end':

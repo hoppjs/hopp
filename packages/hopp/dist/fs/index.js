@@ -45,11 +45,14 @@ function promisify(fn, name) {
    * Create function call wrapper.
    */
   const fnCall = function () {
-    const args = [].slice.call(arguments);
+    const args = [...arguments];
+
     debug('%s(%j)', name, args);
     return new _bluebird2.default((resolve, reject) => {
       fn.apply(this, args.concat([function (err) {
-        if (err) reject(err);else resolve.apply(null, [].slice.call(arguments, 1));
+        const fnargs = [...arguments];
+
+        if (err) reject(err);else resolve.apply(null, fnargs.slice(1));
       }]));
     });
   };
@@ -63,8 +66,10 @@ function promisify(fn, name) {
    * Return conditional cache.
    */
   return function () {
-    if (useCache) return cacheCall.apply(this, arguments);
-    return fnCall.apply(this, arguments);
+    const args = [...arguments];
+
+    if (useCache) return cacheCall.apply(this, args);
+    return fnCall.apply(this, args);
   };
 }
 

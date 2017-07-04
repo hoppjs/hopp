@@ -87,7 +87,6 @@ var val = exports.val = function val(key, value) {
 
 /**
  * Load/create cache for a plugin.
- * @param {}
  */
 var plugin = exports.plugin = function plugin(pluginName) {
   var plugins = val('p');
@@ -109,13 +108,13 @@ var sourcemap = exports.sourcemap = function sourcemap(taskName, sm) {
   var sourcemap = val('sm');
 
   if (!sourcemap) {
-    val('sm', sourcemap = {});
+    val('sm', sourcemap = Object.create(null));
   }
 
   if (sm) {
     sourcemap[taskName] = sm;
   } else {
-    sourcemap[taskName] = sourcemap[taskName] || {};
+    sourcemap[taskName] = sourcemap[taskName] || Object.create(null);
   }
 
   return sourcemap;

@@ -41,12 +41,12 @@ var Bundle = function (_EventEmitter) {
       autoClose: false
     });
 
-    _this.map = {};
+    _this.map = Object.create(null);
     _this.offset = 0;
     _this.files = [];
-    _this.sizes = {};
-    _this.status = {};
-    _this.buffers = {};
+    _this.sizes = Object.create(null);
+    _this.status = Object.create(null);
+    _this.buffers = Object.create(null);
     _this.flushIndex = 0;
     _this.id = Math.random();
     _this.directory = directory;

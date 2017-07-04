@@ -30,7 +30,7 @@ exports.default = function (file) {
   var lmod = +(0, _fs.statSync)(file).mtime;
 
   // try to load from cache
-  var state = {};
+  var state = Object.create(null);
   var _ref = cache.val('_') || [];
 
   var _ref2 = _slicedToArray(_ref, 2);
@@ -40,7 +40,7 @@ exports.default = function (file) {
 
 
   if (state.lmod === lmod) {
-    return [true, {}, state.tasks];
+    return [true, Object.create(null), state.tasks];
   }
 
   // load via require
@@ -52,7 +52,7 @@ exports.default = function (file) {
 
   // only try checking for single tasks
   for (var task in tasks) {
-    if (tasks.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
+    if (state.tasks.hasOwnProperty(task)) {
       var json = tasks[task].toJSON();
 
       if (!(json instanceof Array) && !(0, _utils.deepEqual)(json, state.tasks[task])) {

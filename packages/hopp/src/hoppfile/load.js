@@ -18,11 +18,11 @@ export default file => {
   const lmod = +statSync(file).mtime
 
   // try to load from cache
-  const state = {}
+  const state = Object.create(null)
   ;[state.lmod, state.tasks] = cache.val('_') || []
 
   if (state.lmod === lmod) {
-    return [true, {}, state.tasks]
+    return [true, Object.create(null), state.tasks]
   }
 
   // load via require
@@ -34,7 +34,7 @@ export default file => {
 
   // only try checking for single tasks
   for (let task in tasks) {
-    if (tasks.hasOwnProperty(task) && state.tasks.hasOwnProperty(task)) {
+    if (state.tasks.hasOwnProperty(task)) {
       const json = tasks[task].toJSON()
 
       if (!(json instanceof Array) && !deepEqual(json, state.tasks[task])) {
