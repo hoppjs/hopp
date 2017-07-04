@@ -3,14 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _bluebird = require('bluebird');
+exports.default = find;
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _fs = require('../fs');
+var _fs = require('fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28,25 +27,16 @@ const { debug } = require('../utils/log')('hopp');
  * @returns {String} the directory in which the file exists
  * @throws {Error} if file was not found
  */
+function find(directory) {
+  const files = (0, _fs.readdirSync)(directory).filter(f => f === 'hoppfile.js');
 
-exports.default = (() => {
-  var _ref = (0, _bluebird.coroutine)(function* (directory) {
-    const files = (yield (0, _bluebird.resolve)((0, _fs.readdir)(directory))).filter(f => f === 'hoppfile.js');
+  debug('found %s hoppfiles in %s', files.length, directory);
 
-    debug('found %s hoppfiles in %s', files.length, directory);
-
-    if (files.length === 0 && directory === '/') {
-      throw new Error('Failed to find hoppfile.js');
-    }
-
-    return files.length === 1 ? directory : find(_path2.default.dirname(directory));
-  });
-
-  function find(_x) {
-    return _ref.apply(this, arguments);
+  if (files.length === 0 && directory === '/') {
+    throw new Error('Failed to find hoppfile.js');
   }
 
-  return find;
-})();
+  return files.length === 1 ? directory : find(_path2.default.dirname(directory));
+}
 
 //# sourceMappingURL=find.js.map

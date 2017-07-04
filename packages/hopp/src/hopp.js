@@ -66,8 +66,8 @@ function createMethod (type, name, plugName, method, directory) {
 /**
  * Create hopp object based on plugins.
  */
-export default async directory => {
-  const plugins = await loadPlugins(directory)
+export default directory => {
+  const plugins = loadPlugins(directory)
 
   for (const name in plugins) {
     if (plugins.hasOwnProperty(name)) {

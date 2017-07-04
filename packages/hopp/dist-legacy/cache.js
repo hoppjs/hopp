@@ -5,37 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.save = exports.sourcemap = exports.plugin = exports.val = exports.load = undefined;
 
-var _bluebird = require('bluebird');
-
-/**
- * Cache updater.
- */
-var updateCache = function () {
-  var _ref3 = (0, _bluebird.method)(function (lock) {
-    // handle newer lock files
-    if (require('semver').gt(lock.v, version)) {
-      throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp');
-    }
-
-    var compat = void 0;
-
-    // load converter
-    try {
-      compat = require('./compat/' + lock.v).default;
-    } catch (err) {
-      compat = require('./compat/else').default;
-    }
-
-    // do convert
-    return compat(lock);
-  });
-
-  return function updateCache(_x3) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-var _fs = require('./fs');
+var _fs = require('fs');
 
 var _require = require('../package.json'),
     version = _require.version; /**
@@ -65,122 +35,41 @@ var createCache = function createCache() {
  * @param {String} directory project directory
  * @return {Object} the loaded cache
  */
-var load = exports.load = function () {
-  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(directory) {
-    var lockfile;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            if (!lock) {
-              _context.next = 2;
-              break;
-            }
+var load = exports.load = function load(directory) {
+  // send back internal cache if reloading
+  if (lock) return lock;
 
-            return _context.abrupt('return', lock);
+  // verify directory
+  if (typeof directory !== 'string' || !(0, _fs.existsSync)(directory)) {
+    throw new Error('Invalid directory given: ' + directory);
+  }
 
-          case 2:
-            _context.t0 = typeof directory !== 'string';
+  // set cache file
+  var lockfile = `${directory}/hopp.lock`;
 
-            if (_context.t0) {
-              _context.next = 7;
-              break;
-            }
+  // bring cache into existence
+  if (process.env.RECACHE === 'true' || !(0, _fs.existsSync)(lockfile)) {
+    return lock = createCache();
+  }
 
-            _context.next = 6;
-            return (0, _bluebird.resolve)((0, _fs.exists)(directory));
+  // load lock file
+  debug('Loading cache');
+  try {
+    lock = JSON.parse((0, _fs.readFileSync)(lockfile, 'utf8'));
+    debug('loaded cache at v%s', lock.v);
+  } catch (_) {
+    log('Corrupted cache; ejecting.');
+    return lock = createCache();
+  }
 
-          case 6:
-            _context.t0 = !_context.sent;
+  // handle version change
+  if (lock.v !== version) {
+    log('Found stale cache; updating.');
+    return updateCache(lock);
+  }
 
-          case 7:
-            if (!_context.t0) {
-              _context.next = 9;
-              break;
-            }
-
-            throw new Error('Invalid directory given: ' + directory);
-
-          case 9:
-
-            // set cache file
-            lockfile = `${directory}/hopp.lock`;
-
-            // bring cache into existence
-
-            _context.t1 = process.env.RECACHE === 'true';
-
-            if (_context.t1) {
-              _context.next = 15;
-              break;
-            }
-
-            _context.next = 14;
-            return (0, _bluebird.resolve)((0, _fs.exists)(lockfile));
-
-          case 14:
-            _context.t1 = !_context.sent;
-
-          case 15:
-            if (!_context.t1) {
-              _context.next = 17;
-              break;
-            }
-
-            return _context.abrupt('return', lock = createCache());
-
-          case 17:
-
-            // load lock file
-            debug('Loading cache');
-            _context.prev = 18;
-            _context.t2 = JSON;
-            _context.next = 22;
-            return (0, _bluebird.resolve)((0, _fs.readFile)(lockfile, 'utf8'));
-
-          case 22:
-            _context.t3 = _context.sent;
-            lock = _context.t2.parse.call(_context.t2, _context.t3);
-
-            debug('loaded cache at v%s', lock.v);
-            _context.next = 31;
-            break;
-
-          case 27:
-            _context.prev = 27;
-            _context.t4 = _context['catch'](18);
-
-            log('Corrupted cache; ejecting.');
-            return _context.abrupt('return', lock = createCache());
-
-          case 31:
-            if (!(lock.v !== version)) {
-              _context.next = 36;
-              break;
-            }
-
-            log('Found stale cache; updating.');
-            _context.next = 35;
-            return (0, _bluebird.resolve)(updateCache(lock));
-
-          case 35:
-            lock = _context.sent;
-
-          case 36:
-            return _context.abrupt('return', lock);
-
-          case 37:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, undefined, [[18, 27]]);
-  }));
-
-  return function load(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
+  return lock;
+};
 
 /**
  * Adds/replaces a value in the cache.
@@ -236,27 +125,31 @@ var sourcemap = exports.sourcemap = function sourcemap(taskName, sm) {
  * Saves the lockfile again.
  * @param {*} directory
  */
-var save = exports.save = function () {
-  var _ref2 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(directory) {
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            debug('Saving cache');
-            _context2.next = 3;
-            return (0, _bluebird.resolve)((0, _fs.writeFile)(directory + '/hopp.lock', JSON.stringify(lock)));
+var save = exports.save = function save(directory) {
+  debug('Saving cache');
+  (0, _fs.writeFileSync)(directory + '/hopp.lock', JSON.stringify(lock));
+};
 
-          case 3:
-          case 'end':
-            return _context2.stop();
-        }
-      }
-    }, _callee2, undefined);
-  }));
+/**
+ * Cache updater.
+ */
+function updateCache(lock) {
+  // handle newer lock files
+  if (require('semver').gt(lock.v, version)) {
+    throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp');
+  }
 
-  return function save(_x2) {
-    return _ref2.apply(this, arguments);
-  };
-}();
+  var compat = void 0;
+
+  // load converter
+  try {
+    compat = require('./compat/' + lock.v).default;
+  } catch (err) {
+    compat = require('./compat/else').default;
+  }
+
+  // do convert
+  return compat(lock);
+}
 
 //# sourceMappingURL=cache.js.map

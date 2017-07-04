@@ -127,126 +127,124 @@ if (argv.require) {
     .forEach(mod => require(mod))
 }
 
-;(async () => {
-  /**
-   * Pass verbosity through to the env.
-   */
-  process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose
-  debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
+/**
+ * Pass verbosity through to the env.
+ */
+process.env.HOPP_DEBUG = process.env.HOPP_DEBUG || !!argv.verbose
+debug('Setting HOPP_DEBUG = %j', process.env.HOPP_DEBUG)
 
-  /**
-   * Harmony flag for transpiling hoppfiles.
-   */
-  process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony
+/**
+ * Harmony flag for transpiling hoppfiles.
+ */
+process.env.HARMONY_FLAG = process.env.HARMONY_FLAG || !!argv.harmony
 
-  /**
-   * If project directory not specified, do lookup for the
-   * hoppfile.js
-   */
-  projectDir = (directory => {
-    // absolute paths don't need correcting
-    if (directory[0] === '/') {
-      return directory
-    }
-
-    // sort-of relatives should be made into relative
-    if (directory[0] !== '.') {
-      directory = './' + directory
-    }
-
-    // map to current directory
-    return path.resolve(process.cwd(), directory)
-  })(argv.directory || await hoppfile.find(process.cwd()))
-
-  /**
-   * Set hoppfile location relative to the project.
-   *
-   * This will cause errors later if the directory was supplied
-   * manually but contains no hoppfile. We don't want to do a magic
-   * lookup for the user because they overrode the magic with the
-   * manual flag.
-   */
-  const file = projectDir + '/hoppfile.js'
-  debug('Using hoppfile.js @ %s', file)
-
-  /**
-   * Load cache.
-   */
-  await cache.load(projectDir)
-
-  /**
-   * Create hopp instance creator.
-   */
-  const hopp = await createHopp(projectDir)
-
-  /**
-   * Cache the hopp handler to make `require()` work
-   * in the hoppfile.
-   */
-  const _resolve = Module._resolveFilename
-  Module._resolveFilename = (what, parent) => {
-    return what === 'hopp' ? what : _resolve(what, parent)
+/**
+ * If project directory not specified, do lookup for the
+ * hoppfile.js
+ */
+projectDir = (directory => {
+  // absolute paths don't need correcting
+  if (directory[0] === '/') {
+    return directory
   }
 
-  require.cache.hopp = {
-    id: 'hopp',
-    filename: 'hopp',
-    loaded: true,
-    exports: hopp
+  // sort-of relatives should be made into relative
+  if (directory[0] !== '.') {
+    directory = './' + directory
   }
 
-  /**
-   * Load tasks from file.
-   */
-  const [fromCache, busted, taskDefns] = await hoppfile.load(file)
+  // map to current directory
+  return path.resolve(process.cwd(), directory)
+})(argv.directory || hoppfile.find(process.cwd()))
 
-  /**
-   * Parse from cache.
-   */
-  if (fromCache) {
-    // create copy of tasks, we don't want to modify
-    // the actual goal list
-    let fullList = [].slice.call(tasks)
+/**
+ * Set hoppfile location relative to the project.
+ *
+ * This will cause errors later if the directory was supplied
+ * manually but contains no hoppfile. We don't want to do a magic
+ * lookup for the user because they overrode the magic with the
+ * manual flag.
+ */
+const file = projectDir + '/hoppfile.js'
+debug('Using hoppfile.js @ %s', file)
 
-    // walk the full tree
-    const addDependencies = task => {
-      if (taskDefns[task] instanceof Array) {
-        fullList = fullList.concat(taskDefns[task][1])
-        taskDefns[task][1].forEach(sub => addDependencies(sub))
+/**
+ * Load cache.
+ */
+cache.load(projectDir)
+
+/**
+ * Create hopp instance creator.
+ */
+const hopp = createHopp(projectDir)
+
+/**
+ * Cache the hopp handler to make `require()` work
+ * in the hoppfile.
+ */
+const _resolve = Module._resolveFilename
+Module._resolveFilename = (what, parent) => {
+  return what === 'hopp' ? what : _resolve(what, parent)
+}
+
+require.cache.hopp = {
+  id: 'hopp',
+  filename: 'hopp',
+  loaded: true,
+  exports: hopp
+}
+
+/**
+ * Load tasks from file.
+ */
+const [fromCache, busted, taskDefns] = hoppfile.load(file)
+
+/**
+ * Parse from cache.
+ */
+if (fromCache) {
+  // create copy of tasks, we don't want to modify
+  // the actual goal list
+  let fullList = [].slice.call(tasks)
+
+  // walk the full tree
+  const addDependencies = task => {
+    if (taskDefns[task] instanceof Array) {
+      fullList = fullList.concat(taskDefns[task][1])
+      taskDefns[task][1].forEach(sub => addDependencies(sub))
+    }
+  }
+
+  // start walking from top
+  fullList.forEach(task => addDependencies(task))
+
+  // parse all tasks and their dependencies
+  fromTree(taskDefns, fullList)
+}
+
+/**
+ * Wait for task completion.
+ */
+Goal.defineTasks(taskDefns, busted)
+Goal.create(tasks, projectDir)
+  .then(() => {
+    /**
+     * Store cache for later, then exit.
+     */
+    cache.save(projectDir)
+    process.exit(0)
+  }, err => {
+    function end (lastErr) {
+      if (lastErr) {
+        error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
       }
+
+      process.exit(-1)
     }
 
-    // start walking from top
-    fullList.forEach(task => addDependencies(task))
+    error(err && err.stack ? err.stack : err)
 
-    // parse all tasks and their dependencies
-    fromTree(taskDefns, fullList)
-  }
-
-  /**
-   * Wait for task completion.
-   */
-  Goal.defineTasks(taskDefns, busted)
-  await Goal.create(tasks, projectDir)
-
-  /**
-   * Store cache for later.
-   */
-  await cache.save(projectDir)
-})().then(() => {
-  process.exit(0)
-}, err => {
-  function end (lastErr) {
-    if (lastErr) {
-      error(lastErr && lastErr.stack ? lastErr.stack : lastErr)
-    }
-
-    process.exit(-1)
-  }
-
-  error(err && err.stack ? err.stack : err)
-
-  createLogger.saveLog(projectDir)
-    .then(() => end())
-    .catch(err => end(err))
-})
+    createLogger.saveLog(projectDir)
+      .then(() => end())
+      .catch(err => end(err))
+  })

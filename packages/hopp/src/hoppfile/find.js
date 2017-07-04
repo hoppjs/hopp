@@ -5,7 +5,7 @@
  */
 
 import path from 'path'
-import { readdir } from '../fs'
+import { readdirSync } from 'fs'
 
 const { debug } = require('../utils/log')('hopp')
 
@@ -15,8 +15,8 @@ const { debug } = require('../utils/log')('hopp')
  * @returns {String} the directory in which the file exists
  * @throws {Error} if file was not found
  */
-export default async function find (directory) {
-  const files = (await readdir(directory)).filter(f => f === 'hoppfile.js')
+export default function find (directory) {
+  const files = readdirSync(directory).filter(f => f === 'hoppfile.js')
 
   debug('found %s hoppfiles in %s', files.length, directory)
 

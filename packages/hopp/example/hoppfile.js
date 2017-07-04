@@ -7,7 +7,6 @@ export const css =
 export const js =
   hopp([ 'src/js/**/*.js' ])
     .concat()
-    .concat.test()
     .dest('dist/js/bundle.js')
 
 export const watch = hopp.watch([

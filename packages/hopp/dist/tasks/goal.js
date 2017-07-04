@@ -75,29 +75,23 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
   /**
    * Otherwise wrap all.
    */
-  return (0, _bluebird.all)(tasks.map((() => {
-    var _ref = (0, _bluebird.method)(function (name) {
-      let task = taskDefns[name];
+  return (0, _bluebird.all)(tasks.map(name => {
+    let task = taskDefns[name];
 
-      if (task instanceof Array) {
-        task = fromArray(task);
-      }
+    if (task instanceof Array) {
+      task = fromArray(task);
+    }
 
-      if (!task) {
-        throw new Error(`${name}: no such task.`);
-      }
+    if (!task) {
+      throw new Error(`${name}: no such task.`);
+    }
 
-      if (!(mode in task)) {
-        throw new Error(`Cannot run task ${name} in ${mode} mode!`);
-      }
+    if (!(mode in task)) {
+      throw new Error(`Cannot run task ${name} in ${mode} mode!`);
+    }
 
-      return task[mode](name, projectDir, !!bustedTasks[name]);
-    });
-
-    return function (_x) {
-      return _ref.apply(this, arguments);
-    };
-  })()));
+    return task[mode](name, projectDir, !!bustedTasks[name]);
+  }));
 };
 
 //# sourceMappingURL=goal.js.map

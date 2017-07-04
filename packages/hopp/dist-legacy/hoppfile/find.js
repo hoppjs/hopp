@@ -3,14 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _bluebird = require('bluebird');
+exports.default = find;
 
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _fs = require('../fs');
+var _fs = require('fs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31,49 +30,18 @@ var _require = require('../utils/log')('hopp'),
  */
 
 
-exports.default = function () {
-  var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(directory) {
-    var files;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return (0, _bluebird.resolve)((0, _fs.readdir)(directory));
+function find(directory) {
+  var files = (0, _fs.readdirSync)(directory).filter(function (f) {
+    return f === 'hoppfile.js';
+  });
 
-          case 2:
-            _context.t0 = function (f) {
-              return f === 'hoppfile.js';
-            };
+  debug('found %s hoppfiles in %s', files.length, directory);
 
-            files = _context.sent.filter(_context.t0);
-
-
-            debug('found %s hoppfiles in %s', files.length, directory);
-
-            if (!(files.length === 0 && directory === '/')) {
-              _context.next = 7;
-              break;
-            }
-
-            throw new Error('Failed to find hoppfile.js');
-
-          case 7:
-            return _context.abrupt('return', files.length === 1 ? directory : find(_path2.default.dirname(directory)));
-
-          case 8:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  function find(_x) {
-    return _ref.apply(this, arguments);
+  if (files.length === 0 && directory === '/') {
+    throw new Error('Failed to find hoppfile.js');
   }
 
-  return find;
-}();
+  return files.length === 1 ? directory : find(_path2.default.dirname(directory));
+}
 
 //# sourceMappingURL=find.js.map

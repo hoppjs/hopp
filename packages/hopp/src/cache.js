@@ -4,11 +4,7 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import {
-  exists,
-  readFile,
-  writeFile
-} from './fs'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 
 const { version } = require('../package.json')
 const { debug, log } = require('./utils/log')('hopp')
@@ -27,12 +23,12 @@ const createCache = () => ((lock = {
  * @param {String} directory project directory
  * @return {Object} the loaded cache
  */
-export const load = async directory => {
+export const load = directory => {
   // send back internal cache if reloading
   if (lock) return lock
 
   // verify directory
-  if (typeof directory !== 'string' || !await exists(directory)) {
+  if (typeof directory !== 'string' || !existsSync(directory)) {
     throw new Error('Invalid directory given: ' + directory)
   }
 
@@ -40,14 +36,14 @@ export const load = async directory => {
   const lockfile = `${directory}/hopp.lock`
 
   // bring cache into existence
-  if (process.env.RECACHE === 'true' || !await exists(lockfile)) {
+  if (process.env.RECACHE === 'true' || !existsSync(lockfile)) {
     return (lock = createCache())
   }
 
   // load lock file
   debug('Loading cache')
   try {
-    lock = JSON.parse(await readFile(lockfile, 'utf8'))
+    lock = JSON.parse(readFileSync(lockfile, 'utf8'))
     debug('loaded cache at v%s', lock.v)
   } catch (_) {
     log('Corrupted cache; ejecting.')
@@ -57,7 +53,7 @@ export const load = async directory => {
   // handle version change
   if (lock.v !== version) {
     log('Found stale cache; updating.')
-    lock = await updateCache(lock)
+    return updateCache(lock)
   }
 
   return lock
@@ -117,15 +113,15 @@ export const sourcemap = (taskName, sm) => {
  * Saves the lockfile again.
  * @param {*} directory
  */
-export const save = async directory => {
+export const save = directory => {
   debug('Saving cache')
-  await writeFile(directory + '/hopp.lock', JSON.stringify(lock))
+  writeFileSync(directory + '/hopp.lock', JSON.stringify(lock))
 }
 
 /**
  * Cache updater.
  */
-async function updateCache (lock) {
+function updateCache (lock) {
   // handle newer lock files
   if (require('semver').gt(lock.v, version)) {
     throw new Error('Sorry, this project was built with a newer version of hopp. Please upgrade hopp by running: npm i -g hopp')

@@ -9,7 +9,7 @@ import os from 'os'
 import util from 'util'
 import path from 'path'
 import strip from 'strip-ansi'
-import { writeFile } from '../fs'
+import { writeFileSync } from 'fs'
 
 /**
  * Selected colors - borrowed from `debug`.
@@ -114,8 +114,8 @@ module.exports = namespace => {
 /**
  * Write debug log to file on failure.
  */
-module.exports.saveLog = async directory => {
-  await writeFile(path.join(directory, 'hopp-debug.log'), debugOutput.map(strip).join(os.EOL))
+module.exports.saveLog = directory => {
+  writeFileSync(path.join(directory, 'hopp-debug.log'), debugOutput.map(strip).join(os.EOL))
 
   console.error('\nSaved debug info to: %s.', directory)
   console.error('Please use this log file to submit an issue @ %shttps://github.com/hoppjs/hopp/issues%s.', '\u001B[4m', '\u001B[24m')
