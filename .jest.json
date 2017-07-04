@@ -10,5 +10,9 @@
   ],
   "testMatch": [
     "**/test/test-*.js"
-  ]
+  ],
+  "transform": {
+    "^.+\\.js?$": "babel-jest"
+  },
+  "forceExit": true
 }
