@@ -48,7 +48,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   string: [
     'directory', 'd',
     'require', 'r',
-    'jobs', 'j',
+    'jobs', 'j'
   ],
 
   boolean: [
@@ -56,7 +56,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     'verbose', 'v',
     'version', 'V',
     'help', 'h',
-    'skip', 's',
+    'skip', 's'
   ]
 })
 

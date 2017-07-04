@@ -18,6 +18,6 @@ export default fn => {
       val = val[a] = val[a] || Object.create(null)
     }
 
-    return val[last] = (val[last] || await fn.apply(this, [... arguments]))
+    return val[last] = (val[last] || await fn.apply(this, [...arguments]))
   }
 }

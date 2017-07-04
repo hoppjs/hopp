@@ -47,7 +47,7 @@ async function glob (task, pattern, cwd, useDoubleCache = false, recache = false
    */
   async function walk (relative, pttn, directory, recursive = false) {
     debug('walk(relative = %s, pttn = %s, directory = %s, recursive = %s) in %s [recache:%s, curr:%s]', relative, pttn, directory, recursive, cwd, recache, pttn[0])
-    
+
     pttn = pttn.slice()
 
     if (pttn.length === 0) {

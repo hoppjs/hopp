@@ -23,12 +23,12 @@ function promisify (fn, name) {
    * Create function call wrapper.
    */
   const fnCall = function () {
-    const args = [... arguments]
+    const args = [...arguments]
 
     debug('%s(%j)', name, args)
     return new Promise((resolve, reject) => {
       fn.apply(this, args.concat([function (err) {
-        const fnargs = [... arguments]
+        const fnargs = [...arguments]
 
         if (err) reject(err)
         else resolve.apply(null, fnargs.slice(1))
@@ -45,7 +45,7 @@ function promisify (fn, name) {
    * Return conditional cache.
    */
   return function () {
-    const args = [... arguments]
+    const args = [...arguments]
 
     if (useCache) return cacheCall.apply(this, args)
     return fnCall.apply(this, args)

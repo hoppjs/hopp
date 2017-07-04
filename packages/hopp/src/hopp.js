@@ -38,7 +38,7 @@ function normalize (name) {
  */
 function createMethod (type, name, plugName, method, directory) {
   return function () {
-    const args = [... arguments]
+    const args = [...arguments]
 
     if (type === 'plugin') {
       this.d.stack.push([
