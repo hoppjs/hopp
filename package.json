@@ -8,7 +8,8 @@
     "test": "jest --forceExit --config=.jest.json",
     "testwatch": "jest --watch --testMatch '**/test/test-*.js'",
     "lint": "eslint packages",
-    "lintfix": "eslint --fix packages"
+    "lintfix": "eslint --fix packages",
+    "log": "mv CHANGELOG.md change && lerna-changelog --tag-from v1.0.0-alpha.1 > CHANGELOG.md; cat change >> CHANGELOG.md && rm change"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -28,6 +29,7 @@
     "hopp-plugin-babel": "^1.0.0-alpha.10",
     "jest": "^20.0.4",
     "lerna": "^2.0.0-rc.5",
+    "lerna-changelog": "^0.5.0",
     "nyc": "^11.0.2",
     "regenerator-runtime": "^0.10.5",
     "rimraf": "^2.6.1",

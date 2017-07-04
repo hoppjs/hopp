@@ -1,6 +1,14 @@
 {
   "version": "1.1.0",
   "lerna": "2.0.0-rc.5",
+  "changelog": {
+    "repo": "hoppjs/hopp",
+    "labels": {
+      "bug": "Bug fix",
+      "enhancement": "What's new"
+    },
+    "cacheDir": ".changelog"
+  },
   "packages": [
     "packages/*"
   ],
