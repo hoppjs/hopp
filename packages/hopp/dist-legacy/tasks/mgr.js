@@ -644,9 +644,7 @@ var Hopp = function () {
          */
         if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
           mode = 'buffer';
-          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, function (err) {
-            if (err) error(err && err.stack ? err.stack : err);
-          });
+          return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
         }
 
         /**

@@ -330,9 +330,7 @@ export default class Hopp {
        */
       if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
         mode = 'buffer'
-        return pump(buffer(), pluginStream, err => {
-          if (err) error(err && err.stack ? err.stack : err)
-        })
+        return pump(buffer(), pluginStream)
       }
 
       /**
