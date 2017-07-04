@@ -89,7 +89,7 @@ function fmt(namespace, log) {
     var str = _util2.default.format.apply(console, [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`].concat([].slice.call(arguments, 1)));
 
     // add to record
-    debugOutput.push((0, _stripAnsi2.default)(str));
+    debugOutput.push(str);
 
     // log to console
     if (log !== 'debug' || process.env.HOPP_DEBUG === 'true') {
@@ -135,7 +135,7 @@ module.exports.saveLog = function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return (0, _bluebird.resolve)((0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.join(_os2.default.EOL)));
+            return (0, _bluebird.resolve)((0, _fs.writeFile)(_path2.default.join(directory, 'hopp-debug.log'), debugOutput.map(_stripAnsi2.default).join(_os2.default.EOL)));
 
           case 2:
 
