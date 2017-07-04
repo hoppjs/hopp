@@ -34,11 +34,26 @@ exports.default = function () {
         switch (_context.prev = _context.next) {
           case 0:
             pkgFile = directory + '/package.json';
+
+            // ignore if there is no package.json file
+
+            _context.next = 3;
+            return (0, _bluebird.resolve)((0, _fs.exists)(pkgFile));
+
+          case 3:
+            if (_context.sent) {
+              _context.next = 5;
+              break;
+            }
+
+            return _context.abrupt('return');
+
+          case 5:
             pkg = require(pkgFile);
-            _context.next = 4;
+            _context.next = 8;
             return (0, _bluebird.resolve)((0, _fs.stat)(pkgFile));
 
-          case 4:
+          case 8:
             pkgStat = +_context.sent.mtime;
             _ref2 = cache.val('pl') || [0, {}], _ref3 = _slicedToArray(_ref2, 2), savedStat = _ref3[0], list = _ref3[1];
 
@@ -47,13 +62,13 @@ exports.default = function () {
              */
 
             if (!(savedStat === pkgStat)) {
-              _context.next = 8;
+              _context.next = 12;
               break;
             }
 
             return _context.abrupt('return', list);
 
-          case 8:
+          case 12:
 
             /**
              * Filter for appropriate dependencies.
@@ -87,7 +102,7 @@ exports.default = function () {
              */
             return _context.abrupt('return', list);
 
-          case 13:
+          case 17:
           case 'end':
             return _context.stop();
         }

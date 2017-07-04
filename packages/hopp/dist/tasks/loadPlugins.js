@@ -28,6 +28,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 exports.default = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (directory) {
     const pkgFile = directory + '/package.json';
+
+    // ignore if there is no package.json file
+    if (!(yield (0, _bluebird.resolve)((0, _fs.exists)(pkgFile)))) {
+      return;
+    }
+
     const pkg = require(pkgFile);
     const pkgStat = +(yield (0, _bluebird.resolve)((0, _fs.stat)(pkgFile))).mtime;
 

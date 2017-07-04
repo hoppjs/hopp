@@ -4,7 +4,7 @@
  * @copyright 2017 10244872 Canada Inc.
  */
 
-import { stat } from '../fs'
+import { stat, exists } from '../fs'
 import * as cache from '../cache'
 
 /**
@@ -14,6 +14,12 @@ import * as cache from '../cache'
  */
 export default async directory => {
   const pkgFile = directory + '/package.json'
+
+  // ignore if there is no package.json file
+  if (!await exists(pkgFile)) {
+    return
+  }
+
   const pkg = require(pkgFile)
   const pkgStat = +(await stat(pkgFile)).mtime
 

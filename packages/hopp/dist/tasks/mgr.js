@@ -319,7 +319,6 @@ class Hopp {
    * Converts all plugins in the stack into streams.
    */
   buildStack(name) {
-    const { error } = (0, _utils.createLogger)(`hopp:${name}`);
     const that = this;
 
     let mode = 'stream';
@@ -371,9 +370,7 @@ class Hopp {
        */
       if (mode === 'stream' && pluginConfig[plugin].mode === 'buffer') {
         mode = 'buffer';
-        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream, err => {
-          if (err) error(err && err.stack ? err.stack : err);
-        });
+        return (0, _pump2.default)((0, _streams.buffer)(), pluginStream);
       }
 
       /**
