@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "postinstall": "lerna bootstrap",
     "prebuild": "npm run lintfix",
     "build": "./node_modules/.bin/hopp",
     "pretest": "npm run lint",
