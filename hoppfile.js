@@ -7,6 +7,11 @@
 const hopp = require('hopp')
 
 /**
+ * Import local plugins.
+ */
+hopp.load(`${__dirname}/packages/hopp-plugin-babel`)
+
+/**
  * Set of plugins.
  */
 const plugins = [
