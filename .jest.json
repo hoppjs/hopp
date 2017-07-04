@@ -13,6 +13,5 @@
   ],
   "transform": {
     "^.+\\.js?$": "babel-jest"
-  },
-  "forceExit": true
+  }
 }
