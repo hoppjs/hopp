@@ -16,12 +16,12 @@ export default class Bundle extends EventEmitter {
       autoClose: false
     })
 
-    this.map = {}
+    this.map = Object.create(null)
     this.offset = 0
     this.files = []
-    this.sizes = {}
-    this.status = {}
-    this.buffers = {}
+    this.sizes = Object.create(null)
+    this.status = Object.create(null)
+    this.buffers = Object.create(null)
     this.flushIndex = 0
     this.id = Math.random()
     this.directory = directory

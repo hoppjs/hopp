@@ -16,11 +16,11 @@ let glob = (() => {
       var _ref2 = (0, _bluebird.coroutine)(function* (relative, pttn, directory, recursive = false) {
         debug('walk(relative = %s, pttn = %s, directory = %s, recursive = %s) in %s [recache:%s, curr:%s]', relative, pttn, directory, recursive, cwd, recache, pttn[0]);
 
+        pttn = pttn.slice();
+
         if (pttn.length === 0) {
           return [];
         }
-
-        pttn = pttn.slice();
 
         const curr = pttn.shift();
         let localResults = [];
@@ -40,7 +40,7 @@ let glob = (() => {
           }
 
           // pull from old cache, if it still exists
-          if (retrievedCache.hasOwnProperty(relativepath)) {
+          if (retrievedCache[relativepath]) {
             statCache[relativepath] = retrievedCache[relativepath];
           }
 
@@ -51,7 +51,7 @@ let glob = (() => {
 
           if ((0, _minimatch2.default)(file, curr)) {
             if (fstat.isFile()) {
-              if (recache || !statCache.hasOwnProperty(relativepath) || statCache[relativepath] !== +fstat.mtime) {
+              if (recache || !statCache[relativepath] || statCache[relativepath] !== +fstat.mtime) {
                 statCache[relativepath] = +fstat.mtime;
                 localResults.push(filepath);
 
@@ -85,18 +85,18 @@ let glob = (() => {
 
     // ensure global cache is present
     if (gstatCache === undefined) {
-      gstatCache = cache.val('sc') || {};
+      gstatCache = cache.val('sc') || Object.create(null);
       cache.val('sc', gstatCache);
     }
 
     // create local cache
     if (gstatCache[task] === undefined) {
-      gstatCache[task] = {};
+      gstatCache[task] = Object.create(null);
     }
 
     // create new local cache and load the retreived cache
     let retrievedCache = gstatCache[task];
-    let statCache = {};
+    let statCache = Object.create(null);
 
     // replace the retreived with new cache to get rid of stale
     // entries
@@ -164,7 +164,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const { debug } = require('../utils/log')('hopp:glob');
 
 let gstatCache;
-const tempCache = {};
+const tempCache = Object.create(null);
 
 glob.nonMagic = function (pattern) {
   let newpath = '';

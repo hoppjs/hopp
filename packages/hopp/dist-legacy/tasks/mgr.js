@@ -64,8 +64,8 @@ var watchlog = (0, _utils.createLogger)('hopp:watch').log;
 /**
  * Plugins storage.
  */
-var plugins = {};
-var pluginConfig = {};
+var plugins = Object.create(null);
+var pluginConfig = Object.create(null);
 
 /**
  * Test for undefined or null.
@@ -94,7 +94,7 @@ var Hopp = function () {
     }
 
     // store context local to each task
-    this.pluginCtx = {};
+    this.pluginCtx = Object.create(null);
 
     // persistent info
     this.d = {
@@ -310,7 +310,7 @@ var Hopp = function () {
                  * Create list of unmodified.
                  */
                 freshBuild = true;
-                unmodified = {};
+                unmodified = Object.create(null);
                 _iteratorNormalCompletion2 = true;
                 _didIteratorError2 = false;
                 _iteratorError2 = undefined;
@@ -676,7 +676,7 @@ var Hopp = function () {
         }
 
         // expose module config
-        pluginConfig[plugin] = mod.config || {};
+        pluginConfig[plugin] = mod.config || Object.create(null);
 
         // add plugins to loaded plugins
         plugins[plugin] = mod;
@@ -741,7 +741,7 @@ var Hopp = function () {
                         plugin = _ref9[0],
                         args = _ref9[1];
 
-                    if (!_this2.pluginCtx.hasOwnProperty(plugin)) {
+                    if (!_this2.pluginCtx[plugin]) {
                       _this2.loadPlugin(name, plugin, args, directory);
                     }
 

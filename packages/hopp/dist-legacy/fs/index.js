@@ -48,11 +48,14 @@ function promisify(fn, name) {
   var fnCall = function fnCall() {
     var _this = this;
 
-    var args = [].slice.call(arguments);
+    var args = [].concat(Array.prototype.slice.call(arguments));
+
     debug('%s(%j)', name, args);
     return new _bluebird2.default(function (resolve, reject) {
       fn.apply(_this, args.concat([function (err) {
-        if (err) reject(err);else resolve.apply(null, [].slice.call(arguments, 1));
+        var fnargs = [].concat(Array.prototype.slice.call(arguments));
+
+        if (err) reject(err);else resolve.apply(null, fnargs.slice(1));
       }]));
     });
   };
@@ -66,8 +69,10 @@ function promisify(fn, name) {
    * Return conditional cache.
    */
   return function () {
-    if (useCache) return cacheCall.apply(this, arguments);
-    return fnCall.apply(this, arguments);
+    var args = [].concat(Array.prototype.slice.call(arguments));
+
+    if (useCache) return cacheCall.apply(this, args);
+    return fnCall.apply(this, args);
   };
 }
 

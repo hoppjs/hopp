@@ -63,11 +63,13 @@ function normalize(name) {
  */
 function createMethod(type, name, plugName, method, directory) {
   return function () {
+    const args = [...arguments];
+
     if (type === 'plugin') {
-      this.d.stack.push([name, [].slice.call(arguments), method]);
+      this.d.stack.push([name, args, method]);
     } else {
       const preset = require(_path2.default.resolve(directory, 'node_modules', name));
-      const substack = preset.apply(null, arguments);
+      const substack = preset.apply(null, args);
 
       substack.forEach(row => {
         const [name] = row;
@@ -92,27 +94,25 @@ exports.default = directory => {
   const plugins = (0, _loadPlugins2.default)(directory);
 
   for (const name in plugins) {
-    if (plugins.hasOwnProperty(name)) {
-      const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
-      const plugName = normalize(name);
+    const type = name.indexOf('plugin') !== -1 ? 'plugin' : 'preset';
+    const plugName = normalize(name);
 
-      debug('adding %s %s as %s', type, name, plugName);
+    debug('adding %s %s as %s', type, name, plugName);
 
-      // check for conflicts
-      if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
-        throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
-      }
+    // check for conflicts
+    if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
+      throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
+    }
 
-      // add the plugin to the hopp prototype so it can be
-      // used for the rest of the build process
-      // this function is the proxy of the 'default' function
-      _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
+    // add the plugin to the hopp prototype so it can be
+    // used for the rest of the build process
+    // this function is the proxy of the 'default' function
+    _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
 
-      // add any other methods
-      for (const method of plugins[name]) {
-        if (method !== '__esModule' && method !== 'config' && method !== 'default') {
-          _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
-        }
+    // add any other methods
+    for (const method of plugins[name]) {
+      if (method !== '__esModule' && method !== 'config' && method !== 'default') {
+        _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
       }
     }
   }

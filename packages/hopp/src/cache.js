@@ -75,7 +75,6 @@ export const val = (key, value) => {
 
 /**
  * Load/create cache for a plugin.
- * @param {}
  */
 export const plugin = pluginName => {
   const plugins = val('p')
@@ -97,13 +96,13 @@ export const sourcemap = (taskName, sm) => {
   let sourcemap = val('sm')
 
   if (!sourcemap) {
-    val('sm', sourcemap = {})
+    val('sm', sourcemap = Object.create(null))
   }
 
   if (sm) {
     sourcemap[taskName] = sm
   } else {
-    sourcemap[taskName] = sourcemap[taskName] || {}
+    sourcemap[taskName] = sourcemap[taskName] || Object.create(null)
   }
 
   return sourcemap

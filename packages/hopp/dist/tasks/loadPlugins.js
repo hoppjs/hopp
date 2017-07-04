@@ -32,9 +32,9 @@ exports.default = directory => {
   }
 
   const pkg = require(pkgFile);
-  const pkgStat = (0, _fs.statSync)(pkgFile).mtime;
+  const pkgStat = +(0, _fs.statSync)(pkgFile).mtime;
 
-  let [savedStat, list] = cache.val('pl') || [0, {}];
+  let [savedStat, list] = cache.val('pl') || [0, Object.create(null)];
 
   /**
    * Return cached result if unmodified.
@@ -46,16 +46,14 @@ exports.default = directory => {
   /**
    * Filter for appropriate dependencies.
    */
-  list = {};
+  list = Object.create(null);
   for (const key of ['dependencies', 'devDependencies', 'peerDependencies']) {
     if (pkg.hasOwnProperty(key)) {
       for (const dep in pkg[key]) {
-        if (pkg[key].hasOwnProperty(dep)) {
-          const start = dep.substr(0, 12);
+        const start = dep.substr(0, 12);
 
-          if (start === 'hopp-plugin-' || start === 'hopp-preset-') {
-            list[dep] = Object.keys(require(`${directory}/node_modules/${dep}`));
-          }
+        if (start === 'hopp-plugin-' || start === 'hopp-preset-') {
+          list[dep] = Object.keys(require(`${directory}/node_modules/${dep}`));
         }
       }
     }
