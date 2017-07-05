@@ -84,7 +84,7 @@ try {
   /**
    * Print help.
    */
-  function help () {
+  const help = () => {
     console.log('usage: hopp [OPTIONS] [TASKS]')
     console.log('')
 

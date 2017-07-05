@@ -106,7 +106,7 @@ try {
   /**
    * Print help.
    */
-  function help() {
+  var help = function help() {
     console.log('usage: hopp [OPTIONS] [TASKS]');
     console.log('');
 
@@ -115,7 +115,7 @@ try {
     }
 
     process.exit(1);
-  }
+  };
 
   if (argv.version || argv.V) {
     console.log(require('../package.json').version);
