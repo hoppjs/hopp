@@ -149,7 +149,7 @@ try {
 
     // map to current directory
     return path.resolve(process.cwd(), directory)
-  })(argv.directory || hoppfile.find(process.cwd()))
+  })(argv.directory || argv.d || hoppfile.find(process.cwd()))
 
   /**
    * Set hoppfile location relative to the project.
