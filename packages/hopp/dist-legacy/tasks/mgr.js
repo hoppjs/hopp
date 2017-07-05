@@ -570,7 +570,7 @@ var Hopp = function () {
                     _context2.prev = 12;
                     _context2.t2 = _context2['catch'](3);
 
-                    done(_context2.t2);
+                    done((0, _utils.simplifyError)(_context2.t2, new Error()));
 
                   case 15:
                     _context2.next = 28;
@@ -619,7 +619,7 @@ var Hopp = function () {
                     _context2.prev = 30;
                     _context2.t3 = _context2['catch'](0);
 
-                    done(_context2.t3);
+                    done((0, _utils.simplifyError)(_context2.t3, new Error()));
 
                   case 33:
                   case 'end':
@@ -886,7 +886,7 @@ var Hopp = function () {
 
                     // connect all streams together to form pipeline
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
-                      if (err) reject(err);else if (!resolved && !file.promise) resolve();
+                      if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
                     });
 
                     if (file.promise) {

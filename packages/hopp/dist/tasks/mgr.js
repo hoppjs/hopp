@@ -337,7 +337,7 @@ class Hopp {
                 this.push((yield (0, _bluebird.resolve)(handler)));
                 done();
               } catch (err) {
-                done(err);
+                done((0, _utils.simplifyError)(err, new Error()));
               }
             } else if ('next' in handler) {
               let retval;
@@ -354,7 +354,7 @@ class Hopp {
               done(new Error('Unknown return value received from ' + plugin));
             }
           } catch (err) {
-            done(err);
+            done((0, _utils.simplifyError)(err, new Error()));
           }
         });
 
@@ -571,7 +571,7 @@ class Hopp {
 
             // connect all streams together to form pipeline
             file.stream = (0, _pump2.default)(file.stream, err => {
-              if (err) reject(err);else if (!resolved && !file.promise) resolve();
+              if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
             });
 
             if (file.promise) {

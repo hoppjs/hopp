@@ -11,7 +11,7 @@ import glob from '../fs/glob'
 import through2 from 'through2'
 import * as cache from '../cache'
 import getPath from '../fs/get-path'
-import { _, createLogger } from '../utils'
+import { _, createLogger, simplifyError } from '../utils'
 import { buffer, Bundle, createReadStream, map as mapStream } from '../streams'
 import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync } from '../fs'
 
@@ -301,7 +301,7 @@ export default class Hopp {
               this.push(await handler)
               done()
             } catch (err) {
-              done(err)
+              done(simplifyError(err, new Error()))
             }
           } else if ('next' in handler) {
             let retval
@@ -318,7 +318,7 @@ export default class Hopp {
             done(new Error('Unknown return value received from ' + plugin))
           }
         } catch (err) {
-          done(err)
+          done(simplifyError(err, new Error()))
         }
       })
 
@@ -531,7 +531,7 @@ export default class Hopp {
 
           // connect all streams together to form pipeline
           file.stream = pump(file.stream, err => {
-            if (err) reject(err)
+            if (err) reject(simplifyError(err, new Error()))
             else if (!resolved && !file.promise) resolve()
           })
 
