@@ -283,7 +283,7 @@ class Hopp {
           });
         } else {
           debug('transform: %s', file);
-          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(_this.buildStack(name)));
+          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file), directory)].concat(_this.buildStack(name)));
         }
 
         bundle.add(file, stream);
@@ -513,7 +513,7 @@ class Hopp {
           return {
             file,
             outfile,
-            stream: [(0, _streams.createReadStream)(file, outfile)]
+            stream: [(0, _streams.createReadStream)(file, outfile, directory)]
           };
         });
 

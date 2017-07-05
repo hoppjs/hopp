@@ -427,7 +427,7 @@ var Hopp = function () {
                     });
                   } else {
                     debug('transform: %s', _file);
-                    stream = (0, _pump2.default)([(0, _streams.createReadStream)(_file, dest + '/' + _path2.default.basename(_file))].concat(this.buildStack(name)));
+                    stream = (0, _pump2.default)([(0, _streams.createReadStream)(_file, dest + '/' + _path2.default.basename(_file), directory)].concat(this.buildStack(name)));
                   }
 
                   bundle.add(_file, stream);
@@ -825,7 +825,7 @@ var Hopp = function () {
                   return {
                     file,
                     outfile,
-                    stream: [(0, _streams.createReadStream)(file, outfile)]
+                    stream: [(0, _streams.createReadStream)(file, outfile, directory)]
                   };
                 });
 

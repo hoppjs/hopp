@@ -9,7 +9,7 @@ import pump from 'pump'
 import map from './map'
 import { stat } from '../fs'
 
-export default (file, dest) => {
+export default (file, dest, root) => {
   let size
   let emitted = 0
 
@@ -30,6 +30,7 @@ export default (file, dest) => {
 
       next(null, {
         // metadata
+        root,
         file,
         dest,
         size,
