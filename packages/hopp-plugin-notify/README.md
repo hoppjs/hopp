@@ -1,6 +1,6 @@
 # hopp-plugin-notify
 
-![There was a demo here.](.github/demo.gif)
+![There was a demo here.](https://raw.githubusercontent.com/hoppjs/hopp/master/packages/hopp-plugin-notify/.github/demo.gif)
 
 Shows push notifications on build completion. Useful for watch tasks.
 

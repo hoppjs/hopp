@@ -1,6 +1,7 @@
 {
   "name": "hopp-plugin-notify",
   "version": "1.2.1",
+  "description": "Shows push notifications on build completion. Useful for watch tasks.",
   "main": "dist/index.js",
   "scripts": {
     "test": "../hopp/index.js -R -v -d example"
