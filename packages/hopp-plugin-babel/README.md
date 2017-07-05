@@ -6,9 +6,12 @@ Use babel with hopp.
 
 ## Usage
 
-Install & save with: `npm i -D hopp-plugin-babel`.
+Setup babel the way you usually do (create a .babelrc, install presets, blah blah).
 
-Sample hoppfile.js that uses hopp-plugin-babel:
+This plugin exposes a single function, `.babel()` which takes an options object and passes
+it forwards to babel.
+
+Sample:
 
 ```javascript
 import hopp from 'hopp'
