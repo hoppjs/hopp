@@ -28,19 +28,19 @@ exports.default = directory => {
 
   // ignore if there is no package.json file
   if (!(0, _fs.existsSync)(pkgFile)) {
-    return;
+    return [false, []];
   }
 
   const pkg = require(pkgFile);
   const pkgStat = +(0, _fs.statSync)(pkgFile).mtime;
 
-  let [savedStat, list] = cache.val('pl') || [0, Object.create(null)];
+  let [savedStat, list] = cache.val('pl') || [];
 
   /**
    * Return cached result if unmodified.
    */
   if (savedStat === pkgStat) {
-    return list;
+    return [true, list];
   }
 
   /**
@@ -67,7 +67,7 @@ exports.default = directory => {
   /**
    * Return saved list.
    */
-  return list;
+  return [false, list];
 };
 
 //# sourceMappingURL=loadPlugins.js.map

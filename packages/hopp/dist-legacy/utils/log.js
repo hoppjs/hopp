@@ -60,6 +60,11 @@ var useColors = process.stdout.isTTY;
 var ERROR = useColors ? '\u001b[31m✖\u001b[39m' : '✖';
 
 /**
+ * Warning. npm-style.
+ */
+var WARN = useColors ? '\u001b[43m\u001b[30mWARN\u001b[39m\u001b[49m' : 'WARN';
+
+/**
  * Wraps a string with color escapes.
  */
 function wrapColor(str) {
@@ -84,7 +89,7 @@ var debugOutput = [];
  */
 function fmt(namespace, log) {
   return function (msg) {
-    var args = [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}`];
+    var args = [` ${log === 'error' ? ERROR : ' '} ${namespace} ${log === 'debug' ? dim(msg) : msg}${log === 'warn' ? ' ' + WARN : ''}`];
 
     for (var i = 1; i < arguments.length; i++) {
       args.push(arguments[i]);
@@ -98,7 +103,7 @@ function fmt(namespace, log) {
 
     // log to console
     if (log !== 'debug' || process.env.HOPP_DEBUG === 'true') {
-      return console[log === 'debug' ? 'error' : log](str);
+      return console[log === 'debug' || log === 'warn' ? 'error' : log](str);
     }
   };
 }
@@ -126,7 +131,8 @@ module.exports = function (namespace) {
   return cache[nm] = {
     log: fmt(namespace, 'log'),
     debug: fmt(namespace, 'debug'),
-    error: fmt(namespace, 'error')
+    error: fmt(namespace, 'error'),
+    warn: fmt(namespace, 'warn')
   };
 };
 

@@ -28,13 +28,13 @@ exports.default = function (directory) {
 
   // ignore if there is no package.json file
   if (!(0, _fs.existsSync)(pkgFile)) {
-    return;
+    return [false, []];
   }
 
   var pkg = require(pkgFile);
   var pkgStat = +(0, _fs.statSync)(pkgFile).mtime;
 
-  var _ref = cache.val('pl') || [0, Object.create(null)],
+  var _ref = cache.val('pl') || [],
       _ref2 = _slicedToArray(_ref, 2),
       savedStat = _ref2[0],
       list = _ref2[1];
@@ -45,7 +45,7 @@ exports.default = function (directory) {
 
 
   if (savedStat === pkgStat) {
-    return list;
+    return [true, list];
   }
 
   /**
@@ -74,7 +74,7 @@ exports.default = function (directory) {
   /**
    * Return saved list.
    */
-  return list;
+  return [false, list];
 };
 
 //# sourceMappingURL=loadPlugins.js.map

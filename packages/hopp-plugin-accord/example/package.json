@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "hopp-plugin-accord": "*"
+    "less": "*"
   }
 }
