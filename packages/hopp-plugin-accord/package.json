@@ -1,6 +1,6 @@
 {
   "name": "hopp-plugin-accord",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "A unified interface for compiled languages and templates in JavaScript.",
   "main": "dist/index.js",
   "scripts": {
