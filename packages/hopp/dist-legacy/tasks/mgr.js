@@ -102,14 +102,12 @@ var Hopp = function () {
       stack: [],
       rename: []
 
-      // bind all plugin extras
-    };for (var plugin in this) {
-      if (typeof this[plugin] === 'function') {
-        for (var method in this[plugin]) {
-          if (this[plugin].hasOwnProperty(method)) {
-            this[plugin][method] = this[plugin][method].bind(this);
-          }
-        }
+      // do local create
+    };for (var plugin in Hopp.fn) {
+      this[plugin] = Hopp.fn[plugin].bind(this);
+
+      for (var method in Hopp.fn[plugin]) {
+        this[plugin][method] = Hopp.fn[plugin][method].bind(this);
       }
     }
   }
@@ -970,6 +968,12 @@ var Hopp = function () {
   return Hopp;
 }();
 
+/**
+ * Extended prototype for plugins to be appended to.
+ */
+
+
 exports.default = Hopp;
+Hopp.fn = Object.create(null);
 
 //# sourceMappingURL=mgr.js.map
