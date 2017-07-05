@@ -29,7 +29,7 @@ export default directory => {
    * Return cached result if unmodified.
    */
   if (savedStat === pkgStat) {
-    return list
+    return [true, list]
   }
 
   /**
@@ -61,5 +61,5 @@ export default directory => {
   /**
    * Return saved list.
    */
-  return list
+  return [false, list]
 }

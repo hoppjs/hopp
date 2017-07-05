@@ -392,7 +392,8 @@ class Hopp {
         let pathToPlugin = plugin;
 
         if (plugin[0] !== '/') {
-          pathToPlugin = _path2.default.join(directory, 'node_modules', plugin);
+          const localPlugins = cache.valOr('lp', Object.create(null));
+          pathToPlugin = localPlugins[plugin] || _path2.default.join(directory, 'node_modules', plugin);
         }
 
         mod = require(pathToPlugin);

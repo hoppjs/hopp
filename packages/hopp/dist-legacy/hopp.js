@@ -30,9 +30,9 @@ var _watch = require('./tasks/watch');
 
 var _watch2 = _interopRequireDefault(_watch);
 
-var _loadPlugins = require('./tasks/loadPlugins');
+var _loadPlugins3 = require('./tasks/loadPlugins');
 
-var _loadPlugins2 = _interopRequireDefault(_loadPlugins);
+var _loadPlugins4 = _interopRequireDefault(_loadPlugins3);
 
 var _parallel = require('./tasks/parallel');
 
@@ -151,7 +151,10 @@ function addPlugin(name, plugins, directory) {
  */
 
 exports.default = function (directory) {
-  var plugins = (0, _loadPlugins2.default)(directory);
+  var _loadPlugins = (0, _loadPlugins4.default)(directory),
+      _loadPlugins2 = _slicedToArray(_loadPlugins, 2),
+      fromCache = _loadPlugins2[0],
+      plugins = _loadPlugins2[1];
 
   for (var name in plugins) {
     addPlugin(name, plugins, directory);
@@ -170,8 +173,12 @@ exports.default = function (directory) {
 
   /**
    * API for loading local plugins.
+   * 
+   * Just noop if we've got a valid cache.
    */
-  init.load = function (pathToPlugin) {
+  init.load = fromCache ? function () {
+    return undefined;
+  } : function (pathToPlugin) {
     debug('loading local plugin: %s', pathToPlugin);
 
     // try and grab name from package.json
@@ -183,6 +190,10 @@ exports.default = function (directory) {
         return _path2.default.basename(pathToPlugin);
       }
     }();
+
+    // add to local list in cache
+    var localPlugins = cache.valOr('lp', Object.create(null));
+    localPlugins[pluginName] = pathToPlugin;
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin));

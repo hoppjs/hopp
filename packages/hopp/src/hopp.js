@@ -97,7 +97,7 @@ function addPlugin (name, plugins, directory) {
  * Create hopp object based on plugins.
  */
 export default directory => {
-  const plugins = loadPlugins(directory)
+  const [fromCache, plugins] = loadPlugins(directory)
 
   for (const name in plugins) {
     addPlugin(name, plugins, directory)
@@ -114,8 +114,10 @@ export default directory => {
 
   /**
    * API for loading local plugins.
+   * 
+   * Just noop if we've got a valid cache.
    */
-  init.load = function (pathToPlugin) {
+  init.load = fromCache ? () => undefined : function (pathToPlugin) {
     debug('loading local plugin: %s', pathToPlugin)
 
     // try and grab name from package.json
@@ -127,6 +129,10 @@ export default directory => {
         return path.basename(pathToPlugin)
       }
     })()
+
+    // add to local list in cache
+    const localPlugins = cache.valOr('lp', Object.create(null))
+    localPlugins[pluginName] = pathToPlugin
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin))

@@ -45,7 +45,7 @@ exports.default = function (directory) {
 
 
   if (savedStat === pkgStat) {
-    return list;
+    return [true, list];
   }
 
   /**
@@ -74,7 +74,7 @@ exports.default = function (directory) {
   /**
    * Return saved list.
    */
-  return list;
+  return [false, list];
 };
 
 //# sourceMappingURL=loadPlugins.js.map

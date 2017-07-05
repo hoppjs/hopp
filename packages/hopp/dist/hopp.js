@@ -124,7 +124,7 @@ function addPlugin(name, plugins, directory) {
  */
 
 exports.default = directory => {
-  const plugins = (0, _loadPlugins2.default)(directory);
+  const [fromCache, plugins] = (0, _loadPlugins2.default)(directory);
 
   for (const name in plugins) {
     addPlugin(name, plugins, directory);
@@ -141,8 +141,10 @@ exports.default = directory => {
 
   /**
    * API for loading local plugins.
+   * 
+   * Just noop if we've got a valid cache.
    */
-  init.load = function (pathToPlugin) {
+  init.load = fromCache ? () => undefined : function (pathToPlugin) {
     debug('loading local plugin: %s', pathToPlugin);
 
     // try and grab name from package.json
@@ -154,6 +156,10 @@ exports.default = directory => {
         return _path2.default.basename(pathToPlugin);
       }
     })();
+
+    // add to local list in cache
+    const localPlugins = cache.valOr('lp', Object.create(null));
+    localPlugins[pluginName] = pathToPlugin;
 
     // add to list
     plugins[pluginName] = Object.keys(require(pathToPlugin));

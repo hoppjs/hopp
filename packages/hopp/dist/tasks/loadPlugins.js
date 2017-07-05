@@ -40,7 +40,7 @@ exports.default = directory => {
    * Return cached result if unmodified.
    */
   if (savedStat === pkgStat) {
-    return list;
+    return [true, list];
   }
 
   /**
@@ -67,7 +67,7 @@ exports.default = directory => {
   /**
    * Return saved list.
    */
-  return list;
+  return [false, list];
 };
 
 //# sourceMappingURL=loadPlugins.js.map
