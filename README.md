@@ -8,6 +8,7 @@
   <a href="https://codecov.io/gh/hoppjs/hopp">
     <img src="https://codecov.io/gh/hoppjs/hopp/branch/master/graph/badge.svg" alt="Codecov" />
   </a>
+<a href="https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhoppjs%2Fhopp?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhoppjs%2Fhopp.svg?type=shield"/></a>
   <img alt="node v4 to 8" src="https://img.shields.io/badge/node-v4%20to%208-brightgreen.svg?style=flat">
 </p>
 
@@ -79,3 +80,5 @@ upload a proper `hopp-debug.log` file to accompany your bug report.**
 Copyright (C) 2017 10244872 Canada Inc.
 
 Licensed under [MIT](LICENSE.md) license.
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhoppjs%2Fhopp.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhoppjs%2Fhopp?ref=badge_large)
