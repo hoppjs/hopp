@@ -31,7 +31,7 @@ exports.default = (() => {
       return lock;
     }
 
-    if (_semver2.default.lt(lock.v, '1.0.0')) {
+    if (_semver2.default.lte(lock.v, '1.2.0')) {
       lock.v = version;
       return lock;
     }

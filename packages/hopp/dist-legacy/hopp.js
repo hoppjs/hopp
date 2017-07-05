@@ -108,14 +108,14 @@ function addPlugin(name, plugins, directory) {
   debug('adding %s %s as %s', type, name, plugName);
 
   // check for conflicts
-  if (_mgr2.default.prototype.hasOwnProperty(plugName)) {
+  if (_mgr2.default.fn[plugName] !== undefined) {
     throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`);
   }
 
   // add the plugin to the hopp prototype so it can be
   // used for the rest of the build process
   // this function is the proxy of the 'default' function
-  _mgr2.default.prototype[plugName] = createMethod(type, name, plugName, 'default', directory);
+  _mgr2.default.fn[plugName] = createMethod(type, name, plugName, 'default', directory);
 
   // add any other methods
   var _iteratorNormalCompletion = true;
@@ -127,7 +127,7 @@ function addPlugin(name, plugins, directory) {
       var method = _step.value;
 
       if (method !== '__esModule' && method !== 'config' && method !== 'default') {
-        _mgr2.default.prototype[plugName][method] = createMethod(type, name, plugName, method, directory);
+        _mgr2.default.fn[plugName][method] = createMethod(type, name, plugName, method, directory);
       }
     }
   } catch (err) {

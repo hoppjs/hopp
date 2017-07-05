@@ -20,7 +20,7 @@ export default async lock => {
     return lock
   }
 
-  if (semver.lt(lock.v, '1.0.0')) {
+  if (semver.lte(lock.v, '1.2.0')) {
     lock.v = version
     return lock
   }

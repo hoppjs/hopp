@@ -76,19 +76,19 @@ function addPlugin (name, plugins, directory) {
   debug('adding %s %s as %s', type, name, plugName)
 
   // check for conflicts
-  if (Hopp.prototype.hasOwnProperty(plugName)) {
+  if (Hopp.fn[plugName] !== undefined) {
     throw new Error(`Conflicting ${type}: ${name} (${plugName} already exists)`)
   }
 
   // add the plugin to the hopp prototype so it can be
   // used for the rest of the build process
   // this function is the proxy of the 'default' function
-  Hopp.prototype[plugName] = createMethod(type, name, plugName, 'default', directory)
+  Hopp.fn[plugName] = createMethod(type, name, plugName, 'default', directory)
 
   // add any other methods
   for (const method of plugins[name]) {
     if (method !== '__esModule' && method !== 'config' && method !== 'default') {
-      Hopp.prototype[plugName][method] = createMethod(type, name, plugName, method, directory)
+      Hopp.fn[plugName][method] = createMethod(type, name, plugName, method, directory)
     }
   }
 }

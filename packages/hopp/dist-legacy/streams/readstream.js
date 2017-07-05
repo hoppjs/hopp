@@ -28,7 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @copyright 2017 10244872 Canada Inc.
  */
 
-exports.default = function (file, dest) {
+exports.default = function (file, dest, root) {
   var size = void 0;
   var emitted = 0;
 
@@ -67,6 +67,7 @@ exports.default = function (file, dest) {
 
               next(null, {
                 // metadata
+                root,
                 file,
                 dest,
                 size,

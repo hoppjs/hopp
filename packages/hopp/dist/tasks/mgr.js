@@ -93,14 +93,12 @@ class Hopp {
       stack: [],
       rename: []
 
-      // bind all plugin extras
-    };for (const plugin in this) {
-      if (typeof this[plugin] === 'function') {
-        for (const method in this[plugin]) {
-          if (this[plugin].hasOwnProperty(method)) {
-            this[plugin][method] = this[plugin][method].bind(this);
-          }
-        }
+      // do local create
+    };for (const plugin in Hopp.fn) {
+      this[plugin] = Hopp.fn[plugin].bind(this);
+
+      for (const method in Hopp.fn[plugin]) {
+        this[plugin][method] = Hopp.fn[plugin][method].bind(this);
       }
     }
   }
@@ -283,7 +281,7 @@ class Hopp {
           });
         } else {
           debug('transform: %s', file);
-          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file))].concat(_this.buildStack(name)));
+          stream = (0, _pump2.default)([(0, _streams.createReadStream)(file, dest + '/' + _path2.default.basename(file), directory)].concat(_this.buildStack(name)));
         }
 
         bundle.add(file, stream);
@@ -513,7 +511,7 @@ class Hopp {
           return {
             file,
             outfile,
-            stream: [(0, _streams.createReadStream)(file, outfile)]
+            stream: [(0, _streams.createReadStream)(file, outfile, directory)]
           };
         });
 
@@ -626,6 +624,11 @@ class Hopp {
     return this;
   }
 }
-exports.default = Hopp;
+
+exports.default = Hopp; /**
+                         * Extended prototype for plugins to be appended to.
+                         */
+
+Hopp.fn = Object.create(null);
 
 //# sourceMappingURL=mgr.js.map
