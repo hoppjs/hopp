@@ -1,6 +1,8 @@
 # hopp-plugin-notify
 
-Shows push notifications whens builds complete. Useful for watch tasks.
+![There was a demo here.](.github/demo.gif)
+
+Shows push notifications on build completion. Useful for watch tasks.
 
 ## Usage
 
