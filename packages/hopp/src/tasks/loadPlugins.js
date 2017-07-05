@@ -17,7 +17,7 @@ export default directory => {
 
   // ignore if there is no package.json file
   if (!existsSync(pkgFile)) {
-    return
+    return [false, []]
   }
 
   const pkg = require(pkgFile)
