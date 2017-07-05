@@ -34,7 +34,7 @@ exports.default = function (directory) {
   var pkg = require(pkgFile);
   var pkgStat = +(0, _fs.statSync)(pkgFile).mtime;
 
-  var _ref = cache.val('pl') || [0, Object.create(null)],
+  var _ref = cache.val('pl') || [],
       _ref2 = _slicedToArray(_ref, 2),
       savedStat = _ref2[0],
       list = _ref2[1];

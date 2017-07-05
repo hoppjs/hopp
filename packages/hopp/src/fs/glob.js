@@ -22,8 +22,7 @@ async function glob (task, pattern, cwd, useDoubleCache = false, recache = false
 
   // ensure global cache is present
   if (gstatCache === undefined) {
-    gstatCache = cache.val('sc') || Object.create(null)
-    cache.val('sc', gstatCache)
+    gstatCache = cache.valOr('sc', Object.create(null))
   }
 
   // create local cache

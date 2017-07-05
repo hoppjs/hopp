@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.save = exports.sourcemap = exports.plugin = exports.val = exports.load = undefined;
+exports.save = exports.sourcemap = exports.plugin = exports.valOr = exports.val = exports.load = undefined;
 
 var _fs = require('fs');
 
@@ -72,7 +72,7 @@ var load = exports.load = function load(directory) {
 };
 
 /**
- * Adds/replaces a value in the cache.
+ * Gets/replaces a value in the cache.
  * @param {String} key
  * @param {Any} value anything stringifiable
  * @returns {Any?} value from cache
@@ -83,6 +83,21 @@ var val = exports.val = function val(key, value) {
   }
 
   lock[key] = value;
+};
+
+/**
+ * Gets a value from the cache or creates a new
+ * one.
+ * @param {String} key
+ * @param {Any} fallback the default value to use
+ * @returns {Any} value from cache
+ */
+var valOr = exports.valOr = function valOr(key, fallback) {
+  if (lock[key] === undefined) {
+    lock[key] = fallback;
+  }
+
+  return lock[key];
 };
 
 /**

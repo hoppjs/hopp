@@ -23,7 +23,7 @@ export default directory => {
   const pkg = require(pkgFile)
   const pkgStat = +statSync(pkgFile).mtime
 
-  let [savedStat, list] = cache.val('pl') || [0, Object.create(null)]
+  let [savedStat, list] = cache.val('pl') || []
 
   /**
    * Return cached result if unmodified.
