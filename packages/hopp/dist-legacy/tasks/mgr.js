@@ -852,7 +852,7 @@ var Hopp = function () {
                  * Connect with destination.
                  */
                 files.map(function (file) {
-                  if (!_this2.readonly) {
+                  if (!_this2.readonly || !_this2.d.dest) {
                     // strip out the actual body and write it
                     file.stream.push((0, _streams.map)(function (data, next) {
                       if (typeof data !== 'object' || !data.hasOwnProperty('body')) {

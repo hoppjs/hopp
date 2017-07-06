@@ -500,7 +500,7 @@ export default class Hopp {
        * Connect with destination.
        */
       files.map(file => {
-        if (!this.readonly) {
+        if (!this.readonly || !this.d.dest) {
           // strip out the actual body and write it
           file.stream.push(mapStream((data, next) => {
             if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
