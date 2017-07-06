@@ -35,11 +35,10 @@ export default async (ctx, data) => {
   data.lintResults = ctx.linter.executeOnText(
     data.body.toString('utf8'),
     data.file
-  )
+  ).results[0]
 
   // try and fix data
-      if (data.lintResults.hasOwnProperty('output')) {
-    console.log('applying fixes')
+  if (data.lintResults.hasOwnProperty('output')) {
     data.body = data.lintResults.output
   }
 
@@ -57,7 +56,7 @@ export const format = async (ctx, data) => {
   ctx.formatters[formatter] = ctx.formatters[formatter] || CLIEngine.getFormatter(formatter)
 
   let firstResult
-  ;[].forEach.call(data.lintResults.results, result => {
+  ;[].forEach.call(data.lintResults.messages, result => {
     if (!firstResult) {
       firstResult = result.config
     }

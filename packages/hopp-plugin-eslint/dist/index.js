@@ -44,11 +44,10 @@ exports.default = function () {
             }
 
             // lint file
-            data.lintResults = ctx.linter.executeOnText(data.body.toString('utf8'), data.file);
+            data.lintResults = ctx.linter.executeOnText(data.body.toString('utf8'), data.file).results[0];
 
             // try and fix data
             if (data.lintResults.hasOwnProperty('output')) {
-              console.log('applying fixes');
               data.body = data.lintResults.output;
             }
 
@@ -87,7 +86,7 @@ var format = exports.format = function () {
             ctx.formatters[formatter] = ctx.formatters[formatter] || _eslint.CLIEngine.getFormatter(formatter);
 
             firstResult = void 0;
-            [].forEach.call(data.lintResults.results, function (result) {
+            [].forEach.call(data.lintResults.messages, function (result) {
               if (!firstResult) {
                 firstResult = result.config;
               }
