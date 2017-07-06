@@ -15,17 +15,18 @@ exports.default = simplifyError;
  * the stack trace lines that are part of hopp.
  */
 function simplifyError(err, here) {
-  var stack = '';
-
   here = here.stack.split('\n')[1];
   here = here.substr(0, here.indexOf('.js:'));
+
+  var substack = err.stack.split('\n');
+  var stack = substack.slice(0, 2).join('\n') + '\n';
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = err.stack.split('\n')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+    for (var _iterator = substack.slice(2)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var line = _step.value;
 
       if (line.indexOf(here) !== -1) {
@@ -49,7 +50,7 @@ function simplifyError(err, here) {
     }
   }
 
-  return { stack };
+  return { stack: stack.substr(0, stack.length - 1) };
 }
 
 //# sourceMappingURL=error.js.map

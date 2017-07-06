@@ -50,6 +50,10 @@ export default class Hopp {
     // store context local to each task
     this.pluginCtx = Object.create(null)
 
+    // store args separate from context to avoid arg collisions
+    // when a plugin has many methods
+    this.pluginArgs = Object.create(null)
+
     // persistent info
     this.d = {
       src,
@@ -283,15 +287,24 @@ export default class Hopp {
 
     let mode = 'stream'
 
-    return this.d.stack.map(([plugin, _, method]) => {
+    return this.d.stack.map(([plugin, method, plugName]) => {
       const pluginStream = through2.obj(async function (data, _, done) {
         try {
+          /**
+           * Grab args.
+           */
+          const args = (that.pluginArgs[plugName] || {})[method] || []
+
           /**
            * Try and get proper method - assume
            * default by default.
            */
           const handler = plugins[plugin][method || 'default'](
-            that.pluginCtx[plugin],
+            Object.assign(
+              {},
+              that.pluginCtx[plugin],
+              { args }
+            ),
             data
           )
 
@@ -340,7 +353,7 @@ export default class Hopp {
   /**
    * Loads a plugin, manages its env.
    */
-  loadPlugin (taskName, plugin, args, directory) {
+  loadPlugin (taskName, plugin, plugName, directory) {
     let mod = plugins[plugin]
 
     if (!mod) {
@@ -367,14 +380,14 @@ export default class Hopp {
     }
 
     // create plugin logger
-    const logger = createLogger(`hopp:${taskName}:${path.basename(plugin).substr(5)}`)
+    const logger = createLogger(`${taskName}:${plugName}}`)
 
     // load/create cache for plugin
     const pluginCache = cache.plugin(plugin)
 
     // create a new context for this plugin
     this.pluginCtx[plugin] = {
-      args,
+      args: [],
       cache: pluginCache,
       log: logger.log,
       debug: logger.debug,
@@ -387,7 +400,7 @@ export default class Hopp {
    * @return {Promise} resolves when task is complete
    */
   async start (name, directory, recache = false, useDoubleCache = true) {
-    const { log, debug, error } = createLogger(`hopp:${name}`)
+    const { log, debug, error } = createLogger(name)
 
     /**
      * Add timeout for safety.
@@ -403,9 +416,9 @@ export default class Hopp {
     if (isUndefined(this.needsBundling) || isUndefined(this.needsRecaching) || isUndefined(this.readonly) || (this.d.stack.length > 0 && !this.loadedPlugins)) {
       this.loadedPlugins = true
 
-      this.d.stack.forEach(([plugin, args]) => {
+      this.d.stack.forEach(([plugin, _, plugName]) => {
         if (!this.pluginCtx[plugin]) {
-          this.loadPlugin(name, plugin, args, directory)
+          this.loadPlugin(name, plugin, plugName, directory)
         }
 
         this.needsBundling = !!(this.needsBundling || pluginConfig[plugin].bundle)

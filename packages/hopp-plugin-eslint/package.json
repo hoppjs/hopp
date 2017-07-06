@@ -1,0 +1,22 @@
+{
+  "name": "hopp-plugin-eslint",
+  "version": "1.0.1",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "../hopp/index.js -R -v -d example"
+  },
+  "keywords": [
+    "hopp",
+    "hopp-plugin",
+    "eslint",
+    "linting",
+    "es2015"
+  ],
+  "homepage": "https://hoppjs.com/",
+  "repository": "https://github.com/hoppjs/hopp/tree/master/packages/hopp-plugin-eslint",
+  "author": "10244872 Canada Inc.",
+  "dependencies": {
+    "eslint": "^4.1.1",
+    "regenerator-runtime": "^0.10.5"
+  }
+}
