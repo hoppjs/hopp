@@ -7,7 +7,7 @@
     "test": "jest --forceExit --config=.jest.json",
     "testwatch": "jest --watch --testMatch '**/test/test-*.js'",
     "lint": "npm run build -- lint",
-    "log": "mv CHANGELOG.md change && lerna-changelog --tag-from v1.0.0-alpha.1 > CHANGELOG.md; cat change >> CHANGELOG.md && rm change"
+    "log": "lerna-changelog --tag-from v1.0.0-alpha.1 > CHANGELOG.md"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
