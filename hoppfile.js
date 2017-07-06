@@ -59,12 +59,12 @@ function buildHopp(opts, dest) {
     .dest('./packages/hopp/' + dest)
 }
 
-exports['hopp:latest'] =
+exports['hopp-latest'] =
   buildHopp({
     plugins: ['transform-es2015-modules-commonjs']
   }, 'dist')
 
-exports['hopp:legacy'] =
+exports['hopp-legacy'] =
   buildHopp({
     presets: [
       ['env', {
@@ -77,8 +77,8 @@ exports['hopp:legacy'] =
 
 exports['hopp'] =
   hopp.steps([
-    'hopp:latest',
-    'hopp:legacy'
+    'hopp-latest',
+    'hopp-legacy'
   ])
 
 /**

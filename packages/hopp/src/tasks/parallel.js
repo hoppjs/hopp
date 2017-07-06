@@ -91,6 +91,10 @@ function runAsync (tasks, name, directory) {
  * Run individual task.
  */
 function runTask (task, name, directory) {
+  if (task.indexOf(':') !== -1) {
+    throw new Error('You cannot use `:` in a task name. It is a restricted token.')
+  }
+
   return taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task])
 }
 
@@ -125,6 +129,10 @@ const parallel = tasks => ({
    */
   watch (name, directory) {
     return Promise.all(tasks.map(task => {
+      if (task.indexOf(':') !== -1) {
+        throw new Error('You cannot use `:` in a task name. It is a restricted token.')
+      }
+
       return taskTree[task].watch(name + ':' + task, directory)
     }))
   },

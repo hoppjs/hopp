@@ -44,59 +44,68 @@ var steps = function steps(tasks) {
 
               case 5:
                 if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                  _context.next = 12;
+                  _context.next = 14;
                   break;
                 }
 
                 task = _step.value;
-                _context.next = 9;
-                return (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
+
+                if (!(task.indexOf(':') !== -1)) {
+                  _context.next = 9;
+                  break;
+                }
+
+                throw new Error('You cannot use `:` in a task name. It is a restricted token.');
 
               case 9:
+                _context.next = 11;
+                return (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
+
+              case 11:
                 _iteratorNormalCompletion = true;
                 _context.next = 5;
                 break;
 
-              case 12:
-                _context.next = 18;
+              case 14:
+                _context.next = 20;
                 break;
 
-              case 14:
-                _context.prev = 14;
+              case 16:
+                _context.prev = 16;
                 _context.t0 = _context['catch'](3);
                 _didIteratorError = true;
                 _iteratorError = _context.t0;
 
-              case 18:
-                _context.prev = 18;
-                _context.prev = 19;
+              case 20:
+                _context.prev = 20;
+                _context.prev = 21;
 
                 if (!_iteratorNormalCompletion && _iterator.return) {
                   _iterator.return();
                 }
 
-              case 21:
-                _context.prev = 21;
+              case 23:
+                _context.prev = 23;
 
                 if (!_didIteratorError) {
-                  _context.next = 24;
+                  _context.next = 26;
                   break;
                 }
 
                 throw _iteratorError;
 
-              case 24:
-                return _context.finish(21);
-
-              case 25:
-                return _context.finish(18);
-
               case 26:
+                return _context.finish(23);
+
+              case 27:
+                return _context.finish(20);
+
+              case 28:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[3, 14, 18, 26], [19,, 21, 25]]);
+        }, _callee, _this, [[3, 16, 20, 28], [21,, 23, 27]]);
       }))();
     },
 
@@ -105,6 +114,10 @@ var steps = function steps(tasks) {
      */
     watch(name, directory) {
       return (0, _bluebird.all)(tasks.map(function (task) {
+        if (task.indexOf(':') !== -1) {
+          throw new Error('You cannot use `:` in a task name. It is a restricted token.');
+        }
+
         return taskTree[task].watch(name + ':' + task, directory);
       }));
     },
