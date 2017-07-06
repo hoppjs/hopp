@@ -220,6 +220,9 @@ var glob = function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            // shorten task name based on hopp's internal convention
+            task = task.split(':').pop();
+
             // prefer arrays
             if (!(pattern instanceof Array)) {
               pattern = [pattern];
@@ -249,101 +252,101 @@ var glob = function () {
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context2.prev = 11;
+            _context2.prev = 12;
             _iterator2 = pattern[Symbol.iterator]();
 
-          case 13:
+          case 14:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 35;
+              _context2.next = 36;
               break;
             }
 
             pttn = _step2.value;
 
             if (!(pttn[0] === '/')) {
-              _context2.next = 17;
+              _context2.next = 18;
               break;
             }
 
             throw new Error('Not sure what to do with the / in your glob.');
 
-          case 17:
+          case 18:
             nm = glob.nonMagic(pttn);
 
             debug('nm = %j', nm);
 
             if (nm) {
-              _context2.next = 27;
+              _context2.next = 28;
               break;
             }
 
             _context2.t0 = results;
-            _context2.next = 23;
+            _context2.next = 24;
             return (0, _bluebird.resolve)(walk('.', pttn.split('/'), cwd));
 
-          case 23:
+          case 24:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
-            _context2.next = 32;
+            _context2.next = 33;
             break;
 
-          case 27:
+          case 28:
             _context2.t2 = results;
-            _context2.next = 30;
+            _context2.next = 31;
             return (0, _bluebird.resolve)(walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm)));
 
-          case 30:
+          case 31:
             _context2.t3 = _context2.sent;
             results = _context2.t2.concat.call(_context2.t2, _context2.t3);
 
-          case 32:
+          case 33:
             _iteratorNormalCompletion2 = true;
-            _context2.next = 13;
+            _context2.next = 14;
             break;
 
-          case 35:
-            _context2.next = 41;
+          case 36:
+            _context2.next = 42;
             break;
 
-          case 37:
-            _context2.prev = 37;
-            _context2.t4 = _context2['catch'](11);
+          case 38:
+            _context2.prev = 38;
+            _context2.t4 = _context2['catch'](12);
             _didIteratorError2 = true;
             _iteratorError2 = _context2.t4;
 
-          case 41:
-            _context2.prev = 41;
+          case 42:
             _context2.prev = 42;
+            _context2.prev = 43;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 44:
-            _context2.prev = 44;
+          case 45:
+            _context2.prev = 45;
 
             if (!_didIteratorError2) {
-              _context2.next = 47;
+              _context2.next = 48;
               break;
             }
 
             throw _iteratorError2;
 
-          case 47:
-            return _context2.finish(44);
-
           case 48:
-            return _context2.finish(41);
+            return _context2.finish(45);
 
           case 49:
-            return _context2.abrupt('return', results);
+            return _context2.finish(42);
 
           case 50:
+            return _context2.abrupt('return', results);
+
+          case 51:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[11, 37, 41, 49], [42,, 44, 48]]);
+    }, _callee2, this, [[12, 38, 42, 50], [43,, 45, 49]]);
   }));
 
   return function glob(_x, _x2, _x3, _x4, _x5) {

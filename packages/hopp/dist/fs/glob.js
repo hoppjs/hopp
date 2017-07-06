@@ -78,6 +78,9 @@ let glob = (() => {
      */
 
 
+    // shorten task name based on hopp's internal convention
+    task = task.split(':').pop();
+
     // prefer arrays
     if (!(pattern instanceof Array)) {
       pattern = [pattern];

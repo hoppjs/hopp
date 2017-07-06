@@ -29,14 +29,14 @@ const plugins = [
 plugins.forEach(name => {
   const shortName = name.substr(12)
 
-  exports['lint:' + shortName] =
+  exports['lint-' + shortName] =
     hopp(`./packages/${name}/lib/**/**.js`)
       .eslint({ fix: true })
       .eslint.format()
       .eslint.failOnError()
       .dest()
 
-  exports['build:' + shortName] =
+  exports['build-' + shortName] =
     hopp(`./packages/${name}/lib/**/**.js`)
       .babel({
         babelrc: false,
@@ -53,8 +53,8 @@ plugins.forEach(name => {
 
   exports[shortName] =
     hopp.steps([
-      'lint:' + shortName,
-      'build:' + shortName,
+      'lint-' + shortName,
+      'build-' + shortName,
     ])
 })
 
@@ -76,12 +76,12 @@ function buildHopp(opts, dest) {
     .dest('./packages/hopp/' + dest)
 }
 
-exports['hopp:latest'] =
+exports['hopp-latest'] =
   buildHopp({
     plugins: ['transform-es2015-modules-commonjs']
   }, 'dist')
 
-exports['hopp:legacy'] =
+exports['hopp-legacy'] =
   buildHopp({
     presets: [
       ['env', {
@@ -94,8 +94,8 @@ exports['hopp:legacy'] =
 
 exports['hopp'] =
   hopp.steps([
-    'hopp:latest',
-    'hopp:legacy'
+    'hopp-latest',
+    'hopp-legacy'
   ])
 
 /**
@@ -106,7 +106,7 @@ exports.default = hopp.all(plugins.map(p => p.substr(12)).concat([ 'hopp' ]))
 /**
  * Global linting.
  */
-exports.lint = hopp.all(plugins.map(name => 'lint:' + name.substr(12)))
+exports.lint = hopp.all(plugins.map(name => 'lint-' + name.substr(12)))
 
 /**
  * Watch all.

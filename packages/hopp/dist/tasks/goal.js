@@ -57,6 +57,10 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
     let name = tasks[0];
     let goal = taskDefns[tasks[0]];
 
+    if (name.indexOf(':') !== -1) {
+      throw new Error('You cannot use `:` in a task name. It is a restricted token.');
+    }
+
     if (goal instanceof Array) {
       goal = fromArray(goal);
     }
@@ -77,6 +81,10 @@ const create = exports.create = (tasks, projectDir, mode = 'start') => {
    */
   return (0, _bluebird.all)(tasks.map(name => {
     let task = taskDefns[name];
+
+    if (name.indexOf(':') !== -1) {
+      throw new Error('You cannot use `:` in a task name. It is a restricted token.');
+    }
 
     if (task instanceof Array) {
       task = fromArray(task);

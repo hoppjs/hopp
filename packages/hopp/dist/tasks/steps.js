@@ -28,6 +28,10 @@ const steps = tasks => ({
   start(name, directory) {
     return (0, _bluebird.coroutine)(function* () {
       for (let task of tasks) {
+        if (task.indexOf(':') !== -1) {
+          throw new Error('You cannot use `:` in a task name. It is a restricted token.');
+        }
+
         yield (0, _bluebird.resolve)(taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task]));
       }
     })();
@@ -38,6 +42,10 @@ const steps = tasks => ({
    */
   watch(name, directory) {
     return (0, _bluebird.all)(tasks.map(task => {
+      if (task.indexOf(':') !== -1) {
+        throw new Error('You cannot use `:` in a task name. It is a restricted token.');
+      }
+
       return taskTree[task].watch(name + ':' + task, directory);
     }));
   },

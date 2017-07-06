@@ -15,6 +15,9 @@ let gstatCache
 const tempCache = Object.create(null)
 
 async function glob (task, pattern, cwd, useDoubleCache = false, recache = false) {
+  // shorten task name based on hopp's internal convention
+  task = task.split(':').pop()
+
   // prefer arrays
   if (!(pattern instanceof Array)) {
     pattern = [pattern]

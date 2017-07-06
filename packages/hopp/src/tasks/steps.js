@@ -19,6 +19,10 @@ const steps = tasks => ({
    */
   async start (name, directory) {
     for (let task of tasks) {
+      if (task.indexOf(':') !== -1) {
+        throw new Error('You cannot use `:` in a task name. It is a restricted token.')
+      }
+
       await taskTree[task].start(`${name}:${task}`, directory, !!bustedTasks[task])
     }
   },
@@ -28,6 +32,10 @@ const steps = tasks => ({
    */
   watch (name, directory) {
     return Promise.all(tasks.map(task => {
+      if (task.indexOf(':') !== -1) {
+        throw new Error('You cannot use `:` in a task name. It is a restricted token.')
+      }
+
       return taskTree[task].watch(name + ':' + task, directory)
     }))
   },
