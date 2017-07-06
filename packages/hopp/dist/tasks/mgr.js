@@ -87,6 +87,10 @@ class Hopp {
     // store context local to each task
     this.pluginCtx = Object.create(null);
 
+    // store args separate from context to avoid arg collisions
+    // when a plugin has many methods
+    this.pluginArgs = Object.create(null);
+
     // persistent info
     this.d = {
       src,
@@ -321,15 +325,20 @@ class Hopp {
 
     let mode = 'stream';
 
-    return this.d.stack.map(([plugin, _, method]) => {
+    return this.d.stack.map(([plugin, method, plugName]) => {
       const pluginStream = _through2.default.obj((() => {
         var _ref = (0, _bluebird.coroutine)(function* (data, _, done) {
           try {
             /**
+             * Grab args.
+             */
+            const args = (that.pluginArgs[plugName] || {})[method] || [];
+
+            /**
              * Try and get proper method - assume
              * default by default.
              */
-            const handler = plugins[plugin][method || 'default'](that.pluginCtx[plugin], data);
+            const handler = plugins[plugin][method || 'default'](Object.assign({}, that.pluginCtx[plugin], { args }), data);
 
             // for async functions/promises
             if ('then' in handler) {
@@ -337,7 +346,7 @@ class Hopp {
                 this.push((yield (0, _bluebird.resolve)(handler)));
                 done();
               } catch (err) {
-                done(err);
+                done((0, _utils.simplifyError)(err, new Error()));
               }
             } else if ('next' in handler) {
               let retval;
@@ -354,7 +363,7 @@ class Hopp {
               done(new Error('Unknown return value received from ' + plugin));
             }
           } catch (err) {
-            done(err);
+            done((0, _utils.simplifyError)(err, new Error()));
           }
         });
 
@@ -381,7 +390,7 @@ class Hopp {
   /**
    * Loads a plugin, manages its env.
    */
-  loadPlugin(taskName, plugin, args, directory) {
+  loadPlugin(taskName, plugin, plugName, directory) {
     let mod = plugins[plugin];
 
     if (!mod) {
@@ -408,14 +417,14 @@ class Hopp {
     }
 
     // create plugin logger
-    const logger = (0, _utils.createLogger)(`hopp:${taskName}:${_path2.default.basename(plugin).substr(5)}`);
+    const logger = (0, _utils.createLogger)(`${taskName}:${plugName}}`);
 
     // load/create cache for plugin
     const pluginCache = cache.plugin(plugin);
 
     // create a new context for this plugin
     this.pluginCtx[plugin] = {
-      args,
+      args: [],
       cache: pluginCache,
       log: logger.log,
       debug: logger.debug,
@@ -431,7 +440,7 @@ class Hopp {
     var _this2 = this;
 
     return (0, _bluebird.coroutine)(function* () {
-      const { log, debug, error } = (0, _utils.createLogger)(`hopp:${name}`);
+      const { log, debug, error } = (0, _utils.createLogger)(name);
 
       /**
        * Add timeout for safety.
@@ -447,9 +456,9 @@ class Hopp {
       if (isUndefined(_this2.needsBundling) || isUndefined(_this2.needsRecaching) || isUndefined(_this2.readonly) || _this2.d.stack.length > 0 && !_this2.loadedPlugins) {
         _this2.loadedPlugins = true;
 
-        _this2.d.stack.forEach(([plugin, args]) => {
+        _this2.d.stack.forEach(([plugin, _, plugName]) => {
           if (!_this2.pluginCtx[plugin]) {
-            _this2.loadPlugin(name, plugin, args, directory);
+            _this2.loadPlugin(name, plugin, plugName, directory);
           }
 
           _this2.needsBundling = !!(_this2.needsBundling || pluginConfig[plugin].bundle);
@@ -529,7 +538,7 @@ class Hopp {
          * Connect with destination.
          */
         files.map(file => {
-          if (!_this2.readonly) {
+          if (!_this2.readonly || !_this2.d.dest) {
             // strip out the actual body and write it
             file.stream.push((0, _streams.map)((data, next) => {
               if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
@@ -571,7 +580,7 @@ class Hopp {
 
             // connect all streams together to form pipeline
             file.stream = (0, _pump2.default)(file.stream, err => {
-              if (err) reject(err);else if (!resolved && !file.promise) resolve();
+              if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
             });
 
             if (file.promise) {

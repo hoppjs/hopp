@@ -44,9 +44,12 @@ function createMethod (type, name, plugName, method, directory) {
     if (type === 'plugin') {
       this.d.stack.push([
         name,
-        args,
-        method
+        method,
+        plugName
       ])
+
+      this.pluginArgs[plugName] = this.pluginArgs[plugName] || Object.create(null)
+      this.pluginArgs[plugName][method] = args
     } else {
       const preset = require(path.resolve(directory, 'node_modules', name))
       const substack = preset.apply(null, args)

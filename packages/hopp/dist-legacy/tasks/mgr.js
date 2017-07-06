@@ -96,6 +96,10 @@ var Hopp = function () {
     // store context local to each task
     this.pluginCtx = Object.create(null);
 
+    // store args separate from context to avoid arg collisions
+    // when a plugin has many methods
+    this.pluginArgs = Object.create(null);
+
     // persistent info
     this.d = {
       src,
@@ -527,12 +531,12 @@ var Hopp = function () {
       return this.d.stack.map(function (_ref4) {
         var _ref5 = _slicedToArray(_ref4, 3),
             plugin = _ref5[0],
-            _ = _ref5[1],
-            method = _ref5[2];
+            method = _ref5[1],
+            plugName = _ref5[2];
 
         var pluginStream = _through2.default.obj(function () {
           var _ref6 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(data, _, done) {
-            var handler, retval;
+            var args, handler, retval;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
               while (1) {
                 switch (_context2.prev = _context2.next) {
@@ -540,45 +544,51 @@ var Hopp = function () {
                     _context2.prev = 0;
 
                     /**
+                     * Grab args.
+                     */
+                    args = (that.pluginArgs[plugName] || {})[method] || [];
+
+                    /**
                      * Try and get proper method - assume
                      * default by default.
                      */
-                    handler = plugins[plugin][method || 'default'](that.pluginCtx[plugin], data);
+
+                    handler = plugins[plugin][method || 'default'](Object.assign({}, that.pluginCtx[plugin], { args }), data);
 
                     // for async functions/promises
 
                     if (!('then' in handler)) {
-                      _context2.next = 17;
+                      _context2.next = 18;
                       break;
                     }
 
-                    _context2.prev = 3;
+                    _context2.prev = 4;
                     _context2.t0 = this;
-                    _context2.next = 7;
+                    _context2.next = 8;
                     return (0, _bluebird.resolve)(handler);
 
-                  case 7:
+                  case 8:
                     _context2.t1 = _context2.sent;
 
                     _context2.t0.push.call(_context2.t0, _context2.t1);
 
                     done();
-                    _context2.next = 15;
+                    _context2.next = 16;
                     break;
 
-                  case 12:
-                    _context2.prev = 12;
-                    _context2.t2 = _context2['catch'](3);
+                  case 13:
+                    _context2.prev = 13;
+                    _context2.t2 = _context2['catch'](4);
 
-                    done(_context2.t2);
+                    done((0, _utils.simplifyError)(_context2.t2, new Error()));
 
-                  case 15:
-                    _context2.next = 28;
+                  case 16:
+                    _context2.next = 29;
                     break;
 
-                  case 17:
+                  case 18:
                     if (!('next' in handler)) {
-                      _context2.next = 27;
+                      _context2.next = 28;
                       break;
                     }
 
@@ -586,47 +596,47 @@ var Hopp = function () {
 
                     // for async generators
 
-                  case 19:
-                    _context2.next = 21;
+                  case 20:
+                    _context2.next = 22;
                     return (0, _bluebird.resolve)(handler.next());
 
-                  case 21:
+                  case 22:
                     retval = _context2.sent;
 
                     this.push(retval.value);
 
-                  case 23:
+                  case 24:
                     if (!retval.done) {
-                      _context2.next = 19;
+                      _context2.next = 20;
                       break;
                     }
 
-                  case 24:
+                  case 25:
 
                     done();
-                    _context2.next = 28;
+                    _context2.next = 29;
                     break;
 
-                  case 27:
+                  case 28:
                     // otherwise, fail
                     done(new Error('Unknown return value received from ' + plugin));
 
-                  case 28:
-                    _context2.next = 33;
+                  case 29:
+                    _context2.next = 34;
                     break;
 
-                  case 30:
-                    _context2.prev = 30;
+                  case 31:
+                    _context2.prev = 31;
                     _context2.t3 = _context2['catch'](0);
 
-                    done(_context2.t3);
+                    done((0, _utils.simplifyError)(_context2.t3, new Error()));
 
-                  case 33:
+                  case 34:
                   case 'end':
                     return _context2.stop();
                 }
               }
-            }, _callee2, this, [[0, 30], [3, 12]]);
+            }, _callee2, this, [[0, 31], [4, 13]]);
           }));
 
           return function (_x8, _x9, _x10) {
@@ -655,7 +665,7 @@ var Hopp = function () {
 
   }, {
     key: 'loadPlugin',
-    value: function loadPlugin(taskName, plugin, args, directory) {
+    value: function loadPlugin(taskName, plugin, plugName, directory) {
       var mod = plugins[plugin];
 
       if (!mod) {
@@ -682,14 +692,14 @@ var Hopp = function () {
       }
 
       // create plugin logger
-      var logger = (0, _utils.createLogger)(`hopp:${taskName}:${_path2.default.basename(plugin).substr(5)}`);
+      var logger = (0, _utils.createLogger)(`${taskName}:${plugName}}`);
 
       // load/create cache for plugin
       var pluginCache = cache.plugin(plugin);
 
       // create a new context for this plugin
       this.pluginCtx[plugin] = {
-        args,
+        args: [],
         cache: pluginCache,
         log: logger.log,
         debug: logger.debug,
@@ -717,7 +727,7 @@ var Hopp = function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _createLogger3 = (0, _utils.createLogger)(`hopp:${name}`), log = _createLogger3.log, debug = _createLogger3.debug, error = _createLogger3.error;
+                _createLogger3 = (0, _utils.createLogger)(name), log = _createLogger3.log, debug = _createLogger3.debug, error = _createLogger3.error;
 
                 /**
                  * Add timeout for safety.
@@ -736,12 +746,13 @@ var Hopp = function () {
                   this.loadedPlugins = true;
 
                   this.d.stack.forEach(function (_ref8) {
-                    var _ref9 = _slicedToArray(_ref8, 2),
+                    var _ref9 = _slicedToArray(_ref8, 3),
                         plugin = _ref9[0],
-                        args = _ref9[1];
+                        _ = _ref9[1],
+                        plugName = _ref9[2];
 
                     if (!_this2.pluginCtx[plugin]) {
-                      _this2.loadPlugin(name, plugin, args, directory);
+                      _this2.loadPlugin(name, plugin, plugName, directory);
                     }
 
                     _this2.needsBundling = !!(_this2.needsBundling || pluginConfig[plugin].bundle);
@@ -841,7 +852,7 @@ var Hopp = function () {
                  * Connect with destination.
                  */
                 files.map(function (file) {
-                  if (!_this2.readonly) {
+                  if (!_this2.readonly || !_this2.d.dest) {
                     // strip out the actual body and write it
                     file.stream.push((0, _streams.map)(function (data, next) {
                       if (typeof data !== 'object' || !data.hasOwnProperty('body')) {
@@ -886,7 +897,7 @@ var Hopp = function () {
 
                     // connect all streams together to form pipeline
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
-                      if (err) reject(err);else if (!resolved && !file.promise) resolve();
+                      if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
                     });
 
                     if (file.promise) {

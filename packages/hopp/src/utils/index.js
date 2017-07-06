@@ -7,6 +7,7 @@
 import _ from './_'
 import fn from './fn'
 import deepEqual from './deep-equal'
+import simplifyError from './error'
 
 const createLogger = require('./log')
 
@@ -14,5 +15,6 @@ export {
   _,
   fn,
   deepEqual,
-  createLogger
+  createLogger,
+  simplifyError
 }

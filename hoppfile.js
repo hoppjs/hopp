@@ -10,6 +10,7 @@ const hopp = require('hopp')
  * Import local plugins.
  */
 hopp.load(`${__dirname}/packages/hopp-plugin-babel`)
+hopp.load(`${__dirname}/packages/hopp-plugin-eslint`)
 
 /**
  * Set of plugins.
@@ -19,13 +20,23 @@ const plugins = [
   'hopp-plugin-babel',
   'hopp-plugin-concat',
   'hopp-plugin-notify',
+  'hopp-plugin-eslint',
 ]
 
 /**
  * Setup plugins.
  */
 plugins.forEach(name => {
-  exports[name] =
+  const shortName = name.substr(12)
+
+  exports['lint:' + shortName] =
+    hopp(`./packages/${name}/lib/**/**.js`)
+      .eslint({ fix: true })
+      .eslint.format()
+      .eslint.failOnError()
+      .dest()
+
+  exports['build:' + shortName] =
     hopp(`./packages/${name}/lib/**/**.js`)
       .babel({
         babelrc: false,
@@ -39,6 +50,12 @@ plugins.forEach(name => {
         ]
       })
       .dest(`./packages/${name}/dist`)
+
+  exports[shortName] =
+    hopp.steps([
+      'lint:' + shortName,
+      'build:' + shortName,
+    ])
 })
 
 /**
@@ -84,9 +101,14 @@ exports['hopp'] =
 /**
  * Do all.
  */
-exports.default = hopp.all(plugins.concat([ 'hopp' ]))
+exports.default = hopp.all(plugins.map(p => p.substr(12)).concat([ 'hopp' ]))
+
+/**
+ * Global linting.
+ */
+exports.lint = hopp.all(plugins.map(name => 'lint:' + name.substr(12)))
 
 /**
  * Watch all.
  */
-exports.watch = hopp.watch(plugins.concat([ 'hopp' ]))
+exports.watch = hopp.watch(plugins.map(p => p.substr(12)).concat([ 'hopp' ]))
