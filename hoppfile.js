@@ -31,13 +31,10 @@ plugins.forEach(name => {
 
   exports['lint:' + shortName] =
     hopp(`./packages/${name}/lib/**/**.js`)
-      .eslint({
-        fix: true
-      })
-      // .eslint()
+      .eslint({ fix: true })
       .eslint.format()
       .eslint.failOnError()
-      // .dest(`./packages/${name}/dist`)
+      .dest()
 
   exports['build:' + shortName] =
     hopp(`./packages/${name}/lib/**/**.js`)
@@ -105,6 +102,11 @@ exports['hopp'] =
  * Do all.
  */
 exports.default = hopp.all(plugins.map(p => p.substr(12)).concat([ 'hopp' ]))
+
+/**
+ * Global linting.
+ */
+exports.lint = hopp.all(plugins.map(name => 'lint:' + name.substr(12)))
 
 /**
  * Watch all.
