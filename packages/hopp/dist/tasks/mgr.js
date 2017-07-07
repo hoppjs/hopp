@@ -562,12 +562,14 @@ class Hopp {
                 fd: tmp
               });
 
-              file.promise = new _bluebird2.default((resolve, reject) => {
+              file.promise = didFail => new _bluebird2.default((resolve, reject) => {
                 output.on('close', () => {
-                  const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
+                  if (!didFail()) {
+                    const newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
 
-                  newStream.on('error', reject);
-                  newStream.on('close', resolve);
+                    newStream.on('error', reject);
+                    newStream.on('close', resolve);
+                  }
                 });
               });
             } else {
@@ -582,14 +584,17 @@ class Hopp {
           // promisify the current pipeline
           return new _bluebird2.default((resolve, reject) => {
             let resolved = false;
+            let didFail = false;
 
             // connect all streams together to form pipeline
             file.stream = (0, _pump2.default)(file.stream, err => {
+              didFail = !!err;
+
               if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
             });
 
             if (file.promise) {
-              file.promise.then(() => {
+              file.promise(() => didFail).then(() => {
                 resolved = true;
                 resolve();
               }, reject);

@@ -879,14 +879,18 @@ var Hopp = function () {
                         fd: tmp
                       });
 
-                      file.promise = new _bluebird2.default(function (resolve, reject) {
-                        output.on('close', function () {
-                          var newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
+                      file.promise = function (didFail) {
+                        return new _bluebird2.default(function (resolve, reject) {
+                          output.on('close', function () {
+                            if (!didFail()) {
+                              var newStream = _fs2.default.createReadStream(tmppath).pipe(_fs2.default.createWriteStream(file.file));
 
-                          newStream.on('error', reject);
-                          newStream.on('close', resolve);
+                              newStream.on('error', reject);
+                              newStream.on('close', resolve);
+                            }
+                          });
                         });
-                      });
+                      };
                     } else {
                       debug('Set output: %s', file.outfile);
                       (0, _fs3.mkdirpSync)(_path2.default.dirname(file.outfile).replace(directory, ''), directory);
@@ -899,14 +903,19 @@ var Hopp = function () {
                   // promisify the current pipeline
                   return new _bluebird2.default(function (resolve, reject) {
                     var resolved = false;
+                    var didFail = false;
 
                     // connect all streams together to form pipeline
                     file.stream = (0, _pump2.default)(file.stream, function (err) {
+                      didFail = !!err;
+
                       if (err) reject((0, _utils.simplifyError)(err, new Error()));else if (!resolved && !file.promise) resolve();
                     });
 
                     if (file.promise) {
-                      file.promise.then(function () {
+                      file.promise(function () {
+                        return didFail;
+                      }).then(function () {
                         resolved = true;
                         resolve();
                       }, reject);

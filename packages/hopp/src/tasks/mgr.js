@@ -524,14 +524,16 @@ export default class Hopp {
               fd: tmp
             })
 
-            file.promise = new Promise((resolve, reject) => {
+            file.promise = didFail => new Promise((resolve, reject) => {
               output.on('close', () => {
-                const newStream =
-                  fs.createReadStream(tmppath)
-                    .pipe(fs.createWriteStream(file.file))
+                if (!didFail()) {
+                  const newStream =
+                    fs.createReadStream(tmppath)
+                      .pipe(fs.createWriteStream(file.file))
 
-                newStream.on('error', reject)
-                newStream.on('close', resolve)
+                  newStream.on('error', reject)
+                  newStream.on('close', resolve)
+                }
               })
             })
           } else {
@@ -546,18 +548,23 @@ export default class Hopp {
         // promisify the current pipeline
         return new Promise((resolve, reject) => {
           let resolved = false
+          let didFail = false
 
           // connect all streams together to form pipeline
           file.stream = pump(file.stream, err => {
+            didFail = !!err
+
             if (err) reject(simplifyError(err, new Error()))
             else if (!resolved && !file.promise) resolve()
           })
 
           if (file.promise) {
-            file.promise.then(() => {
-              resolved = true
-              resolve()
-            }, reject)
+            file
+              .promise(() => didFail)
+              .then(() => {
+                resolved = true
+                resolve()
+              }, reject)
           }
         }).then(async () => {
           // ensure global cache is present
