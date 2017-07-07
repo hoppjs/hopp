@@ -85,13 +85,11 @@ var format = exports.format = function () {
 
             ctx.formatters[formatter] = ctx.formatters[formatter] || _eslint.CLIEngine.getFormatter(formatter);
 
-            firstResult = void 0;
+            firstResult = (data.lintResults.messages.find(function (result) {
+              return result.config;
+            }) || {}).config;
             [].forEach.call(data.lintResults.messages, function (result) {
-              if (!firstResult) {
-                firstResult = result.config;
-              }
-
-              var msg = ctx.formatters[formatter](data.lintResults.messages, firstResult);
+              var msg = ctx.formatters[formatter]([data.lintResults], firstResult);
 
               if (msg) {
                 console.log('\n%s', msg);
