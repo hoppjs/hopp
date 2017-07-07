@@ -47,7 +47,7 @@ exports.default = function () {
             data.lintResults = ctx.linter.executeOnText(data.body.toString('utf8'), data.file).results[0];
 
             // try and fix data
-            if (data.lintResults.hasOwnProperty('output')) {
+            if (data.lintResults.output && data.lintResults.output !== data.body) {
               data.body = data.lintResults.output;
             }
 

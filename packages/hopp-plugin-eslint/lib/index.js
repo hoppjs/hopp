@@ -38,7 +38,7 @@ export default async (ctx, data) => {
   ).results[0]
 
   // try and fix data
-  if (data.lintResults.hasOwnProperty('output')) {
+  if (data.lintResults.output && data.lintResults.output !== data.body) {
     data.body = data.lintResults.output
   }
 
