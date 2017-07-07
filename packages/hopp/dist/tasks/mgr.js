@@ -62,6 +62,11 @@ const plugins = Object.create(null);
 const pluginConfig = Object.create(null);
 
 /**
+ * The stat cache.
+ */
+let gstatCache;
+
+/**
  * Test for undefined or null.
  */
 function isUndefined(value) {
@@ -589,7 +594,25 @@ class Hopp {
                 resolve();
               }, reject);
             }
-          });
+          }).then((0, _bluebird.method)(function () {
+            // ensure global cache is present
+            if (gstatCache === undefined) {
+              gstatCache = cache.valOr('sc', Object.create(null));
+            }
+
+            // shorten task name based on hopp's internal convention
+            const taskName = name.split(':').pop();
+
+            // create local cache
+            if (gstatCache[taskName] === undefined) {
+              gstatCache[taskName] = Object.create(null);
+            }
+
+            const localCache = gstatCache[taskName];
+
+            // update file stat
+            localCache['./' + _path2.default.relative(directory, file.file)] = +_fs2.default.statSync(file.file).mtime;
+          }));
         });
 
         // start & wait for all pipelines to end

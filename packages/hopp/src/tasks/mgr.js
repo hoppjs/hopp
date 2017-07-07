@@ -13,7 +13,7 @@ import * as cache from '../cache'
 import getPath from '../fs/get-path'
 import { _, createLogger, simplifyError } from '../utils'
 import { buffer, Bundle, createReadStream, map as mapStream } from '../streams'
-import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync } from '../fs'
+import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync, stat } from '../fs'
 
 const { debug } = createLogger('hopp')
 const watchlog = createLogger('hopp:watch').log
@@ -23,6 +23,11 @@ const watchlog = createLogger('hopp:watch').log
  */
 const plugins = Object.create(null)
 const pluginConfig = Object.create(null)
+
+/**
+ * The stat cache.
+ */
+let gstatCache
 
 /**
  * Test for undefined or null.
@@ -554,6 +559,24 @@ export default class Hopp {
               resolve()
             }, reject)
           }
+        }).then(async () => {
+          // ensure global cache is present
+          if (gstatCache === undefined) {
+            gstatCache = cache.valOr('sc', Object.create(null))
+          }
+
+          // shorten task name based on hopp's internal convention
+          const taskName = name.split(':').pop()
+
+          // create local cache
+          if (gstatCache[taskName] === undefined) {
+            gstatCache[taskName] = Object.create(null)
+          }
+
+          const localCache = gstatCache[taskName]
+
+          // update file stat
+          localCache['./' + path.relative(directory, file.file)] = +fs.statSync(file.file).mtime
         })
       })
 
