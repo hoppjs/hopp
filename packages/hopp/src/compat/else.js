@@ -8,7 +8,7 @@ import semver from 'semver'
 
 const { version } = require('../../package.json')
 
-export default async lock => {
+export default lock => {
   if (semver.lt(lock.v, '1.0.0-alpha.11')) {
     lock.v = version
 
@@ -20,7 +20,9 @@ export default async lock => {
     return lock
   }
 
-  if (semver.lte(lock.v, '1.2.0')) {
+  // final rule if all else passes is to just allow the
+  // updating by changing the version number
+  if (semver.lte(lock.v, version)) {
     lock.v = version
     return lock
   }
