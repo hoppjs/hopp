@@ -61,7 +61,7 @@ export const format = async (ctx, data) => {
       firstResult = result.config
     }
 
-    const msg = ctx.formatters[formatter](data.lintResults.results, firstResult)
+    const msg = ctx.formatters[formatter](data.lintResults.messages, firstResult)
 
     if (msg) {
       console.log('\n%s', msg)

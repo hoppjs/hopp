@@ -91,7 +91,7 @@ var format = exports.format = function () {
                 firstResult = result.config;
               }
 
-              var msg = ctx.formatters[formatter](data.lintResults.results, firstResult);
+              var msg = ctx.formatters[formatter](data.lintResults.messages, firstResult);
 
               if (msg) {
                 console.log('\n%s', msg);
