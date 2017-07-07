@@ -55,15 +55,12 @@ export const format = async (ctx, data) => {
   const formatter = ctx.args[0] || 'stylish'
   ctx.formatters[formatter] = ctx.formatters[formatter] || CLIEngine.getFormatter(formatter)
 
+  // get config for formatter
   const firstResult = (data.lintResults.messages.find(result => result.config) || {}).config
 
-  ;[].forEach.call(data.lintResults.messages, result => {
-    const msg = ctx.formatters[formatter]([data.lintResults], firstResult)
-
-    if (msg) {
-      console.log('\n%s', msg)
-    }
-  })
+  // print error via formatter
+  const msg = ctx.formatters[formatter]([data.lintResults], firstResult)
+  if (msg) console.error('\n%s', msg)
 
   return data
 }

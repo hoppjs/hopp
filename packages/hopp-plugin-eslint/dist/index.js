@@ -74,7 +74,7 @@ exports.default = function () {
 
 var format = exports.format = function () {
   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(ctx, data) {
-    var formatter, firstResult;
+    var formatter, firstResult, msg;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -85,20 +85,20 @@ var format = exports.format = function () {
 
             ctx.formatters[formatter] = ctx.formatters[formatter] || _eslint.CLIEngine.getFormatter(formatter);
 
+            // get config for formatter
             firstResult = (data.lintResults.messages.find(function (result) {
               return result.config;
             }) || {}).config;
-            [].forEach.call(data.lintResults.messages, function (result) {
-              var msg = ctx.formatters[formatter]([data.lintResults], firstResult);
 
-              if (msg) {
-                console.log('\n%s', msg);
-              }
-            });
+            // print error via formatter
+
+            msg = ctx.formatters[formatter]([data.lintResults], firstResult);
+
+            if (msg) console.error('\n%s', msg);
 
             return _context2.abrupt('return', data);
 
-          case 6:
+          case 7:
           case 'end':
             return _context2.stop();
         }
