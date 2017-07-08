@@ -18,13 +18,13 @@ describe('glob', async () => {
 
     // tests with no .; these snapshots are assumed to be correct
     // in later tests
-    expect((await glob('test', '*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+    expect((await glob('test', ['*.js'], `${__dirname}/fixtures/glob`, false, true)).map(
       p => p.replace(PROJECT_ROOT, '')
     )).toMatchSnapshot()
-    expect((await glob('test', '*/*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+    expect((await glob('test', ['*/*.js'], `${__dirname}/fixtures/glob`, false, true)).map(
       p => p.replace(PROJECT_ROOT, '')
     )).toMatchSnapshot()
-    expect((await glob('test', '**/*.js', `${__dirname}/fixtures/glob`, false, true)).map(
+    expect((await glob('test', ['**/*.js'], `${__dirname}/fixtures/glob`, false, true)).map(
       p => p.replace(PROJECT_ROOT, '')
     )).toMatchSnapshot()
   })
@@ -34,8 +34,8 @@ describe('glob', async () => {
     await cache.load(tmp.dirSync().name)
 
     async function assert (pttn) {
-      const relativeToDot = await glob('test', './' + pttn, `${__dirname}/fixtures/glob`, false, true)
-      const relativeToCurr = await glob('test', pttn, `${__dirname}/fixtures/glob`, false, true)
+      const relativeToDot = await glob('test', ['./' + pttn], `${__dirname}/fixtures/glob`, false, true)
+      const relativeToCurr = await glob('test', [pttn], `${__dirname}/fixtures/glob`, false, true)
 
       return expect(relativeToDot).toEqual(relativeToCurr)
     }
@@ -50,8 +50,8 @@ describe('glob', async () => {
     await cache.load(tmp.dirSync().name)
 
     async function assert (pttn) {
-      const relativeToDot = await glob('test', '../' + pttn, `${__dirname}/fixtures/glob/1`, false, true)
-      const relativeToCurr = await glob('test', pttn, `${__dirname}/fixtures/glob`, false, true)
+      const relativeToDot = await glob('test', ['../' + pttn], `${__dirname}/fixtures/glob/1`, false, true)
+      const relativeToCurr = await glob('test', [pttn], `${__dirname}/fixtures/glob`, false, true)
 
       return expect(relativeToDot).toEqual(relativeToCurr)
     }

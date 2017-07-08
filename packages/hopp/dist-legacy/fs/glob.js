@@ -223,11 +223,6 @@ var glob = function () {
             // shorten task name based on hopp's internal convention
             task = task.split(':').pop();
 
-            // prefer arrays
-            if (!(pattern instanceof Array)) {
-              pattern = [pattern];
-            }
-
             // ensure global cache is present
             if (gstatCache === undefined) {
               gstatCache = cache.valOr('sc', Object.create(null));
@@ -252,101 +247,101 @@ var glob = function () {
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context2.prev = 12;
+            _context2.prev = 11;
             _iterator2 = pattern[Symbol.iterator]();
 
-          case 14:
+          case 13:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context2.next = 36;
+              _context2.next = 35;
               break;
             }
 
             pttn = _step2.value;
 
             if (!(pttn[0] === '/')) {
-              _context2.next = 18;
+              _context2.next = 17;
               break;
             }
 
             throw new Error('Not sure what to do with the / in your glob.');
 
-          case 18:
+          case 17:
             nm = glob.nonMagic(pttn);
 
             debug('nm = %j', nm);
 
             if (nm) {
-              _context2.next = 28;
+              _context2.next = 27;
               break;
             }
 
             _context2.t0 = results;
-            _context2.next = 24;
+            _context2.next = 23;
             return (0, _bluebird.resolve)(walk('.', pttn.split('/'), cwd));
 
-          case 24:
+          case 23:
             _context2.t1 = _context2.sent;
             results = _context2.t0.concat.call(_context2.t0, _context2.t1);
-            _context2.next = 33;
+            _context2.next = 32;
             break;
 
-          case 28:
+          case 27:
             _context2.t2 = results;
-            _context2.next = 31;
+            _context2.next = 30;
             return (0, _bluebird.resolve)(walk(nm, pttn.replace(nm, '').substr(1).split('/'), _path2.default.resolve(cwd, nm)));
 
-          case 31:
+          case 30:
             _context2.t3 = _context2.sent;
             results = _context2.t2.concat.call(_context2.t2, _context2.t3);
 
-          case 33:
+          case 32:
             _iteratorNormalCompletion2 = true;
-            _context2.next = 14;
+            _context2.next = 13;
             break;
 
-          case 36:
-            _context2.next = 42;
+          case 35:
+            _context2.next = 41;
             break;
 
-          case 38:
-            _context2.prev = 38;
-            _context2.t4 = _context2['catch'](12);
+          case 37:
+            _context2.prev = 37;
+            _context2.t4 = _context2['catch'](11);
             _didIteratorError2 = true;
             _iteratorError2 = _context2.t4;
 
-          case 42:
+          case 41:
+            _context2.prev = 41;
             _context2.prev = 42;
-            _context2.prev = 43;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return) {
               _iterator2.return();
             }
 
-          case 45:
-            _context2.prev = 45;
+          case 44:
+            _context2.prev = 44;
 
             if (!_didIteratorError2) {
-              _context2.next = 48;
+              _context2.next = 47;
               break;
             }
 
             throw _iteratorError2;
 
+          case 47:
+            return _context2.finish(44);
+
           case 48:
-            return _context2.finish(45);
+            return _context2.finish(41);
 
           case 49:
-            return _context2.finish(42);
-
-          case 50:
             return _context2.abrupt('return', results);
 
-          case 51:
+          case 50:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[12, 38, 42, 50], [43,, 45, 49]]);
+    }, _callee2, this, [[11, 37, 41, 49], [42,, 44, 48]]);
   }));
 
   return function glob(_x, _x2, _x3, _x4, _x5) {

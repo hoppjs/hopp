@@ -18,11 +18,6 @@ async function glob (task, pattern, cwd, useDoubleCache = false, recache = false
   // shorten task name based on hopp's internal convention
   task = task.split(':').pop()
 
-  // prefer arrays
-  if (!(pattern instanceof Array)) {
-    pattern = [pattern]
-  }
-
   // ensure global cache is present
   if (gstatCache === undefined) {
     gstatCache = cache.valOr('sc', Object.create(null))
