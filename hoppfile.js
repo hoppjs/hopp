@@ -92,8 +92,16 @@ exports['hopp-legacy'] =
     ]
   }, 'dist-legacy')
 
+exports['lint-hopp'] =
+  hopp('./packages/hopp/src/**/*.js')
+    .eslint({ fix: true })
+    .eslint.format()
+    .eslint.failOnError()
+    .dest()
+
 exports['hopp'] =
   hopp.steps([
+    'lint-hopp',
     'hopp-latest',
     'hopp-legacy'
   ])
@@ -106,7 +114,7 @@ exports.default = hopp.all(plugins.map(p => p.substr(12)).concat([ 'hopp' ]))
 /**
  * Global linting.
  */
-exports.lint = hopp.all(plugins.map(name => 'lint-' + name.substr(12)))
+exports.lint = hopp.all(plugins.map(name => 'lint-' + name.substr(12)).concat([ 'lint-hopp' ]))
 
 /**
  * Watch all.

@@ -13,7 +13,7 @@ import * as cache from '../cache'
 import getPath from '../fs/get-path'
 import { _, createLogger, simplifyError } from '../utils'
 import { buffer, Bundle, createReadStream, map as mapStream } from '../streams'
-import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync, stat } from '../fs'
+import { disableFSCache, mkdirp, mkdirpSync, openFile, tmpFile, tmpFileSync } from '../fs'
 
 const { debug } = createLogger('hopp')
 const watchlog = createLogger('hopp:watch').log

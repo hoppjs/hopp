@@ -8,7 +8,7 @@
  * Simplifies an error's stack trace by removing
  * the stack trace lines that are part of hopp.
  */
-export default function simplifyError(err, here) {
+export default function simplifyError (err, here) {
   here = here.stack.split('\n')[1]
   here = here.substr(0, here.indexOf('.js:'))
 
