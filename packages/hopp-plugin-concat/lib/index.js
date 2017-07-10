@@ -2,7 +2,7 @@
  * @file index.src.js
  * @license MIT
  */
-
+let tmp = false
 /**
  * For node v4.
  */
@@ -18,10 +18,7 @@ export const config = {
 
 /**
  * We don't need to do any real transformation.
- * 
- * suffix and prefix features
- * @param suffix || null @param prefix || null
- * appending additional suffix and prefix to each data.
+ * suffix and prefix features added
  */
 export default async (ctx, data) => {
   /**
@@ -33,19 +30,23 @@ export default async (ctx, data) => {
 
   /**
    * options assign
+   *  @param suffix adding string at the end of the each file
+   *  @param prefix adding string at the beginning of the first packet
    */
-  var opts = Object.assign({}, ctx.args[0] || {})
-
-  // suffix 
-  if (opts.suffix) {
-    data.size += opts.suffix.length
-    data.body = Buffer.from(opts.suffix + data.body.toString())
-  }
-
-  // prefix
-  if (opts.prefix) {
-    data.size += opts.prefix.length
-    data.body = Buffer.from(data.body.toString() + opts.prefix)
+  const opts = ctx.args[0] || {}
+  
+  if (config.bundle && !tmp) {
+    // prefix
+    if (opts.prefix) {
+      data.size += opts.prefix.length
+      data.body = opts.prefix + data.body.toString()
+    }
+    // suffix
+    if (opts.suffix) {
+      data.size += opts.suffix.length
+      data.body = data.body.toString() + opts.suffix
+    }
+    tmp = true
   }
 
   return data

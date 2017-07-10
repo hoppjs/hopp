@@ -10,7 +10,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
  * @file index.src.js
  * @license MIT
  */
-
+var tmp = false;
 /**
  * For node v4.
  */
@@ -25,17 +25,59 @@ var config = exports.config = {
 
   /**
    * We don't need to do any real transformation.
+   * suffix and prefix features
    */
 };
 exports.default = function () {
   var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ctx, data) {
+    var opts;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            if (!(ctx.args.length > 1)) {
+              _context.next = 2;
+              break;
+            }
+
+            throw new Error('Unexpected numbers of arguments.');
+
+          case 2:
+
+            /**
+             * options assign
+             *  @param suffix adding string at the end of the each file
+             *  @param prefix adding string at the beginning of the first packet
+             */
+            opts = ctx.args[0] || {};
+            // // prefix
+            // if (opts.prefix && !tmp) {
+            //   data.size += opts.prefix.length
+            //   data.body = opts.prefix + data.body.toString();
+            // }
+            // // suffix 
+            // if (opts.suffix && !tmp) {
+            //   data.size += opts.prefix.length
+            //   data.body = data.body.toString() + opts.suffix
+            // }
+
+            if (config.bundle && !tmp) {
+              // prefix
+              if (opts.prefix) {
+                data.size += opts.prefix.length;
+                data.body = opts.prefix + data.body.toString();
+              }
+              // suffix
+              if (opts.suffix) {
+                data.size += opts.suffix.length;
+                data.body = data.body.toString() + opts.suffix;
+              }
+              tmp = true;
+            }
+
             return _context.abrupt('return', data);
 
-          case 1:
+          case 5:
           case 'end':
             return _context.stop();
         }
