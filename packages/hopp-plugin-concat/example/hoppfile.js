@@ -4,5 +4,7 @@ hopp.load(`${__dirname}/../`)
 
 exports.default =
   hopp('src/*.js')
-    .concat()
-    .dest('dist')
+    .concat({
+      prefix:"@Rock"
+    })
+    .dest('dist.lock')
