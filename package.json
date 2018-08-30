@@ -1,0 +1,36 @@
+{
+  "name": "hopp",
+  "version": "2.0.0",
+  "description": "Crazy rapid build system.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoppjs/hopp.git"
+  },
+  "keywords": [
+    "build",
+    "cached",
+    "fast",
+    "rapid",
+    "build",
+    "system",
+    "parallel"
+  ],
+  "author": "Karim Alibhai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hoppjs/hopp/issues"
+  },
+  "homepage": "https://github.com/hoppjs/hopp#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4",
+    "rsxjs": "^0.1.0"
+  }
+}

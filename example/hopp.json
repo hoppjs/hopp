@@ -1,0 +1,13 @@
+{
+  "js": {
+    "src": "./src/**/*.js",
+    "dest": "./dist",
+    "build": [
+      "babel"
+    ]
+  },
+
+  "default": {
+    "deps": ["js"]
+  }
+}

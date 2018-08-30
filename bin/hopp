@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+start="$(gdate +%s%N)"
+
+node \
+  "$(dirname $0)/../dist/index.js" \
+  $@
+
+diff=$[ ($(gdate +%s%N) - start) / 1000000 ]
+echo "finished in ${diff}ms"
